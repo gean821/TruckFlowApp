@@ -1,3 +1,4 @@
+import CadastroProduto from '@/components/icons/CadastroProduto.vue';
 import HomeView from '@/views/HomeView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -8,7 +9,12 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
-    },  
+    },
+    {
+      path: '/gerenciar',
+      name: 'cadastroProduto',
+      component: CadastroProduto
+    }
   ],
 })
 
