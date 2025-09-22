@@ -1,4 +1,4 @@
-import type EntidadeBase from "./EntidadeBase";
+import type EntidadeBase from "./IEntidadeBase";
 
 export default interface UnidadeEntrega extends EntidadeBase {
 
