@@ -1,11 +1,10 @@
 <template>
-  <div class="section d-flex pa-5 mt-5 d-flex flex-row justify-center align-center ">
-    <h1 id="h1" class="d-flex flex-row ga-2">
+  <div class="section d-flex pa-3 mt-5 d-flex flex-row justify-center align-center">
+    <h1 id="h1" class="d-flex flex-row ga-2 text-h5">
       Produtos Cadastrados
         <v-img width="auto" 
           aspect-ratio="16/9"
-          cover src="/Clipboard.svg">
-          
+          cover src="/Clipboard.svg">  
         </v-img>
     </h1>
   </div>
@@ -33,7 +32,7 @@
                 @click="abrirDialog"
                 elevation="5"
               >
-                  Adicionar Produto
+                  Novo
               </v-btn>
             </div>
        </template>     
@@ -67,7 +66,6 @@
      max-width="500">
     <v-card
       rounded="lg"
-      theme="dark"
       :title="`${isEditing ? 'Insira os dados' : 'Insira as informações'} `"
     >
       <template v-slot:text>
@@ -131,13 +129,11 @@ import type IProduto from '@/Entities/IProduto';
 import { useLocalDescargaStore } from '@/stores/LocalDescargaStore';
 import { useProdutoStore } from '@/stores/ProdutoStore';
 import { computed, onMounted, ref } from 'vue';
-import Color from 'vuetify/directives/color';
 
 onMounted(() => {
   store.GetAll(),
   localDescargaStore.GetAll();
 });
-
 
 const store = useProdutoStore();
 computed(() =>  store.produtos)
@@ -183,11 +179,11 @@ function abrirDialog(item?: IProduto) {
   dialog.value = true;
 }
 
-async function removerProduto(id:string) {
+async function removerProduto(id: string) {
   await store.DeleteProduto(id)
 }
 
-function salvar() {
+async function salvar() {
 
   const produto: IProduto = {
     nome: formModel.value.nome,
@@ -196,19 +192,21 @@ function salvar() {
   };
 
   if (isEditing.value && produto.id) {
-    store.UpdateProduto(produto.id, produto);
+    await store.UpdateProduto(produto.id, produto);
   }
   else 
   {
-    store.AddProduto(produto);
+    await store.AddProduto(produto);
   }
-
+  
   dialog.value = false;
 }
 
-
 const formatarData = (dataString: string): string => {
-    if (!dataString) return '';
+    if (!dataString) {
+      return '';
+    }
+
     const data = new Date(dataString);
     return data.toLocaleDateString('pt-BR');
 }

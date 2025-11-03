@@ -1,0 +1,14 @@
+/* Aplica Montserrat para todo o app */
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Opcional: só títulos h1..h6 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Caso queira manter a classe .text-h5 */
+.text-h5 {
+  font-family: 'Montserrat', sans-serif;
+}

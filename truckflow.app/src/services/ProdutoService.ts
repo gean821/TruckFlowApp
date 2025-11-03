@@ -3,17 +3,17 @@ import http from "@/http/http";
 
 export default class ProdutoService {
 
-    static async GetAll():Promise<IProduto[]> {
+    static async GetAll(): Promise<IProduto[]> {
         const produtos = await http.get('/Produto');
-        return produtos.data; 
+        return produtos.data;
     }
 
-     static async GetById(id: string): Promise<IProduto> {
+    static async GetById(id: string): Promise<IProduto> {
         const local = await http.get(`/Produto/${id}`);
-        return local.data;        
+        return local.data;
     }
 
-    static async AddProduto(Produto: IProduto):Promise<IProduto> {
+    static async AddProduto(Produto: IProduto): Promise<IProduto> {
         const produto = await http.post('/Produto', Produto);
         return produto.data;
     }
@@ -23,7 +23,7 @@ export default class ProdutoService {
         return produto.data;
     }
 
-    static async DeleteProduto(id: string) : Promise<void> {
+    static async DeleteProduto(id: string): Promise<void> {
         await http.delete(`/Produto/${id}`);
     }
 }

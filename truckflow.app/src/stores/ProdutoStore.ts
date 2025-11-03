@@ -32,6 +32,7 @@ export const useProdutoStore = defineStore('Produto', () => {
     async function DeleteProduto(id: string) {
         await ProdutoService.DeleteProduto(id);
         const index = produtos.value.findIndex(x => x.id === id);
+        
         if (index !== -1) {
             produtos.value.splice(index,1);
         }

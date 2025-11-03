@@ -9,10 +9,10 @@ export default class LocalDescargaService {
 
     static async GetById(id: string): Promise<ILocalDescarga> {
         const local = await http.get(`/LocalDescarga/${id}`);
-        return local.data;        
+        return local.data;
     }
 
-    static async AddLocalDescarga(localDescarga: ILocalDescarga):Promise<ILocalDescarga> {
+    static async AddLocalDescarga(localDescarga: ILocalDescarga): Promise<ILocalDescarga> {
         const local = await http.post('/LocalDescarga', localDescarga);
         return local.data;
     }
@@ -22,7 +22,7 @@ export default class LocalDescargaService {
         return local.data;
     }
 
-    static async DeleteLocalDescarga(id: string) : Promise<void> {
+    static async DeleteLocalDescarga(id: string): Promise<void> {
         await http.delete(`/LocalDescarga/${id}`);
     }
 }

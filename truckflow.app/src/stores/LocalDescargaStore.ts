@@ -1,4 +1,4 @@
-import { ref} from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import LocalDescargaService from '@/services/LocalDescargaService';
 import type ILocalDescarga from '@/Entities/ILocalDescarga';
@@ -21,7 +21,7 @@ export const useLocalDescargaStore = defineStore('localDescarga', () => {
 
   async function UpdateLocalDescarga(id: string, localAtualizado: ILocalDescarga) {
     const local = await LocalDescargaService.UpdateLocalDescarga(id, localAtualizado);
-    const index = locaisDeDescarga.value.findIndex(x => x.id !== localAtualizado.id);
+    const index = locaisDeDescarga.value.findIndex(x => x.id === localAtualizado.id);
 
     if (index !== -1) {
       locaisDeDescarga.value[index] = local;
@@ -30,7 +30,11 @@ export const useLocalDescargaStore = defineStore('localDescarga', () => {
 
   async function DeleteLocalDescarga(id: string) {
     await LocalDescargaService.DeleteLocalDescarga(id);
-    locaisDeDescarga.value.filter(x => x.id != id);
+    const index = locaisDeDescarga.value.findIndex(x => x.id === id);
+    
+    if (index !== -1) {
+      locaisDeDescarga.value.splice(index, 1);
+    }
   }
 
   return {
@@ -39,7 +43,7 @@ export const useLocalDescargaStore = defineStore('localDescarga', () => {
     GetById,
     AddLocalDescarga,
     UpdateLocalDescarga,
-    DeleteLocalDescarga 
+    DeleteLocalDescarga
   }
 })
 
