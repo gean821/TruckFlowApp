@@ -7,8 +7,14 @@
     >
         <template #top>
             <div class="d-flex justify-center align-center pa-5 ">
-                <v-text-field v-model="search" label="Pesquisar..." variant="outlined" density="comfortable" clearable
-                    prepend-inner-icon="mdi-magnify" />
+                <v-text-field 
+                    v-model="search"
+                    label="Pesquisar..."
+                    variant="outlined"
+                    density="comfortable"
+                    clearable
+                    prepend-inner-icon="mdi-magnify"
+                />
             </div>
 
             <div class="d-flex justify-end pa-5">
@@ -23,6 +29,17 @@
                 <v-icon size="28" color="blue" class="icon" @click="$emit('abrirDialog', item)">
                     mdi-pencil
                 </v-icon>
+
+                  <v-icon
+                    v-if="showView"
+                    size="28"
+                    color="gray"
+                    class="icon"
+                    @click="$emit('viewItens', item)"
+                    >
+                        mdi-eye
+                    </v-icon>
+                
                 <v-icon size="28" color="red" class="icon" @click="$emit('delete', item.id)">
                     mdi-delete
                 </v-icon>
@@ -43,12 +60,14 @@ import { formatarData } from '@/utils/date-format';
 
 const props = defineProps<{
     items: Array<any>;
-    headers: VDataTableHeader
+    headers: VDataTableHeader;
+    showView?: boolean;
 }>();
 
 const emit = defineEmits<{
     (e: 'abrirDialog', item?: any): void;
     (e: 'delete', item: any): void;
+    (e: 'viewItens', item: any): void;
 }>();
 
 const search = ref('');

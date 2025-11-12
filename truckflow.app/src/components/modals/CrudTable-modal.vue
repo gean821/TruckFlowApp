@@ -1,6 +1,6 @@
 <template>
     <v-dialog v-model="internalModel" max-width="500">
-        <v-card rounded="lg" :title="`${isEditing ? 'Editar' : 'Novo'} local de descarga`">
+        <v-card rounded="lg" :title="`${isEditing ? 'Editar' : 'Novo'}`">
             <template #text>
                 <v-row>
                     <v-col cols="12">

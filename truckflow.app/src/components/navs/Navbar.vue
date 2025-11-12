@@ -37,7 +37,7 @@
                     <v-list-item title="Descarga" to="locais" class="sub-item" />
 
                     <v-list-item title="Fornecedores" to="fornecedores" class="sub-item" />
-                    <v-list-item title="Recebimento" to="/gerenciar-recebimentos" class="sub-item" />
+                    <v-list-item title="Recebimento" to="recebimentos" class="sub-item" />
                     <v-list-item title="Controle" to="/visualizar-recebimentos" class="sub-item" />
                 </v-list-group>
 

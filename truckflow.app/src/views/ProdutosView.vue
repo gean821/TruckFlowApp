@@ -2,12 +2,20 @@
   <div class="section d-flex pa-3 mt-5 d-flex flex-row justify-center align-center">
     <h1 id="h1" class="d-flex flex-row ga-2 text-h5">
       Produtos Cadastrados
-        <v-img width="auto" 
-          aspect-ratio="16/9"
-          cover src="/Clipboard.svg">  
-        </v-img>
     </h1>
   </div>
+
+  <div class="d-flex justify-center align-center pa-5">
+    <v-text-field
+      v-model="search"
+      label="Pesquisar..."
+      variant="outlined"
+      density="comfortable"
+      clearable
+      prepend-inner-icon="mdi-magnify"
+    />
+  </div>
+  
   <div class="table pa-5 mt-5">
     <v-data-table 
       :items="store.produtos"
@@ -51,7 +59,6 @@
       <template v-slot:item.actions="{ item }">
         <div class="d-flex ga-4 justify-end">
           <v-icon color="#000000" icon="mdi-pencil" class="icon" size="large"  @click="abrirDialog(item)"></v-icon>
-
           <v-icon color="#E53935" icon="mdi-delete" class="icon" size="large" @click="removerProduto(item.id!)"></v-icon>
         </div>
       </template>
@@ -61,7 +68,7 @@
       </template>
       </v-data-table>
   </div>
-
+  
    <v-dialog v-model="dialog"
      max-width="500">
     <v-card
@@ -144,6 +151,7 @@ const locais = computed(() => localDescargaStore.locaisDeDescarga);
 const dialog = ref(false);
 const isEditing = ref(false);
 const loading = ref(false);
+const search = ref('');
 
 
 const headers = [

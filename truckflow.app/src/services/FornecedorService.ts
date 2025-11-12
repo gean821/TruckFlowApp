@@ -25,6 +25,15 @@ export default class FornecedorService {
     static async DeleteFornecedor(id: string): Promise<void> {
         await http.delete(`/Fornecedor/${id}`);
     }
+    
+    static async addProdutoToFornecedor(fornecedorId: string, produtoId: string): Promise<IFornecedor> {
+        const produtoAdicionado = await http.post(`/Fornecedor/${fornecedorId}/produtos/${produtoId}`)
+        return produtoAdicionado.data;
+    }
+
+    static async deleteProdutoFromFornecedor(fornecedorId: string, produtoId: string) : Promise<void> {
+        await http.delete(`/Fornecedor/${fornecedorId}/produtos/${produtoId}`);
+    }
 }
 
 

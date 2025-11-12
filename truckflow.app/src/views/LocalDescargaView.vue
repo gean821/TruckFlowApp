@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex flex-row justify-center align-center mt-3 pa-5">
-        <h1 class="text-h5">Locais de Descarga</h1>
+        <h1 class="text-h5"> Locais de Descarga</h1>
     </div>
     
     <CrudTable 
@@ -24,7 +24,7 @@ import CrudTable, { type VDataTableHeader } from "@/components/data-table/CrudTa
 import { computed, onMounted, ref } from "vue";
 import type ILocalDescarga from "@/Entities/ILocalDescarga";
 import { useLocalDescargaStore } from "@/stores/LocalDescargaStore";
-import CrudTableModal from "@/components/CrudTable-modal.vue";
+import CrudTableModal from "@/components/modals/CrudTable-modal.vue";
 
 onMounted(() => {
     store.GetAll();
@@ -41,7 +41,6 @@ const headers: VDataTableHeader = [
 ];
 
 const dialog = ref(false);
-const nome = ref('');
 const isEditing = ref(false);
 
 const formModel = ref<ILocalDescarga>({

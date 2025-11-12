@@ -2,7 +2,6 @@ import type IProduto from "@/Entities/IProduto";
 import http from "@/http/http";
 
 export default class ProdutoService {
-
     static async GetAll(): Promise<IProduto[]> {
         const produtos = await http.get('/Produto');
         return produtos.data;
@@ -18,8 +17,8 @@ export default class ProdutoService {
         return produto.data;
     }
 
-    static async UpdateProduto(id: string, localAtualizado: IProduto): Promise<IProduto> {
-        const produto = await http.put(`/Produto/${id}`, localAtualizado);
+    static async UpdateProduto(id: string, produtoAtualizado: IProduto): Promise<IProduto> {
+        const produto = await http.put(`/Produto/${id}`, produtoAtualizado);
         return produto.data;
     }
 
