@@ -1,5 +1,5 @@
 <template>
-  <v-container class="pa-5">
+  <v-container class="pa-4">
     <div class="text-center mb-6">
       <h1 class="text-h5 font-weight-medium pa-3">
         Cadastro de Recebimento
@@ -10,11 +10,11 @@
       <v-col cols="12" md="10" lg="8">
         <v-form v-model="isFormValid" @submit.prevent="submitFormulario">
           <v-card 
-            elevation="3"
-            class="pa-6" color="#ECEFF1">
+            elevation="5"
+            class="pa-6" color="#EDEAEA94">
             <v-card-text>
 
-              <h3 class="text-h5 mb-4 d-flex justify-center">Dados Principais</h3>
+              <h3 class="text-h5 mb-5 d-flex justify-center">Dados Principais</h3>
 
               <v-row dense>
                 <v-col cols="12" md="6">

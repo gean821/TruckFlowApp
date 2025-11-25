@@ -6,7 +6,7 @@
           <div class="text-h6">Itens do Recebimento</div>
           <div class="subtitle-2">
             <strong v-if="recebimento">
-              {{ recebimento.fornecedor }}
+              {{ recebimento.fornecedorNome }}
             </strong>
             <span v-if="recebimento"> — {{ formatarData(recebimento.dataInicio) }}</span>
           </div>
@@ -33,7 +33,7 @@
           density="compact"
         >
           <template #item.produto="{ item }">
-            {{ item.produto ?? item.produtoNome ?? '—' }}
+            {{ item.produto ?? item.produto ?? '—' }}
           </template>
 
           <template #item.quantidadeTotalPlanejada="{ item }">
@@ -55,7 +55,7 @@
           <template #item.createdAt="{ item }">
             {{ formatarData(item.createdAt) }}
           </template>
-
+ 
           <template #item.actions="{ item }">
             <v-tooltip location="top">
               <template #activator="{ props }">
@@ -82,10 +82,11 @@ import { ref, watch, computed } from 'vue';
 import { useItemPlanejamentoStore } from '@/stores/ItemPlanejamentoStore';
 import { useRecebimentoStore } from '@/stores/RecebimentoStore';
 import { formatarData } from '@/utils/date-format';
-import type IPlanejamentoRecebimento from '@/Entities/IPlanejamentoRecebimento';
 import type { VDataTableHeader } from '../data-table/CrudTable.vue';
+import type ItemPlanejamentoResponse from '@/Dtos/Item/ItemResponseDto';
+import type IRecebimentoResponse from '@/Dtos/Recebimento/IRecebimentoResponse';
 
-const props = defineProps<{ recebimento: IPlanejamentoRecebimento | null }>();
+const props = defineProps<{ recebimento: IRecebimentoResponse | null }>();
 const emit = defineEmits<{
   (e: 'close'): void
 }>();
@@ -95,7 +96,7 @@ const itemStore = useItemPlanejamentoStore();
 const recebimentoStore = useRecebimentoStore();
 
 const open = ref(true);
-const localItems = ref<any[]>([]);
+const localItems = ref<ItemPlanejamentoResponse[]>([]);
 
 const tableHeaders : VDataTableHeader = [
   { title: 'PRODUTO', key: 'produto' },
@@ -118,7 +119,7 @@ watch(
     }
 
     // clona os itens (evita problemas com reatividade/proxy)
-    localItems.value = (r.itemPlanejamentos ?? []).map(i => ({ ...i }));
+    localItems.value = (r.itens ?? []).map(i => ({ ...i }));
   },
   { immediate: true }
 );
@@ -128,17 +129,14 @@ function getItemId(item: any): string | undefined {
   return item.id ?? item.Id ?? item.Id?.toString?.();
 }
 
-// fechar modal e notificar pai
 function closeModal() {
   open.value = false;
   emit('close');
 }
 
-// confirmação e remoção do item
 async function onDeleteItem(item: any) {
   const id = getItemId(item);
   if (!id) {
-    // tenta remover localmente se não houver id (incomum)
     localItems.value = localItems.value.filter(x => x !== item);
     return;
   }

@@ -1,6 +1,6 @@
 export default interface EntidadeBase {
     id?: string;
-    createdAt?: Date;
+    createdAt?:  string;
     updatedAt?: Date;
     deletedAt?: Date;
 }

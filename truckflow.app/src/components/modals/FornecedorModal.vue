@@ -6,9 +6,21 @@
         <v-text-field v-model="form.nome" label="Nome do fornecedor" variant="outlined" />
       </v-card-text>
       <v-card-actions>
-        <v-btn text="Cancelar" @click="close" />
+        <v-btn 
+          text="Cancelar"
+          color="red"
+          @click="close" 
+          variant="flat"
+          rounded="lg"
+        />
         <v-spacer />
-        <v-btn color="green" text="Salvar" @click="save" />
+        <v-btn 
+          color="green"
+          text="Salvar"
+          @click="save" 
+          variant="flat"
+          rounded="lg"
+        />
       </v-card-actions>
     </v-card>
   </v-dialog>

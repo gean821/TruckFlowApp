@@ -6,6 +6,9 @@ import ProdutosView from '@/views/ProdutosView.vue';
 import RecebimentoView from '@/views/RecebimentoView.vue';
 import RecebimentoForm from '@/components/Forms/RecebimentoForm.vue';
 import RecebimentoTable from '@/components/data-table/RecebimentoTable.vue';
+import BloqueioView from '@/views/BloqueioView.vue';
+import AgendamentoCard from '@/components/AgendamentoCard.vue';
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,6 +17,16 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
+    },
+    {
+      path: '/programacao',
+      name: 'programacao',
+      component: AgendamentoCard
+    },
+    {
+      path: '/bloqueios',
+      name: 'bloqueios',
+      component: BloqueioView
     },
     {
       path: '/produtos',

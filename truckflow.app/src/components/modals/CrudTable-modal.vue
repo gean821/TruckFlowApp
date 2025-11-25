@@ -12,9 +12,18 @@
             <v-divider />
 
             <v-card-actions class="bg-surface-light">
-                <v-btn text="Cancelar" color="red" @click="close" />
+                <v-btn 
+                    text="Cancelar" color="red" 
+                    @click="close"
+                    variant="flat" 
+                />
                 <v-spacer />
-                <v-btn text="Salvar" color="blue" @click="salvar" />
+                <v-btn 
+                    text="Salvar"
+                    color="blue"
+                    @click="salvar"
+                    variant="flat" 
+                />
             </v-card-actions>
         </v-card>
     </v-dialog>

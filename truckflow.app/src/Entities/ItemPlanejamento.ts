@@ -9,4 +9,5 @@ export default interface ItemPlanejamento extends EntidadeBase {
     quantidadeTotalPlanejada: number;
     cadenciaDiariaPlanejada: number;
     quantidadeTotalRecebida: number;
+    faltaReceber: number;
 }

@@ -49,6 +49,10 @@
         <template v-slot:item.createdAt="{ value }">
             {{ formatarData(value) }}
         </template>
+
+        <template #item.totalItens="{ value }">
+            {{ value }}
+        </template>
     </v-data-table>
 </template>
 

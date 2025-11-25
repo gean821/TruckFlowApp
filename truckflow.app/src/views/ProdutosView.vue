@@ -58,7 +58,7 @@
 
       <template v-slot:item.actions="{ item }">
         <div class="d-flex ga-4 justify-end">
-          <v-icon color="#000000" icon="mdi-pencil" class="icon" size="large"  @click="abrirDialog(item)"></v-icon>
+          <v-icon color="blue" icon="mdi-pencil" class="icon" size="large"  @click="abrirDialog(item)"></v-icon>
           <v-icon color="#E53935" icon="mdi-delete" class="icon" size="large" @click="removerProduto(item.id!)"></v-icon>
         </div>
       </template>

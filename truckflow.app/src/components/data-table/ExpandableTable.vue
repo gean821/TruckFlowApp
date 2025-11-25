@@ -22,6 +22,7 @@
         <v-btn color="green" prepend-icon="mdi-plus" @click="$emit('add-main')">
           Novo
         </v-btn>
+
       </div>
     </template>
 
@@ -71,6 +72,15 @@
             >
               Adicionar Produto
             </v-btn>
+
+             <!-- <v-btn
+              color="#42A5F5"
+              size="small"
+              prepend-icon="mdi-plus"
+              @click="$emit('assoc-sub', item.id,)"
+            >
+              Associar Produto
+            </v-btn> -->
           </div>
         </template>
       </v-data-table>
@@ -96,11 +106,12 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'add-main'): void;
-  (e: 'add-sub', parent: IProduto): void;
   (e: 'edit-main',item: IFornecedor): void;
-  (e: 'edit-sub', item: IProduto): void;
   (e: 'delete-main', id: string): void;
+  (e: 'add-sub', parent: IProduto): void;
+  (e: 'edit-sub', item: IProduto): void;
   (e: 'delete-sub', fornecedorId: any, produtoId: any): void;
+  (e: 'assoc-sub', fornecedorId: string, produtoId: string): void;
 }>();
 
 const search = ref('');

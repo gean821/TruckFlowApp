@@ -3,10 +3,72 @@
         <v-app-bar-nav-icon icon="mdi-menu" @click="abrirNavegacao">
 
         </v-app-bar-nav-icon>
+
         <v-app-bar-title class="d-flex justify-center">
             <v-img :width="145" aspect-ratio="16/9" cover src="/Rectangle.svg" class="pa-3 mt-3">
             </v-img>
         </v-app-bar-title>
+
+        <template v-slot:append>
+            <v-btn 
+                icon="mdi-bell-outline"
+                @click="openBellModal"
+            ></v-btn>
+
+            <v-menu 
+                v-model="accountModal"
+                location="bottom end"
+                transition="fade-transition"
+                close-on-content-click
+            >
+
+                <!-- Trigger -->
+            <template #activator="{ props }">
+                <v-btn icon v-bind="props">
+                    <v-icon>mdi-account</v-icon>
+                </v-btn>
+            </template>
+
+                <v-card class="py-2" min-width="220">
+                    <v-list>
+                        <v-list-item>
+                            <v-list-item-title class="font-weight-bold">
+                                {{ profile.name }}
+                            </v-list-item-title>
+                            <v-list-item-subtitle>
+                                {{ roleDisplay }}
+                            </v-list-item-subtitle>
+                        </v-list-item>
+
+                        <v-divider class="my-2" />
+
+                        <v-list-item @click="logout" link>
+                            <v-icon 
+                                color="red-darken-2"
+                                class="mr-2"
+                            >
+                                mdi-logout
+                            </v-icon>
+                                Sair
+                        </v-list-item>
+
+                        <v-list-item 
+                            @click="toConfigs" 
+                            link
+                        >
+                            <v-icon 
+                                class="mr-2"
+                                color="black"
+                            >
+                                mdi-cog-outline
+                            </v-icon>
+                            Configurações
+                        </v-list-item>
+                    </v-list>
+                </v-card>
+            </v-menu>
+        </template>
+
     </v-app-bar>
     <v-navigation-drawer id="navegacao" color="#195FA0" v-model="ativo">
         <v-list class="d-flex flex-column ga-5 pa-3
@@ -43,30 +105,39 @@
 
                 <v-list-item title="Relatórios" to="/relatorios" class="list mt-5 pa-3" rounded="pill"
                     variant="outlined" </v-list-item />
-        </v-list>
-
-        <template v-slot:append>
-            <div class="pa-5">
-                <v-btn prepend-icon="mdi-logout" color="red-darken-2" block @click="logout">
-                    Sair
-                </v-btn>
-            </div>
-        </template>
+            </v-list>
     </v-navigation-drawer>
 </template>
 
 <script setup lang="ts">
 import router from '@/router';
 import { ref } from 'vue';
-
+const accountModal = ref(false);
+const isActiveBell = ref(false);
 const ativo = ref(false);
+
+const profile = {
+  name: "Gean Luca",
+  role: "admin",
+};
+
+const roleDisplay = ref('Adm');
+
 
 function abrirNavegacao() {
     ativo.value = !ativo.value;
 }
 
+function openBellModal() {
+    isActiveBell.value = true;
+}
+
 function logout() {
     router.push('/home');
+}
+
+function toConfigs() {
+    router.push('/account-config')
 }
 
 </script>

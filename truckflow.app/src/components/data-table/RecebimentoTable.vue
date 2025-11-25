@@ -24,18 +24,18 @@ import { ref, onMounted, computed } from 'vue';
 import router from '@/router';
 import CrudTable, { type VDataTableHeader } from '@/components/data-table/CrudTable.vue';
 import { useRecebimentoStore } from '@/stores/RecebimentoStore';
-import type IPlanejamentoRecebimento from '@/Entities/IPlanejamentoRecebimento';
 import ItensModal from '../modals/ItensModal.vue';
+import type IRecebimentoResponse from '@/Dtos/Recebimento/IRecebimentoResponse';
 
 const recebimentoStore = useRecebimentoStore();
 
 const modalAberto = ref(false);
-const recebimentoSelecionado = ref<IPlanejamentoRecebimento | null>(null);
+const recebimentoSelecionado = ref<IRecebimentoResponse | null>(null);
 
 const headers: VDataTableHeader = [
   { title: "FORNECEDOR", key: "fornecedorNome" },
   { title: "DATA DE INÍCIO", key: "dataInicio" },
-  { title: "TOTAL DE ITENS", key: "itensCount" },
+  { title: "TOTAL DE ITENS", key: "totalItens" },
   { title: "CRIADO EM", key: "createdAt" },
   { title: "AÇÕES", key: "actions", sortable: false, align: "center" },
 ];
@@ -51,7 +51,7 @@ function redirectToNewRecebimento() {
   router.push('/novo-recebimento');
 }
 
-function abrirModal(recebimento: IPlanejamentoRecebimento) {
+function abrirModal(recebimento: IRecebimentoResponse) {
   recebimentoSelecionado.value = recebimento;
   modalAberto.value = true;
 }
