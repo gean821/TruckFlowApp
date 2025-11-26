@@ -1,22 +1,24 @@
 <template>
-  <div class="d-flex flex-row justify-center align-center pa-5 mt-3">
-    <h1 class="text-h5">Controle de Recebimentos</h1>
-  </div>
-
-  <CrudTable 
+  <v-container fluid class="pa-6">
+    
+    <CrudTable
+     title="Recebimentos"
+     subtitle="Gerenciar recebimentos" 
     :headers="headers"
     :items="recebimentos"
     @abrir-dialog="redirectToNewRecebimento"
     @viewItens="abrirModal"
     @delete="deletarRecebimento"
     :showView="true"  
-  />
+    />
 
-  <ItensModal 
+    <ItensModal 
     v-if="modalAberto" 
     :recebimento="recebimentoSelecionado" 
     @close="modalAberto = false"
-  />
+    />
+
+  </v-container>
 </template>
 
 <script setup lang="ts">

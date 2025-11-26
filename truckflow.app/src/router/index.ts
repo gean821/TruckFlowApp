@@ -8,6 +8,7 @@ import RecebimentoForm from '@/components/Forms/RecebimentoForm.vue';
 import RecebimentoTable from '@/components/data-table/RecebimentoTable.vue';
 import BloqueioView from '@/views/BloqueioView.vue';
 import AgendamentoCard from '@/components/AgendamentoCard.vue';
+import VisualizarAgendamentoView from '@/views/VisualizarAgendamentoView.vue';
 
 
 const router = createRouter({
@@ -17,6 +18,11 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
+    },
+    {
+      path: '/visualizar',
+      name: 'visualizar',
+      component: VisualizarAgendamentoView
     },
     {
       path: '/programacao',

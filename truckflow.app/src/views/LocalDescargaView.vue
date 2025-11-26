@@ -1,22 +1,24 @@
 <template>
-    <div class="d-flex flex-row justify-center align-center mt-3 pa-5">
-        <h1 class="text-h5"> Locais de Descarga</h1>
-    </div>
-    
-    <CrudTable 
-        :headers="headers"
-        :items=locais 
-        @delete="deleteLocalDescarga"
-        @abrir-dialog="abrirDialog" 
-    />
+   <v-container fluid class="pa-6">
 
-    <CrudTableModal 
-        label="Nome do local de descarga" 
-        @salvar="salvarLocal" 
-        :is-editing="isEditing"
-        :value="formModel.nome"
-        v-model="dialog" 
-    />
+       <CrudTable
+       title="Locais de descarga"
+       subtitle="Gerencie os locais de descarga"
+       icon="mdi-truck-delivery"
+       :headers="headers"
+       :items=locais 
+       @delete="deleteLocalDescarga"
+       @abrir-dialog="abrirDialog" 
+       />
+       
+       <CrudTableModal 
+       label="Nome do local de descarga" 
+       @salvar="salvarLocal" 
+       :is-editing="isEditing"
+       :value="formModel.nome"
+       v-model="dialog" 
+       />
+    </v-container> 
 </template>
 
 <script setup lang="ts">
@@ -26,8 +28,13 @@ import type ILocalDescarga from "@/Entities/ILocalDescarga";
 import { useLocalDescargaStore } from "@/stores/LocalDescargaStore";
 import CrudTableModal from "@/components/modals/CrudTable-modal.vue";
 
-onMounted(() => {
-    store.GetAll();
+
+const loading = ref(false);
+
+onMounted(async() => {
+    loading.value = true;
+    setTimeout(() => loading.value = false, 800);
+    await store.GetAll();
 })
 
 const store = useLocalDescargaStore();

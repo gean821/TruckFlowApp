@@ -1,16 +1,14 @@
 <template>
-    <div class="d-flex flex-row justify-center align-center pa-5 mt-3"> 
-        <h1 class="text-h5">
-            Controle de Recebimentos
-        </h1>
-    </div>
-
-    <CrudTable 
+    <v-container fluid class="pa-6">
+        <CrudTable
+        title="Recebimento"
+        subtitle="Gerenciar recebimentos" 
         :headers=headers
         :items=itens
         @abrir-dialog=redirectToNewRecebimento
         @delete=deleteItem
-    />
+        />
+    </v-container>
    
 </template>
 
