@@ -9,6 +9,7 @@ import RecebimentoTable from '@/components/data-table/RecebimentoTable.vue';
 import BloqueioView from '@/views/BloqueioView.vue';
 import AgendamentoCard from '@/components/AgendamentoCard.vue';
 import VisualizarAgendamentoView from '@/views/VisualizarAgendamentoView.vue';
+import Relatorio from '@/views/Relatorio.vue';
 
 
 const router = createRouter({
@@ -64,6 +65,11 @@ const router = createRouter({
       name: 'visualizar-recebimentos',
       component: RecebimentoTable
     },
+    {
+      path: '/relatorios',
+      name: 'relatorios',
+      component: Relatorio
+    }
   ],
 })
 

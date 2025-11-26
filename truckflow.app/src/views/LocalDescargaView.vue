@@ -10,7 +10,7 @@
        @delete="deleteLocalDescarga"
        @abrir-dialog="abrirDialog" 
        />
-       
+
        <CrudTableModal 
        label="Nome do local de descarga" 
        @salvar="salvarLocal" 

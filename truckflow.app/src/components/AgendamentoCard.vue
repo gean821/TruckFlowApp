@@ -1,7 +1,8 @@
 <template>
+  <!--COLOCAR UM CONTADOR DE GRADES PARA O TANTO DE AGENDAMENTOS DE ACORDO COM O INTERVALO DE GRADES.-->
   <v-container height="auto" width="auto" class="pa-6 mt-5 d-flex flex-column justify-center">
     <v-card class="pa-6" elevation="5">
-      <v-card-title class="text-h6">Programação de Agendamentos</v-card-title>
+      <v-card-title class="text-h6">Programação de Grades</v-card-title>
       <v-divider class="my-4"></v-divider>
 
       <v-row>

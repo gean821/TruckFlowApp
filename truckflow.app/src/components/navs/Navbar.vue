@@ -61,7 +61,7 @@
     
     <div class="pa-4 text-center">
         <v-avatar size="80" color="white" class="mb-3">
-            <v-img src="/Profile.svg" alt="Profile"></v-img>
+            <v-img src="/cat.jpg" alt="Profile"></v-img>
         </v-avatar>
         <div class="text-white font-weight-bold text-h6">{{ profile.name }}</div>
         <div class="text-white-darken-1 text-body-2">{{ roleDisplay }}</div>
@@ -73,23 +73,39 @@
       
         <v-list-item 
             to="/visualizar" 
-            prepend-icon="mdi-eye" 
-            title="Visualizar" 
+            prepend-icon="mdi-calendar-month-outline" 
+            title="Agendamentos" 
             rounded="xl"
             variant="outlined"
             base-color="white"
             class="mb-2"
       ></v-list-item>
 
-      <v-list-item 
-        to="/programacao" 
-        prepend-icon="mdi-calendar-check" 
-        title="Programação" 
-        rounded="xl"
-        variant="outlined"
-        base-color="white"
-        class="mb-2"
+       <v-list-item 
+            to="/visualizar-grades" 
+            prepend-icon="mdi-eye" 
+            title="Visualizar Grades" 
+            rounded="xl"
+            variant="outlined"
+            base-color="white"
+            class="mb-2"
       ></v-list-item>
+      
+      <v-list-group value="Notificacoes">
+        <template v-slot:activator="{props}">
+          <v-list-item 
+            to="/programacao" 
+            prepend-icon="mdi-calendar-check" 
+            title="Programação" 
+            rounded="xl"
+            variant="outlined"
+            base-color="white"
+            class="mb-2"
+          >
+          </v-list-item>
+        </template>
+    </v-list-group value="Notificacoes">
+
 
       <v-list-item 
         to="/bloqueios" 
@@ -203,40 +219,39 @@ const isActiveBell = ref(false);
 const ativo = ref(true);
 
 const profile = {
-    name: "Gean Luca",
-    role: "admin",
+  name: "Gean Luca",
+  role: "admin",
 };
 
 const roleDisplay = ref('Administrador');
 
 function abrirNavegacao() {
-    ativo.value = !ativo.value;
+  ativo.value = !ativo.value;
 }
 
 function openBellModal() {
-    isActiveBell.value = true;
+  isActiveBell.value = true;
 }
 
 function logout() {
-    router.push('/home');
+  router.push('/home');
 }
 
 function toConfigs() {
-    router.push('/account-config')
+  router.push('/account-config')
 }
 </script>
 
 <style scoped>
-/* CSS Reset para garantir a limpeza do Vuetify */
 :deep(.v-list-group__items .v-list-item) {
-    /* Ajuste fino para os subitens */
-    font-size: 0.9rem; 
-    opacity: 0.9;
+  /* Ajuste fino para os subitens */
+  font-size: 0.9rem; 
+  opacity: 0.9;
 }
 
 /* Efeito hover suave nos subitens */
 :deep(.v-list-group__items .v-list-item:hover) {
-    opacity: 1;
-    background-color: rgba(255, 255, 255, 0.1);
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 </style>
