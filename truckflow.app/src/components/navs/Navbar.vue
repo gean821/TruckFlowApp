@@ -80,21 +80,11 @@
             base-color="white"
             class="mb-2"
       ></v-list-item>
-
-       <v-list-item 
-            to="/visualizar-grades" 
-            prepend-icon="mdi-eye" 
-            title="Visualizar Grades" 
-            rounded="xl"
-            variant="outlined"
-            base-color="white"
-            class="mb-2"
-      ></v-list-item>
       
-      <v-list-group value="Notificacoes">
+      <v-list-group value="Programacao">
         <template v-slot:activator="{props}">
           <v-list-item 
-            to="/programacao" 
+            v-bind=props 
             prepend-icon="mdi-calendar-check" 
             title="Programação" 
             rounded="xl"
@@ -104,8 +94,26 @@
           >
           </v-list-item>
         </template>
-    </v-list-group value="Notificacoes">
+        
+          <v-list-item
+          to="nova-grade"
+          title="Nova Grade"
+          prepend-icon="mdi-plus"
+          rounded="xl"
+          variant="text" 
+          color="white"
+          class="pl-6 mb-1 text-white"
+        ></v-list-item>
 
+        <v-list-item 
+          to="/visualizar-grades" 
+          prepend-icon="mdi-eye" 
+          title="Visualizar Grades" 
+          rounded="xl"
+          class="mb-2"
+      ></v-list-item>
+
+    </v-list-group value="Programacao">
 
       <v-list-item 
         to="/bloqueios" 

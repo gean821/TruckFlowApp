@@ -7,7 +7,7 @@ import RecebimentoView from '@/views/RecebimentoView.vue';
 import RecebimentoForm from '@/components/Forms/RecebimentoForm.vue';
 import RecebimentoTable from '@/components/data-table/RecebimentoTable.vue';
 import BloqueioView from '@/views/BloqueioView.vue';
-import AgendamentoCard from '@/components/AgendamentoCard.vue';
+import GradeCard from '@/components/GradeCard.vue';
 import VisualizarAgendamentoView from '@/views/VisualizarAgendamentoView.vue';
 import Relatorio from '@/views/Relatorio.vue';
 
@@ -26,9 +26,9 @@ const router = createRouter({
       component: VisualizarAgendamentoView
     },
     {
-      path: '/programacao',
-      name: 'programacao',
-      component: AgendamentoCard
+      path: '/nova-grade',
+      name: 'nova-grade',
+      component: GradeCard
     },
     {
       path: '/bloqueios',
