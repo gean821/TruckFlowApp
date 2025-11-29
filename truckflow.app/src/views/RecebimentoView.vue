@@ -2,7 +2,8 @@
     <v-container fluid class="pa-6">
         <CrudTable
         title="Recebimento"
-        subtitle="Gerenciar recebimentos" 
+        subtitle="Gerenciar recebimentos"
+        icon="mdi-import" 
         :headers=headers
         :items=itens
         @abrir-dialog=redirectToNewRecebimento

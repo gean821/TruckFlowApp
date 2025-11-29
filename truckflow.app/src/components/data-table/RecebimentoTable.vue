@@ -3,7 +3,8 @@
     
     <CrudTable
      title="Recebimentos"
-     subtitle="Gerenciar recebimentos" 
+     subtitle="Gerenciar recebimentos"
+     icon="mdi-import"
     :headers="headers"
     :items="recebimentos"
     @abrir-dialog="redirectToNewRecebimento"

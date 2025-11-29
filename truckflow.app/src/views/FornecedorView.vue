@@ -1,9 +1,9 @@
 <template>
-    <div class="d-flex flex-row justify-center align-center mt-3 pa-5">
-        <h1 class="text-h5">Fornecedores</h1>
-    </div>
-
-    <ExpandableTable 
+    <v-container fluid class="pa-6">
+        <ExpandableTable 
+        title="Gestão de fornecedores"
+        subtitle="Gerencie parceiros e seus produtos vinculados"
+        icon="mdi-domain"
         :headers="fornecedorHeaders"
         :sub-headers=produtosHeaders
         :items=fornecedores
@@ -14,22 +14,23 @@
         @add-sub="(fornecedor) => abrirDialogNovoProduto(fornecedor)"
         @edit-sub="(produto) => abrirDialogEditarProduto(produto)"
         @delete-sub="(fornecedorId, produtoId) => deleteProduto(fornecedorId, produtoId)"
-    />
+        />
 
-    <FornecedorModal 
+        <FornecedorModal 
         :is-editing=isEditingFornecedor
         :fornecedor=formModelFornecedor
         v-model="dialogFornecedor"
         @salvar=handleFornecedorSave
-    />
+        />
 
-    <ProdutoModal 
+        <ProdutoModal 
         :is-editing=isEditingProduto
         v-model=dialogProduto    
         @salvar="saveProduto"
         :locais=locais
         :produto=formModelProduto
-    />
+        />
+    </v-container>
 
 </template>
 
@@ -54,7 +55,7 @@ const isEditingProduto = ref(false);
 
 const fornecedorHeaders: VDataTableHeader = [
     { title: "IDENTIFICADOR", key: "id", align: "start" },
-    { title: "NOME", key: "nome" },
+    { title: "NOME DA EMPRESA", key: "nome" },
     { title: "CRIADO EM", key: "createdAt" },
     { title: "AÇÕES", key: "actions", sortable: false, align: "center" },
 ];

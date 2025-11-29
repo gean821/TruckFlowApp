@@ -1,74 +1,16 @@
 <template>
-  <div class="section d-flex pa-3 mt-5 d-flex flex-row justify-center align-center">
-    <h1 id="h1" class="d-flex flex-row ga-2 text-h5">
-      Produtos Cadastrados
-    </h1>
-  </div>
+  <v-content fluid class="pa-5">
 
-  <div class="d-flex justify-center align-center pa-5">
-    <v-text-field
-      v-model="search"
-      label="Pesquisar..."
-      variant="outlined"
-      density="comfortable"
-      clearable
-      prepend-inner-icon="mdi-magnify"
-    />
-  </div>
-  
-  <div class="table pa-5 mt-5">
-    <v-data-table 
-      :items="store.produtos"
-      :headers="headers"
-      width="auto"
-      class="tabela-produtos pa-4"
-      theme="#ECEFF1"
-    >
-       <template v-slot:top>
-            <v-toolbar-title class="pa-2">
-              <v-icon color="high-emphasis" icon="mdi-book-multiple" size="x-small" start></v-icon>
-                  Produtos
-            </v-toolbar-title>
-            <div class="button d-flex justify-end pa-1">
-              <v-btn
-                class="me-2" 
-                prepend-icon="mdi-plus-thick"
-                rounded="lg"
-                text="Adicionar um produto"
-                color="green"
-                width="250"
-                @click="abrirDialog"
-                elevation="5"
-              >
-                  Novo
-              </v-btn>
-            </div>
-       </template>     
-        
-       <template v-slot:item.title="{ value }">
-          <v-chip :text="value" 
-            border="thin opacity-25"
-            prepend-icon="mdi-book" 
-            label>
-            <template v-slot:prepend>
-              <v-icon color="medium-emphasis"></v-icon>
-            </template>
-          </v-chip>
-      </template>
+  <CrudTable 
+    :headers=headers
+    :items=produtos
+    icon="mdi-package"
+    title="Produtos Do Sistema"
+    subtitle="Gerencie os produtos do sistema"
+    @abrir-dialog="abrirDialog"
+    @delete="removerProduto"
+  />
 
-      <template v-slot:item.actions="{ item }">
-        <div class="d-flex ga-4 justify-end">
-          <v-icon color="blue" icon="mdi-pencil" class="icon" size="large"  @click="abrirDialog(item)"></v-icon>
-          <v-icon color="#E53935" icon="mdi-delete" class="icon" size="large" @click="removerProduto(item.id!)"></v-icon>
-        </div>
-      </template>
-
-      <template v-slot:item.createdAt="{value}">
-        {{ formatarData(value) }}
-      </template>
-      </v-data-table>
-  </div>
-  
    <v-dialog v-model="dialog"
      max-width="500">
     <v-card
@@ -129,9 +71,11 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+</v-content >
 </template>
 
 <script setup lang="ts">
+import CrudTable from '@/components/data-table/CrudTable.vue';
 import type IProduto from '@/Entities/IProduto';
 import { useLocalDescargaStore } from '@/stores/LocalDescargaStore';
 import { useProdutoStore } from '@/stores/ProdutoStore';
@@ -143,7 +87,7 @@ onMounted(() => {
 });
 
 const store = useProdutoStore();
-computed(() =>  store.produtos)
+const produtos = computed(() =>  store.produtos)
 
 const localDescargaStore = useLocalDescargaStore();
 const locais = computed(() => localDescargaStore.locaisDeDescarga);
