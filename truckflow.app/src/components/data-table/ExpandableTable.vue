@@ -86,6 +86,7 @@
                         <v-icon size="small" class="mr-2">mdi-package-variant-closed</v-icon>
                         <span class="text-uppercase text-caption">Produtos Vinculados a {{ item.nome }}</span>
                     </div>
+
                     <v-btn 
                         size="small" 
                         color="success" 
@@ -96,12 +97,23 @@
                     >
                         Adicionar Produto
                     </v-btn>
+
+                    <v-btn 
+                        size="small" 
+                        color="#AB47BC" 
+                        variant="tonal" 
+                        prepend-icon="mdi-plus" 
+                        class="text-capitalize"
+                        @click="$emit('vincular-sub', item)"
+                    >
+                        Vincular Existente
+                    </v-btn>
                 </div>
 
                 <v-data-table
                     v-if="getSubItems && subHeaders"
                     :headers="subHeaders"
-                    :items="getSubItems(item)"
+                    :items="getSubItems(item)" 
                     density="compact"
                     class="rounded-lg border bg-white elevation-0 sub-table"
                     hide-default-footer
@@ -159,6 +171,7 @@ const emit = defineEmits<{
   (e: 'edit-main',item: IFornecedor): void;
   (e: 'delete-main', id: string): void;
   (e: 'add-sub', parent: IFornecedor): void;
+  (e: 'vincular-sub', parent: IFornecedor): void;
   (e: 'edit-sub', item: IProduto): void;
   (e: 'delete-sub', fornecedorId: any, produtoId: any): void;
 }>();

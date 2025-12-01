@@ -15,7 +15,7 @@
         />
         <v-spacer />
         <v-btn 
-          color="green"
+          color="blue"
           text="Salvar"
           @click="save" 
           variant="flat"

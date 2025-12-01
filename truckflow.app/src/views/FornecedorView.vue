@@ -12,6 +12,7 @@
         @edit-main="(fornecedor) => abrirDialogFornecedor(fornecedor)"
         @delete-main="deleteFornecedor"
         @add-sub="(fornecedor) => abrirDialogNovoProduto(fornecedor)"
+        @vincular-sub="abrirDialogVincularProduto"
         @edit-sub="(produto) => abrirDialogEditarProduto(produto)"
         @delete-sub="(fornecedorId, produtoId) => deleteProduto(fornecedorId, produtoId)"
         />
@@ -30,6 +31,13 @@
         :locais=locais
         :produto=formModelProduto
         />
+
+        <ProdutoSelectModal 
+            :model-value="dialogVincular"
+            @update:model-value="dialogVincular = $event"
+            :produtos=produtos
+            @vincular="vincularProduto"     
+        />
     </v-container>
 
 </template>
@@ -46,11 +54,13 @@ import FornecedorModal from '@/components/modals/FornecedorModal.vue';
 import '../Entities/IProduto'
 import ProdutoModal from '@/components/modals/ProdutoModal.vue';
 import { useLocalDescargaStore } from '@/stores/LocalDescargaStore';
+import ProdutoSelectModal from '@/components/modals/ProdutoSelectModal.vue';
 
 const dialogFornecedor = ref(false);
 const dialogProduto = ref(false);
 const isEditingFornecedor = ref(false);
 const isEditingProduto = ref(false);
+const dialogVincular = ref(false);
 
 
 const fornecedorHeaders: VDataTableHeader = [
@@ -208,6 +218,20 @@ async function saveProduto(produto: IProduto) {
 
 async function deleteProduto(fornecedorId: string, produtoId: string) {
     await fornecedorStore.deleteProdutoFromFornecedor(fornecedorId, produtoId);
+}
+
+async function abrirDialogVincularProduto(fornecedor: IFornecedor) {
+    formModelFornecedor.value = { ...fornecedor };
+    dialogVincular.value = true;
+}
+
+async function vincularProduto(produtoId: string) {
+    if (!produtoId || !formModelFornecedor.value?.id) {
+        return;
+    }
+
+    await fornecedorStore.addProdutoToFornecedor(formModelFornecedor.value.id, produtoId!);
+
 }
 
 </script>

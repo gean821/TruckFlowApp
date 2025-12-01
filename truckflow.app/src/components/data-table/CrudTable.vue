@@ -135,7 +135,6 @@ const props = defineProps<{
     items: Array<any>;
     headers: VDataTableHeader;
     showView?: boolean;
-    // Novas props para estilização
     title?: string;
     subtitle?: string;
     icon?: string;
