@@ -1,35 +1,47 @@
-import type IAgendamento from "@/Entities/IAgendamento";
-import http from "@/http/http";
+import type CreateAgendamentoAdminDto from "@/Dtos/agendamento/agendamentoAdminCreate.dto";
+import type AgendamentoAdminResponse from "@/Dtos/agendamento/agendamentoAdminResponse.dto";
+import type AgendamentoAdminUpdateDto from "@/Dtos/agendamento/agendamentoAdminUpdate.dto";
+import type IAgendamentoFilterDto from "@/Dtos/agendamento/agendamentoFilterDto";
+import type IAgendamento from "@/entities/IAgendamento";
 import AgendamentoService from "@/services/AgendamentoService";
 import { defineStore } from "pinia";
 import { provide, ref } from 'vue';
 
 export const useAgendamentoStore = defineStore('Agendamento', () => {
-    const agendamentos = ref<IAgendamento[]>([]);
-
-    async function GetAll() {
-        agendamentos.value = await AgendamentoService.GetAll();
-    }
+    const agendamentosFiltrados = ref<IAgendamentoFilterDto[]>([]);
+    const agendamentos = ref<AgendamentoAdminResponse[]>([]);
+    const loading = ref(false);
 
     async function GetById(id: string) {
         return await AgendamentoService.GetById(id);
     }
 
-    async function AddAgendamento(Agendamento: IAgendamento) {
-        const receb = await AgendamentoService.AddAgendamento(Agendamento);
-        agendamentos.value.push(receb);
-        return receb;
+    async function getByFilters(filters: IAgendamentoFilterDto) {
+        loading.value = true;
+
+        try {
+            const result = await AgendamentoService.getByFilters(filters);
+            agendamentos.value = result;
+        } finally {
+            loading.value = false;
+        }
     }
 
-    async function UpdateAgendamento(id: string, AgendamentoAtualizado: IAgendamento ) {
-        const Agendamento = await AgendamentoService.UpdateAgendamento(id, AgendamentoAtualizado);
+    async function AddAgendamento(agendamento: CreateAgendamentoAdminDto) {
+        const agendamentoAdicionado = await AgendamentoService.AddAgendamento(agendamento);
+        agendamentos.value.push(agendamentoAdicionado);
+        return agendamentoAdicionado;
+    }
+
+    async function UpdateAgendamento(id: string, agendamentoAtualizado: AgendamentoAdminUpdateDto) {
+        const agendamento = await AgendamentoService.UpdateAgendamento(id, agendamentoAtualizado);
         const index = agendamentos.value.findIndex(x => x.id === id);
 
         if (index !== -1) {
-            agendamentos.value[index] = Agendamento;
+            agendamentos.value[index] = agendamento;
         }
-        
-        return Agendamento;
+
+        return agendamento;
     }
 
     async function DeleteAgendamento(id: string) {
@@ -42,13 +54,15 @@ export const useAgendamentoStore = defineStore('Agendamento', () => {
     }
 
     return {
-        agendamentos,
-        GetAll,
-        GetById,
-        UpdateAgendamento,
-        DeleteAgendamento,
-        AddAgendamento
-    }
+    agendamentosFiltrados,
+    agendamentos,
+    loading,
+    GetById,
+    getByFilters,
+    UpdateAgendamento,
+    DeleteAgendamento,
+    AddAgendamento
+}
 })
 
 

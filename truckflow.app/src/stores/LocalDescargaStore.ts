@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import LocalDescargaService from '@/services/LocalDescargaService';
-import type ILocalDescarga from '@/Entities/ILocalDescarga';
+import type ILocalDescarga from '@/entities/ILocalDescarga';
 
 export const useLocalDescargaStore = defineStore('localDescarga', () => {
   const locaisDeDescarga = ref<ILocalDescarga[]>([]);

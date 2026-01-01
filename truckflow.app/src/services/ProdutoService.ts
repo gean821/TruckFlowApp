@@ -1,4 +1,4 @@
-import type IProduto from "@/Entities/IProduto";
+import type IProduto from "@/entities/IProduto";
 import http from "@/http/http";
 
 export default class ProdutoService {

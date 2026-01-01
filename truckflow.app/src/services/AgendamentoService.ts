@@ -1,28 +1,37 @@
 import http from "@/http/http";
-import type IAgendamento from '@/Entities/IAgendamento';
+import type CreateAgendamentoAdminDto from "@/Dtos/agendamento/agendamentoAdminCreate.dto";
+import type AgendamentoAdminUpdateDto from "@/Dtos/agendamento/agendamentoAdminUpdate.dto";
+import type AgendamentoAdminResponseDtoFilterDto from "@/Dtos/agendamento/agendamentoFilterDto";
+import type AgendamentoAdminResponse from "@/Dtos/agendamento/agendamentoAdminResponse.dto";
 
 export default class AgendamentoService {
-  static async GetAll(): Promise<IAgendamento[]> {
-    const { data } = await http.get('/Agendamento');
+
+  static async GetById(id: string): Promise<AgendamentoAdminResponse> {
+    const { data } = await http.get(`/AgendamentoAdmin/${id}`);
     return data;
   }
 
-  static async GetById(id: string): Promise<IAgendamento> {
-    const { data } = await http.get(`/Agendamento/${id}`);
+  static async getByFilters(
+    filters: AgendamentoAdminResponseDtoFilterDto
+  ): Promise<AgendamentoAdminResponse[]> {
+    const { data } = await http.get('/AgendamentoAdmin', {
+      params: filters
+    });
+
     return data;
   }
 
-  static async AddAgendamento(Agendamento: IAgendamento): Promise<IAgendamento> {
-    const { data } = await http.post('/Agendamento', Agendamento);
+  static async AddAgendamento(agendamento: CreateAgendamentoAdminDto): Promise<AgendamentoAdminResponse> {
+    const { data } = await http.post('/AgendamentoAdmin', agendamento);
     return data;
   }
 
-  static async UpdateAgendamento(id: string, AgendamentoAtualizado: IAgendamento): Promise<IAgendamento> {
-    const { data } = await http.put(`/Agendamento/${id}`, AgendamentoAtualizado);
+  static async UpdateAgendamento(id: string, agendamentoAtualizado: AgendamentoAdminUpdateDto): Promise<AgendamentoAdminResponse> {
+    const { data } = await http.put(`/AgendamentoAdmin/${id}`, agendamentoAtualizado);
     return data;
   }
 
   static async DeleteAgendamento(id: string): Promise<void> {
-    await http.delete(`/Agendamento/${id}`);
+    await http.delete(`/AgendamentoAdmin/${id}`);
   }
 }

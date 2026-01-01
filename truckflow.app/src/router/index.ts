@@ -7,9 +7,11 @@ import RecebimentoView from '@/views/RecebimentoView.vue';
 import RecebimentoForm from '@/components/Forms/RecebimentoForm.vue';
 import RecebimentoTable from '@/components/data-table/RecebimentoTable.vue';
 import BloqueioView from '@/views/BloqueioView.vue';
-import GradeCard from '@/components/GradeCard.vue';
 import VisualizarAgendamentoView from '@/views/VisualizarAgendamentoView.vue';
 import Relatorio from '@/views/Relatorio.vue';
+import GradeCard from '@/components/cards/GradeCard.vue';
+import ProgramacaoView from '@/views/ProgramacaoView.vue';
+import GradeView from '@/views/GradeView.vue';
 
 
 const router = createRouter({
@@ -29,6 +31,11 @@ const router = createRouter({
       path: '/nova-grade',
       name: 'nova-grade',
       component: GradeCard
+    },
+    {
+      path: '/visualizar-grades',
+      name: 'visualizar-grade',
+      component: ProgramacaoView
     },
     {
       path: '/bloqueios',
@@ -69,7 +76,7 @@ const router = createRouter({
       path: '/relatorios',
       name: 'relatorios',
       component: Relatorio
-    }
+    },
   ],
 })
 

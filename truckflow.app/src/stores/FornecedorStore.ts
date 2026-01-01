@@ -1,8 +1,8 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import FornecedorService from '@/services/FornecedorService';
-import type IFornecedor from '@/Entities/IFornecedor';
-import type IProduto from '@/Entities/IProduto';
+import type IFornecedor from '@/entities/IFornecedor';
+import type IProduto from '@/entities/IProduto';
 
 export const useFornecedorStore = defineStore('Fornecedor', () => {
   const fornecedores = ref<IFornecedor[]>([]);

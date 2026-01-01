@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import CrudTable, { type VDataTableHeader } from "@/components/data-table/CrudTable.vue";
 import { computed, onMounted, ref } from "vue";
-import type ILocalDescarga from "@/Entities/ILocalDescarga";
+import type ILocalDescarga from "@/entities/ILocalDescarga";
 import { useLocalDescargaStore } from "@/stores/LocalDescargaStore";
 import CrudTableModal from "@/components/modals/CrudTable-modal.vue";
 

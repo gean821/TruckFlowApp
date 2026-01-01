@@ -1,4 +1,4 @@
-import type IProduto from "@/Entities/IProduto"
+import type IProduto from "@/entities/IProduto"
 import http from "@/http/http";
 import ProdutoService from "@/services/ProdutoService";
 import { defineStore } from "pinia";

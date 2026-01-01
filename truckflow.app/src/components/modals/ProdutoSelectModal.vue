@@ -46,7 +46,7 @@
 
 
 <script setup lang="ts">
-import type IProduto from '@/Entities/IProduto';
+import type IProduto from '@/entities/IProduto';
 import {ref, computed} from 'vue';
 
 const props = defineProps<{

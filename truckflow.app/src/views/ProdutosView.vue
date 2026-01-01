@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 import CrudTable from '@/components/data-table/CrudTable.vue';
-import type IProduto from '@/Entities/IProduto';
+import type IProduto from '@/entities/IProduto';
 import { useLocalDescargaStore } from '@/stores/LocalDescargaStore';
 import { useProdutoStore } from '@/stores/ProdutoStore';
 import { computed, onMounted, ref } from 'vue';

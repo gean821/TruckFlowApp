@@ -1,6 +1,6 @@
 import type IRecebimentoCreate from "@/Dtos/Recebimento/IRecebimentoCreate";
 import type IRecebimentoUpdate from "@/Dtos/Recebimento/IRecebimentoUpdate";
-import type IPlanejamentoRecebimento from "@/Entities/IPlanejamentoRecebimento";
+import type IPlanejamentoRecebimento from "@/entities/IPlanejamentoRecebimento";
 import http from "@/http/http";
 import RecebimentoService from "@/services/RecebimentoService";
 import { defineStore } from "pinia";

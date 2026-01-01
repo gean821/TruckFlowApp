@@ -1,4 +1,4 @@
-import type IBloqueio from "@/Entities/IBloqueio";
+import type IBloqueio from "@/entities/IBloqueio";
 import http from "@/http/http";
 import BloqueioService from "@/services/BloqueioService";
 import { defineStore } from "pinia";

@@ -1,5 +1,5 @@
 import type IRecebimentoUpdate from '@/Dtos/Recebimento/IRecebimentoUpdate';
-import type IPlanejamentoRecebimento from '../Entities/IPlanejamentoRecebimento';
+import type IPlanejamentoRecebimento from '../entities/IPlanejamentoRecebimento';
 import http from "@/http/http";
 import type IRecebimentoCreate from '@/Dtos/Recebimento/IRecebimentoCreate';
 

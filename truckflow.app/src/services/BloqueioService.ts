@@ -1,4 +1,4 @@
-import type IBloqueio from "@/Entities/IBloqueio";
+import type IBloqueio from "@/entities/IBloqueio";
 import http from "@/http/http";
 
 export default class BloqueioService {

@@ -1,4 +1,4 @@
-import type ItemPlanejamento from "@/Entities/ItemPlanejamento";
+import type ItemPlanejamento from "@/entities/ItemPlanejamento";
 import http from "@/http/http";
 
 export default class ItemPlanejamentoService {

@@ -45,13 +45,13 @@
 <script setup lang="ts">
 import type { VDataTableHeader } from '@/components/data-table/CrudTable.vue';
 import ExpandableTable from '@/components/data-table/ExpandableTable.vue';
-import type IFornecedor from '@/Entities/IFornecedor';
-import type IProduto from '@/Entities/IProduto';
+import type IFornecedor from '@/entities/IFornecedor';
+import type IProduto from '@/entities/IProduto';
 import { useFornecedorStore } from '@/stores/FornecedorStore';
 import { useProdutoStore } from '@/stores/ProdutoStore';
 import { computed, onMounted, ref } from 'vue';
 import FornecedorModal from '@/components/modals/FornecedorModal.vue';
-import '../Entities/IProduto'
+import '../entities/IProduto'
 import ProdutoModal from '@/components/modals/ProdutoModal.vue';
 import { useLocalDescargaStore } from '@/stores/LocalDescargaStore';
 import ProdutoSelectModal from '@/components/modals/ProdutoSelectModal.vue';

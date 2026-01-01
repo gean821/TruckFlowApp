@@ -1,4 +1,4 @@
-import type ILocalDescarga from "@/Entities/ILocalDescarga";
+import type ILocalDescarga from "@/entities/ILocalDescarga";
 import http from "@/http/http";
 
 export default class LocalDescargaService {

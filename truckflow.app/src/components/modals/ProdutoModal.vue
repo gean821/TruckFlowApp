@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import type IProduto from "@/Entities/IProduto";
+import type IProduto from "@/entities/IProduto";
 
 const props = defineProps<{
   modelValue: boolean;

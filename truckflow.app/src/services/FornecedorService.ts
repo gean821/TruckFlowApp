@@ -1,4 +1,4 @@
-import type IFornecedor from "@/Entities/IFornecedor";
+import type IFornecedor from "@/entities/IFornecedor";
 import http from "@/http/http";
 
 export default class FornecedorService {
