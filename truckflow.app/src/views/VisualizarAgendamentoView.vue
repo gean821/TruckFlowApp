@@ -1,6 +1,7 @@
 <template>
   <v-container fluid class="pa-6">
-    <CrudTable 
+    <CrudTable
+      :key="agendamentos.length + '-' + agendamentos[0]?.updatedAt"
       title="Gestão de Agendamentos"
       icon="mdi-calendar-clock"
       subtitle="Acompanhe a grade de horários e status de recebimento"
@@ -9,6 +10,7 @@
       :loading="loading" 
       @abrir-dialog="newAgendamento"
       @delete="deleteAgendamento"
+      @refresh="refresh"
     >
       
       <template #item.dataInicio="{ item }">
@@ -61,7 +63,7 @@
         </span>
       </template>
 
-      <template #item.statusDescricao="{ value }">
+      <template #item.status="{ value }">
         <v-chip 
           size="small" 
           :color="getStatusColor(value)" 
@@ -87,18 +89,26 @@ const loading = ref(false);
 const agendamentoStore = useAgendamentoStore();
 const agendamentos = computed(() => agendamentoStore.agendamentos);
 
-
 const headers: VDataTableHeader = [
   { title: "HORÁRIO / DATA", key: "dataInicio", width: "200px", align: 'start' },
   { title: "PRODUTO", key: "produto", width: "150px" },
   { title: "FORNECEDOR", key: "fornecedorNome" },
   { title: "MOTORISTA / PLACA", key: "motoristaNome", width: "220px" },
   { title: "PESO", key: "pesoCarga", align: "end", width: "120px" },
-  { title: "STATUS", key: "statusDescricao", align: "center", width: "140px" },
+  { title: "STATUS", key: "status", align: "center", width: "140px" },
   { title: "AÇÕES", key: "actions", sortable: false, align: "center", width: "100px" }
 ];
 
 onMounted(async () => {
+  await fetchAgendamentos();
+
+  setInterval(() => {
+    fetchAgendamentos();
+  }, 30000);
+  
+});
+
+async function fetchAgendamentos() {
   loading.value = true;
   try {
     const hoje = new Date();
@@ -109,10 +119,15 @@ onMounted(async () => {
       dataInicio: hoje.toISOString().split('T')[0],
       dataFim: proximaSemana.toISOString().split('T')[0]
     });
+    
   } finally {
     loading.value = false;
   }
-});
+}
+
+async function refresh() {
+  await fetchAgendamentos();
+}
 
 function formatTime(dateStr: string) {
   if (!dateStr) return '--:--';

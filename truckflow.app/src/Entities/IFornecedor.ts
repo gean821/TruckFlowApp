@@ -3,5 +3,6 @@ import type IProduto from "./IProduto";
 
 export default interface IFornecedor extends EntidadeBase {
     nome: string;
+    cnpj: string;
     produtos?: IProduto[];
 }

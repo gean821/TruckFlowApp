@@ -66,6 +66,7 @@ const dialogVincular = ref(false);
 const fornecedorHeaders: VDataTableHeader = [
     { title: "IDENTIFICADOR", key: "id", align: "start" },
     { title: "NOME DA EMPRESA", key: "nome" },
+    { title: "CNPJ", key: "cnpj" },
     { title: "CRIADO EM", key: "createdAt" },
     { title: "AÇÕES", key: "actions", sortable: false, align: "center" },
 ];
@@ -96,6 +97,7 @@ const locais = computed(() => localStore.locaisDeDescarga)
 const formModelFornecedor = ref<IFornecedor>({
     id: undefined,
     nome: '',
+    cnpj: '',
     produtos: []
 });
 
@@ -116,6 +118,7 @@ function abrirDialogFornecedor(fornecedor?: IFornecedor) {
         formModelFornecedor.value = {
             id: undefined,
             nome: '',
+            cnpj: '',
             produtos: []
         };
     }
@@ -127,12 +130,12 @@ async function saveFornecedor() {
     const fornecedor: IFornecedor = {
         id: formModelFornecedor.value.id,
         nome: formModelFornecedor.value.nome,
+        cnpj: formModelFornecedor.value.cnpj,
         produtos: formModelFornecedor.value.produtos
     }
 
     await fornecedorStore.AddFornecedor(fornecedor);
     dialogFornecedor.value = false;
-
 }
 
 async function handleFornecedorSave(fornecedor : IFornecedor) {
@@ -156,6 +159,7 @@ async function editFornecedor() {
     const fornecedor: IFornecedor = {
         id: formModelFornecedor.value.id,
         nome: formModelFornecedor.value.nome,
+        cnpj: formModelFornecedor.value.cnpj,
         produtos: formModelFornecedor.value.produtos
     };
 

@@ -28,6 +28,15 @@
         ></v-text-field>
 
         <v-btn 
+          icon="mdi-refresh" 
+          variant="text" 
+          color="grey-darken-1" 
+          :loading="loading"
+          @click="$emit('refresh')"
+          tooltip="Atualizar Lista">
+        </v-btn>
+
+        <v-btn 
           color="primary" 
           prepend-icon="mdi-plus" 
           height="40" 
@@ -128,7 +137,7 @@
 import { computed, ref } from 'vue';
 import type { VDataTable } from 'vuetify/components';
 
-// Tipagem correta para Headers
+
 export type VDataTableHeader = InstanceType<typeof VDataTable>['$props']['headers']
 
 const props = defineProps<{
@@ -145,14 +154,21 @@ const emit = defineEmits<{
     (e: 'abrirDialog', item?: any): void;
     (e: 'delete', id: any): void;
     (e: 'viewItens', item: any): void;
+    (e: 'refresh'):void;
 }>();
 
 const search = ref('');
 
 const filteredItems = computed(() => {
-    if (!search.value) return props.items;
+    const base = [...props.items];
+
+    if (!search.value) {
+      base;
+    } 
+
     const termo = search.value.toLowerCase();
-    return props.items.filter((item) =>
+    
+    return base.filter((item) =>
         Object.values(item).some((val) =>
             String(val).toLowerCase().includes(termo)
         )

@@ -12,6 +12,11 @@ export default class FornecedorService {
         return fornecedor.data;
     }
 
+    static async GetByCnpj(cnpj: string) : Promise<IFornecedor> {
+        const fornecedor = await http.get(`/Fornecedor/cnpj/${cnpj}`);
+        return fornecedor.data;
+    }
+    
     static async AddFornecedor(Fornecedor: IFornecedor): Promise<IFornecedor> {
         const fornecedor = await http.post('/Fornecedor', Fornecedor);
         return fornecedor.data;

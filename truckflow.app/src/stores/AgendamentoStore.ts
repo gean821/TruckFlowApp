@@ -21,7 +21,7 @@ export const useAgendamentoStore = defineStore('Agendamento', () => {
 
         try {
             const result = await AgendamentoService.getByFilters(filters);
-            agendamentos.value = result;
+            agendamentos.value = result.map(x => ({ ...x }));
         } finally {
             loading.value = false;
         }
@@ -54,15 +54,15 @@ export const useAgendamentoStore = defineStore('Agendamento', () => {
     }
 
     return {
-    agendamentosFiltrados,
-    agendamentos,
-    loading,
-    GetById,
-    getByFilters,
-    UpdateAgendamento,
-    DeleteAgendamento,
-    AddAgendamento
-}
+        agendamentosFiltrados,
+        agendamentos,
+        loading,
+        GetById,
+        getByFilters,
+        UpdateAgendamento,
+        DeleteAgendamento,
+        AddAgendamento
+    }
 })
 
 

@@ -15,9 +15,21 @@ export const useFornecedorStore = defineStore('Fornecedor', () => {
     await FornecedorService.GetById(id);
   }
 
+  async function GetByCnpj(cnpj: string) {
+    const fornecedor = await FornecedorService.GetByCnpj(cnpj);
+    return fornecedor;
+  }
+
   async function AddFornecedor(Fornecedor: IFornecedor) {
-    const fornecedor = await FornecedorService.AddFornecedor(Fornecedor);
-    fornecedores.value.push(fornecedor);
+    try {
+      const fornecedor = await FornecedorService.AddFornecedor(Fornecedor);
+      fornecedores.value.push(fornecedor);
+      return true;
+      
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Erro ao criar fornecedor");
+      return false;
+    }
   }
 
   async function UpdateFornecedor(id: string, fornecedorAtualizado: IFornecedor) {
@@ -88,6 +100,7 @@ export const useFornecedorStore = defineStore('Fornecedor', () => {
     fornecedores,
     GetAll,
     GetById,
+    GetByCnpj,
     AddFornecedor,
     UpdateFornecedor,
     DeleteFornecedor,

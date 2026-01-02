@@ -65,9 +65,9 @@ const produtoSelecionado = ref<string | null>(null);
 
 async function vincularProduto() {
     if (produtoSelecionado.value) {
-        emit('vincular', produtoSelecionado.value);
-        model.value = false;
-        produtoSelecionado.value = null;
+      emit('vincular', produtoSelecionado.value);
+      model.value = false;
+      produtoSelecionado.value = null;
     }
 }
 
