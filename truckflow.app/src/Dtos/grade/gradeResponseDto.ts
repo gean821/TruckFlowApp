@@ -10,6 +10,7 @@ export default interface GradeResponseDto {
     horaFinal: string;
     unidadeEntrega: string;
     diasSemana: string;
+    tempoDuracao: string;
     createdAt: string;
     UpdatedAt?: string | null;
     intervaloMinutos: number;

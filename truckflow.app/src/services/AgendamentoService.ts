@@ -26,6 +26,18 @@ export default class AgendamentoService {
     return data;
   }
 
+  static async checkIn(agendamentoId: string): Promise<void> {
+    await http.patch(`/AgendamentoAdmin/${agendamentoId}/check-in`);
+  }
+
+  static async checkOut(agendamentoId: string): Promise<void> {
+    await http.patch(`AgendamentoAdmin/${agendamentoId}/check-out`);
+  }
+
+  static async cancelar(agendamentoId: string): Promise<void> {
+    await http.patch(`/AgendamentoAdmin/${agendamentoId}/cancelar`);
+  }
+
   static async UpdateAgendamento(id: string, agendamentoAtualizado: AgendamentoAdminUpdateDto): Promise<AgendamentoAdminResponse> {
     const { data } = await http.put(`/AgendamentoAdmin/${id}`, agendamentoAtualizado);
     return data;

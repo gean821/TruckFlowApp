@@ -33,6 +33,29 @@ export const useAgendamentoStore = defineStore('Agendamento', () => {
         return agendamentoAdicionado;
     }
 
+    async function realizarCheckIn(id: string) {
+        await AgendamentoService.checkIn(id);
+        atualizarStatusLocal(id, 'EmAndamento'); 
+    }
+
+    async function realizarCheckOut(id: string) {
+        await AgendamentoService.checkOut(id);
+        atualizarStatusLocal(id, 'Finalizado'); 
+    }
+
+    async function cancelarAgendamento(id: string) {
+        await AgendamentoService.cancelar(id);
+        atualizarStatusLocal(id, 'Cancelado');
+    }
+
+    
+    function atualizarStatusLocal(id: string, novoStatus: string) {
+        const index = agendamentos.value.findIndex(a => a.id === id);
+        if (index !== -1) {
+            agendamentos.value[index].status = novoStatus;
+        }
+    }
+
     async function UpdateAgendamento(id: string, agendamentoAtualizado: AgendamentoAdminUpdateDto) {
         const agendamento = await AgendamentoService.UpdateAgendamento(id, agendamentoAtualizado);
         const index = agendamentos.value.findIndex(x => x.id === id);
@@ -60,6 +83,10 @@ export const useAgendamentoStore = defineStore('Agendamento', () => {
         GetById,
         getByFilters,
         UpdateAgendamento,
+        atualizarStatusLocal,
+        cancelarAgendamento,
+        realizarCheckIn,
+        realizarCheckOut,
         DeleteAgendamento,
         AddAgendamento
     }
