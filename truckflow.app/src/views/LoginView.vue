@@ -23,17 +23,17 @@
 
         <v-form @submit.prevent="handleLogin">
           <v-text-field
-            v-model="email"
-            label="E-mail Corporativo"
+            v-model="formLogin.login"
+            label="Usuario"
             variant="outlined"
-            prepend-inner-icon="mdi-email-outline"
+            prepend-inner-icon="mdi-account-outline"
             color="primary"
             class="mb-2"
             rounded="lg"
           ></v-text-field>
 
           <v-text-field
-            v-model="password"
+            v-model="formLogin.password"
             label="Senha"
             variant="outlined"
             prepend-inner-icon="mdi-lock-outline"
@@ -80,24 +80,34 @@
 </template>
 
 <script setup lang="ts">
+import type AdminLoginDto from '@/Dtos/adm/adminLoginDto';
+import { useAuthStore } from '@/stores/AuthStore';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-
+const authStore = useAuthStore();
 const router = useRouter();
-const email = ref('');
-const password = ref('');
+
+const formLogin = ref<AdminLoginDto>({
+  password: '',
+  login: ''
+});
+
 const showPass = ref(false);
 const remember = ref(false);
 const loading = ref(false);
 
-function handleLogin() {
+async function handleLogin() {
   loading.value = true;
-  // Simulação de delay de rede
-  setTimeout(() => {
+
+  try {
+    await authStore.login(formLogin.value);
+    
+    router.push("/visualizar");
+  } catch (e) {
+    alert("Usuário ou senha inválidos");
+  } finally {
     loading.value = false;
-    // Lógica futura de Auth aqui
-    router.push('/visualizar'); 
-  }, 1500);
+  }
 }
 </script>
 

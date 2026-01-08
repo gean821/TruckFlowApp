@@ -70,7 +70,18 @@
     <v-divider class="mb-4 border-opacity-25" color="white"></v-divider>
 
     <v-list class="px-3" density="comfortable" nav>
+
+      <v-list-item 
+            to="/dashboard" 
+            prepend-icon="mdi-poll" 
+            title="Dashboard" 
+            rounded="xl"
+            variant="outlined"
+            base-color="white"
+            class="mb-2"
+      ></v-list-item>
       
+
         <v-list-item 
             to="/visualizar" 
             prepend-icon="mdi-calendar-month-outline" 
@@ -114,6 +125,40 @@
       ></v-list-item>
 
     </v-list-group value="Programacao">
+
+    <v-list-group value="Gerenciar">
+        <template v-slot:activator="{ props }">
+          <v-list-item
+            v-bind="props"
+            prepend-icon="mdi-cog-box"
+            title="Gerenciar"
+            rounded="xl"
+            variant="outlined"
+            base-color="white"
+            class="mb-2"
+          ></v-list-item>
+        </template>
+
+        <div class="d-flex flex-column gap-1 mt-1">
+            <v-list-item title="Produtos" 
+                to="produtos" rounded="xl"
+                variant="text"
+                class="pl-6 text-white"
+                prepend-icon="mdi-package-variant-closed"
+                density="compact" />
+            <v-list-item title="Descarga"
+                to="locais" 
+                rounded="xl"
+                variant="text"
+                class="pl-6 text-white"
+                prepend-icon="mdi-truck-delivery"
+                density="compact" />
+            <v-list-item title="Fornecedores" to="fornecedores" rounded="xl" variant="text" class="pl-6 text-white" prepend-icon="mdi-domain" density="compact" />
+            <v-list-item title="Recebimento" to="recebimentos" rounded="xl" variant="text" class="pl-6 text-white" prepend-icon="mdi-import" density="compact" />
+            <v-list-item title="Controle" to="/visualizar-recebimentos" rounded="xl" variant="text" class="pl-6 text-white" prepend-icon="mdi-clipboard-list-outline" density="compact" />
+        </div>
+      </v-list-group>
+
 
       <v-list-item 
         to="/bloqueios" 
@@ -170,39 +215,7 @@
 
       </v-list-group>
 
-      <v-list-group value="Gerenciar">
-        <template v-slot:activator="{ props }">
-          <v-list-item
-            v-bind="props"
-            prepend-icon="mdi-cog-box"
-            title="Gerenciar"
-            rounded="xl"
-            variant="outlined"
-            base-color="white"
-            class="mb-2"
-          ></v-list-item>
-        </template>
-
-        <div class="d-flex flex-column gap-1 mt-1">
-            <v-list-item title="Produtos" 
-                to="produtos" rounded="xl"
-                variant="text"
-                class="pl-6 text-white"
-                prepend-icon="mdi-package-variant-closed"
-                density="compact" />
-            <v-list-item title="Descarga"
-                to="locais" 
-                rounded="xl"
-                variant="text"
-                class="pl-6 text-white"
-                prepend-icon="mdi-truck-delivery"
-                density="compact" />
-            <v-list-item title="Fornecedores" to="fornecedores" rounded="xl" variant="text" class="pl-6 text-white" prepend-icon="mdi-domain" density="compact" />
-            <v-list-item title="Recebimento" to="recebimentos" rounded="xl" variant="text" class="pl-6 text-white" prepend-icon="mdi-import" density="compact" />
-            <v-list-item title="Controle" to="/visualizar-recebimentos" rounded="xl" variant="text" class="pl-6 text-white" prepend-icon="mdi-clipboard-list-outline" density="compact" />
-        </div>
-      </v-list-group>
-
+      
       <v-list-item 
         to="/relatorios" 
         prepend-icon="mdi-file-chart-outline" 

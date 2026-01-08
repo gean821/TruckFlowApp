@@ -15,7 +15,7 @@
     </v-col>
 
     <v-col cols="12" md="6" lg="5" class="d-flex flex-column bg-white fill-height">
-      
+
       <div class="pa-6">
         <v-btn 
           variant="text" 
@@ -39,7 +39,7 @@
           <v-form ref="formRef" @submit.prevent="handleRegister">
             
             <v-text-field
-              v-model="form.userName"
+              v-model="form.nomeReal"
               label="Nome Completo ou Razão Social"
               variant="outlined"
               prepend-inner-icon="mdi-account-outline"
@@ -48,6 +48,18 @@
               rounded="lg"
               :rules="[rules.required]"
             ></v-text-field>
+
+            <v-text-field
+              v-model="form.username"
+              label="Usuario ex: teste.teste"
+              variant="outlined"
+              prepend-inner-icon="mdi-account-outline"
+              color="primary"
+              class="mb-2"
+              rounded="lg"
+              :rules="[rules.required]"
+            ></v-text-field>
+
 
             <v-text-field
               v-model="form.email"
@@ -62,7 +74,7 @@
             ></v-text-field>
 
             <v-text-field
-              v-model="form.phoneNumber"
+              v-model="form.telefone"
               label="Telefone / WhatsApp"
               variant="outlined"
               prepend-inner-icon="mdi-phone-outline"
@@ -88,7 +100,7 @@
             ></v-text-field>
 
             <v-text-field
-              v-model="form.confirmPassword"
+              v-model="confirmPassword"
               label="Confirmar Senha"
               variant="outlined"
               prepend-inner-icon="mdi-lock-check-outline"
@@ -123,21 +135,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import type AdminRegisterDto from '@/Dtos/adm/adminRegisterDto';
+import { AuthService } from '@/services/AuthService';
+import { useAuthStore } from '@/stores/AuthStore';
+import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+const authStore = useAuthStore();
 const router = useRouter();
 const formRef = ref<any>(null);
 const loading = ref(false);
 const showPass = ref(false);
 
-const form = reactive({
-  userName: '',
+const form = reactive<AdminRegisterDto>({
+  username: '',
+  nomeReal: '',
   email: '',
-  phoneNumber: '',
+  telefone: '',
   password: '',
-  confirmPassword: ''
 });
+
+const confirmPassword = ref('');
 
 const rules = {
   required: (v: string) => !!v || 'Campo obrigatório',
@@ -156,24 +174,26 @@ async function handleRegister() {
   if (valid) {
     loading.value = true;
     
-    // Simulação de chamada ao backend Identity
-    setTimeout(() => {
-      loading.value = false;
-      
-      // Aqui vou chamar AuthService.register(form) quando fizer a auth
-      console.log("Dados para Identity:", {
-        UserName: form.userName,
-        Email: form.email,
-        PhoneNumber: form.phoneNumber,
-        Password: form.password
-        // Role será 'Admin' fixo no backend para este endpoint
+    try {
+
+      await AuthService.register({
+        username: form.username,
+        nomeReal: form.nomeReal,
+        email: form.email,
+        telefone: form.telefone,
+        password: form.password,
       });
-      
-      // Redireciona para login ou direto para dashboard
+
       router.push('/login'); 
-    }, 1500);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    } finally {    //adicionar snackbars ou alert para usuario.
+      loading.value = false;
+    }
   }
 }
+
 </script>
 
 <style scoped>

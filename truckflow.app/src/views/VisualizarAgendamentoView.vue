@@ -57,6 +57,15 @@
         </div>
       </template>
 
+      <template #item.tipoVeiculo="{ value }">
+        <div class="d-flex align-center">
+          <v-icon icon="mdi-truck-cargo-container" size="small" class="mr-2 text-grey-darken-1" />
+          <span class="text-body-2 text-grey-darken-3 text-capitalize">
+            {{ formatTipoVeiculo(value) }}
+          </span>
+        </div>
+      </template>
+
       <template #item.pesoCarga="{ value }">
         <span :class="value > 0 ? 'text-grey-darken-3' : 'text-grey-lighten-1'">
           {{ value > 0 ? value.toLocaleString('pt-BR') : '-' }} <small v-if="value > 0">kg</small>
@@ -145,6 +154,7 @@ import router from '@/router';
 import { useAgendamentoStore } from '@/stores/AgendamentoStore';
 import { computed, ref, onMounted } from 'vue';
 import { format, parseISO } from 'date-fns';
+import { TipoVeiculoLabels } from '@/utils/tipoVeiculoLabels';
 
 const loading = ref(false);
 const agendamentoStore = useAgendamentoStore();
@@ -156,6 +166,8 @@ const headers: VDataTableHeader = [
   { title: "PRODUTO", key: "produto", width: "150px" },
   { title: "FORNECEDOR", key: "fornecedorNome" },
   { title: "MOTORISTA / PLACA", key: "motoristaNome", width: "220px" },
+  { title: "Unidade De Entrega", key: "unidadeEntrega", width: "220px" },
+  { title: "TIPO VEICULO", key: "tipoVeiculo", width: "220px" },
   { title: "PESO", key: "pesoCarga", align: "end", width: "120px" },
   { title: "STATUS", key: "status", align: "center", width: "140px" },
   { title: "AÇÕES", key: "actions", sortable: false, align: "center", width: "100px" }
@@ -275,6 +287,14 @@ async function deleteAgendamento(id: string) {
   if(confirm("Deseja realmente cancelar este horário?")) {
     await agendamentoStore.DeleteAgendamento(id);
   }
+}
+
+function formatTipoVeiculo(tipo: any) {
+  if (!tipo) {
+    return '-';
+  } 
+  
+  return TipoVeiculoLabels[tipo.toString()] || tipo;
 }
 
 function newAgendamento() {

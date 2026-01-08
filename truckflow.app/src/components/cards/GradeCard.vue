@@ -42,10 +42,10 @@
           <v-col cols="12" md="4">
             <v-select
               v-model="formModelGrade.unidadeEntregaId"
-              :items="unidadeStore.unidadeEntregas"
+              :items="unidades"
               item-title="nome"
               item-value="id"
-              label="Unidade de Descarga (Doca)"
+              label="Unidade de Entrega (Doca)"
               prepend-inner-icon="mdi-warehouse"
               variant="outlined"
               color="primary"
@@ -159,6 +159,7 @@ const produtoStore = useProdutoStore();
 const fornecedorStore = useFornecedorStore();
 const unidadeStore = useUnidadeEntregaStore();
 const gradeStore = useGradeStore();
+const unidades = computed(() => unidadeStore.unidadeEntregas)
 
 // Controle dos dias da semana (Array no front -> String no DTO)
 const diasSelecionados = ref<string[]>([]);

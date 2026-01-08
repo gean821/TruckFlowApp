@@ -7,6 +7,7 @@ import type UnidadeEntrega from "./IUnidadeEntrega";
 import type Usuario from "./IUsuario";
 import type { TipoCarga } from "@/enums/TipoCarga";
 import type EntidadeBase from "./IEntidadeBase";
+import type { TipoVeiculo } from "@/enums/TipoVeiculo";
 
 
 export default interface IAgendamento extends EntidadeBase{
@@ -26,4 +27,6 @@ export default interface IAgendamento extends EntidadeBase{
     notaFiscal: NotaFiscal;
     notaFiscalId: string;
     notificacoes: INotificacoes[];
+    PlacaVeiculo?: string;
+    tipoVeiculo?: TipoVeiculo;
 }
