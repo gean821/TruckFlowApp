@@ -2,8 +2,8 @@ import { defineStore } from "pinia";
 import { AuthService } from "@/services/AuthService";
 import type AdminLoginDto from "@/Dtos/adm/adminLoginDto";
 import router from "@/router";
-import type JwtPayload from "@/entities/JwtPayload";
 import { jwtDecode } from "jwt-decode";
+import type JwtPayload from "@/Entities/JwtPayload";
 
 interface AuthState {
     user: JwtPayload | null;

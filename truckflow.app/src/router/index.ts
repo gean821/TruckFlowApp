@@ -104,7 +104,10 @@ const router = createRouter({
       path: '/fornecedores',
       name: 'fornecedores',
       component: Fornecedor,
-      meta: { layout: 'admin' }
+      meta: {
+        requiresAuth: true,
+        roles: ['Admin']
+      }
     },
     {
       path: '/recebimentos',

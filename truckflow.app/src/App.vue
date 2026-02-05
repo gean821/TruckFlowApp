@@ -1,10 +1,10 @@
 <template>
- <v-app>
+  <v-app>
     <Navbar v-if="router.currentRoute.value.meta.requiresAuth" />
-   <v-main class="w-100">
-     <RouterView />
-   </v-main>
- </v-app>
+    <v-main class="w-100">
+      <RouterView />
+    </v-main>
+  </v-app>
 </template>
 
 <script setup lang="ts">

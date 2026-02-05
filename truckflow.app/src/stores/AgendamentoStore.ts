@@ -2,10 +2,9 @@ import type CreateAgendamentoAdminDto from "@/Dtos/agendamento/agendamentoAdminC
 import type AgendamentoAdminResponse from "@/Dtos/agendamento/agendamentoAdminResponse.dto";
 import type AgendamentoAdminUpdateDto from "@/Dtos/agendamento/agendamentoAdminUpdate.dto";
 import type IAgendamentoFilterDto from "@/Dtos/agendamento/agendamentoFilterDto";
-import type IAgendamento from "@/entities/IAgendamento";
 import AgendamentoService from "@/services/AgendamentoService";
 import { defineStore } from "pinia";
-import { provide, ref } from 'vue';
+import { ref } from 'vue';
 
 export const useAgendamentoStore = defineStore('Agendamento', () => {
     const agendamentosFiltrados = ref<IAgendamentoFilterDto[]>([]);
@@ -35,12 +34,12 @@ export const useAgendamentoStore = defineStore('Agendamento', () => {
 
     async function realizarCheckIn(id: string) {
         await AgendamentoService.checkIn(id);
-        atualizarStatusLocal(id, 'EmAndamento'); 
+        atualizarStatusLocal(id, 'EmAndamento');
     }
 
     async function realizarCheckOut(id: string) {
         await AgendamentoService.checkOut(id);
-        atualizarStatusLocal(id, 'Finalizado'); 
+        atualizarStatusLocal(id, 'Finalizado');
     }
 
     async function cancelarAgendamento(id: string) {
@@ -48,7 +47,7 @@ export const useAgendamentoStore = defineStore('Agendamento', () => {
         atualizarStatusLocal(id, 'Cancelado');
     }
 
-    
+
     function atualizarStatusLocal(id: string, novoStatus: string) {
         const index = agendamentos.value.findIndex(a => a.id === id);
         if (index !== -1) {

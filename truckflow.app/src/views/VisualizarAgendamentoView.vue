@@ -1,18 +1,10 @@
 <template>
   <v-container fluid class="pa-6">
-    <CrudTable
-      :key="agendamentos.length + '-' + agendamentos[0]?.updatedAt"
-      title="Gestão de Agendamentos"
-      icon="mdi-calendar-clock"
-      subtitle="Acompanhe a grade de horários e status de recebimento"
-      :headers="headers" 
-      :items="agendamentos"
-      :loading="loading" 
-      @abrir-dialog="newAgendamento"
-      @delete="deleteAgendamento"
-      @refresh="refresh"
-    >
-      
+    <CrudTable :key="agendamentos.length + '-' + agendamentos[0]?.updatedAt" title="Gestão de Agendamentos"
+      icon="mdi-calendar-clock" subtitle="Acompanhe a grade de horários e status de recebimento" :headers="headers"
+      :items="agendamentos" :loading="loading" @abrir-dialog="newAgendamento" @delete="deleteAgendamento"
+      @refresh="refresh">
+
       <template #item.dataInicio="{ item }">
         <div class="d-flex flex-column py-2">
           <div class="d-flex align-center">
@@ -28,12 +20,7 @@
       </template>
 
       <template #item.produto="{ value }">
-        <v-chip 
-          size="small" 
-          color="blue-grey" 
-          variant="tonal" 
-          class="font-weight-bold"
-        >
+        <v-chip size="small" color="blue-grey" variant="tonal" class="font-weight-bold">
           {{ value || 'Carga Geral' }}
         </v-chip>
       </template>
@@ -73,56 +60,31 @@
       </template>
 
       <template #item.status="{ value }">
-        <v-chip 
-          size="small" 
-          :color="getStatusColor(value)" 
-          variant="flat"
-          class="font-weight-bold text-uppercase"
-        >
+        <v-chip size="small" :color="getStatusColor(value)" variant="flat" class="font-weight-bold text-uppercase">
           {{ value }}
         </v-chip>
       </template>
 
       <template #item.actions="{ item }">
         <div class="d-flex justify-center align-center ga-2">
-          
-          <v-tooltip 
-            text="Registrar Chegada (Check-in)" 
-            location="top" 
-            v-if="isStatus(item.status, 'Agendado') || isStatus(item.status, 'Confirmado')"
-          >
+
+          <v-tooltip text="Registrar Chegada (Check-in)" location="top"
+            v-if="isStatus(item.status, 'Agendado') || isStatus(item.status, 'Confirmado')">
             <template v-slot:activator="{ props }">
-              <v-btn 
-                 icon="mdi-login-variant" 
-                 color="blue-darken-2" 
-                 variant="tonal" 
-                 size="small"
-                 v-bind="props"
-                 @click="handleCheckIn(item)"
-                 :loading="loadingAction === item.id"
-              />
+              <v-btn icon="mdi-login-variant" color="blue-darken-2" variant="tonal" size="small" v-bind="props"
+                @click="handleCheckIn(item)" :loading="loadingAction === item.id" />
             </template>
           </v-tooltip>
 
-          <v-tooltip 
-            text="Finalizar Operação (Check-out)" 
-            location="top" 
-            v-if="isStatus(item.status, 'EmAndamento')"
-          >
+          <v-tooltip text="Finalizar Operação (Check-out)" location="top" v-if="isStatus(item.status, 'EmAndamento')">
             <template v-slot:activator="{ props }">
-              <v-btn 
-                 icon="mdi-check-all" 
-                 color="green-darken-1" 
-                 variant="tonal" 
-                 size="small"
-                 v-bind="props"
-                 @click="handleCheckOut(item)"
-                 :loading="loadingAction === item.id"
-              />
+              <v-btn icon="mdi-check-all" color="green-darken-1" variant="tonal" size="small" v-bind="props"
+                @click="handleCheckOut(item)" :loading="loadingAction === item.id" />
             </template>
           </v-tooltip>
 
-          <v-menu v-if="!isStatus(item.status, 'Finalizado') && !isStatus(item.status, 'Concluido') && !isStatus(item.status, 'Cancelado')">
+          <v-menu
+            v-if="!isStatus(item.status, 'Finalizado') && !isStatus(item.status, 'Concluido') && !isStatus(item.status, 'Cancelado')">
             <template v-slot:activator="{ props }">
               <v-btn icon="mdi-dots-vertical" variant="text" size="small" v-bind="props"></v-btn>
             </template>
@@ -131,11 +93,7 @@
                 <v-list-item-title>Editar Dados</v-list-item-title>
               </v-list-item>
               <v-divider class="my-1"></v-divider>
-              <v-list-item 
-                  @click="handleCancelar(item)" 
-                  prepend-icon="mdi-cancel" 
-                  base-color="red"
-              >
+              <v-list-item @click="handleCancelar(item)" prepend-icon="mdi-cancel" base-color="red">
                 <v-list-item-title class="text-red">Cancelar Agendamento</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -179,7 +137,7 @@ onMounted(async () => {
   setInterval(() => {
     fetchAgendamentos();
   }, 30000);
-  
+
 });
 
 async function fetchAgendamentos() {
@@ -193,7 +151,7 @@ async function fetchAgendamentos() {
       dataInicio: hoje.toISOString().split('T')[0],
       dataFim: proximaSemana.toISOString().split('T')[0]
     });
-    
+
   } finally {
     loading.value = false;
   }
@@ -215,7 +173,7 @@ function formatTime(dateStr: string) {
 function formatDate(dateStr: string) {
   if (!dateStr) {
     return '-';
-  } 
+  }
 
   return format(parseISO(dateStr), 'dd/MM/yyyy');
 }
@@ -233,11 +191,11 @@ function getStatusColor(status: string) {
 
 async function handleCheckIn(item: any) {
   const placa = item.placaVeiculo || 'sem placa cadastrada';
-  
-  if (!confirm(`Confirmar entrada do veículo ${placa}?`))  {
+
+  if (!confirm(`Confirmar entrada do veículo ${placa}?`)) {
     return;
   }
-  
+
   loadingAction.value = item.id;
   try {
     await agendamentoStore.realizarCheckIn(item.id);
@@ -253,7 +211,7 @@ async function handleCheckIn(item: any) {
 async function handleCheckOut(item: any) {
   if (!confirm("Confirmar finalização da descarga e liberação do veículo?")) {
     return;
-  } 
+  }
 
   loadingAction.value = item.id;
   try {
@@ -269,13 +227,13 @@ async function handleCheckOut(item: any) {
 async function handleCancelar(item: any) {
   if (!confirm("ATENÇÃO: Deseja realmente CANCELAR este agendamento?")) {
     return;
-  } 
+  }
 
   loadingAction.value = item.id;
   try {
     await agendamentoStore.cancelarAgendamento(item.id);
     await fetchAgendamentos();
-    
+
   } catch (e: any) {
     alert(e.response?.data?.message || "Erro ao cancelar.");
   } finally {
@@ -284,7 +242,7 @@ async function handleCancelar(item: any) {
 }
 
 async function deleteAgendamento(id: string) {
-  if(confirm("Deseja realmente cancelar este horário?")) {
+  if (confirm("Deseja realmente cancelar este horário?")) {
     await agendamentoStore.DeleteAgendamento(id);
   }
 }
@@ -292,8 +250,8 @@ async function deleteAgendamento(id: string) {
 function formatTipoVeiculo(tipo: any) {
   if (!tipo) {
     return '-';
-  } 
-  
+  }
+
   return TipoVeiculoLabels[tipo.toString()] || tipo;
 }
 
