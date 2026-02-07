@@ -1,125 +1,116 @@
 <template>
-  <v-app-bar scroll-threshold="0" color="#195FA0" class="pa-2" elevation="0">
-    <v-app-bar-nav-icon icon="mdi-menu" @click="abrirNavegacao"></v-app-bar-nav-icon>
+  <v-app-bar color="white" elevation="1" height="64" class="border-b">
+    <v-app-bar-nav-icon variant="text" @click="abrirNavegacao" color="grey-darken-2"></v-app-bar-nav-icon>
 
-    <v-app-bar-title class="d-flex justify-center">
-      <div class="text-h6 text-white font-weight-bold">
-        <v-img :width="145" aspect-ratio="16/9" cover src="/Rectangle.svg" class="pa-3 mt-3"> </v-img>
-      </div>
-    </v-app-bar-title>
+    <div class="ml-2 d-flex align-center">
+      <v-img src="/Rectangle.svg" alt="Logo TruckFlow" width="140" max-height="40" contain
+        class="d-inline-block"></v-img>
+    </div>
 
-    <template v-slot:append>
-      <v-btn icon="mdi-bell-outline" @click="openBellModal"></v-btn>
+    <v-spacer></v-spacer>
 
-      <v-menu v-model="accountModal" location="bottom end" transition="scale-transition"
-        :close-on-content-click="false">
-        <template #activator="{ props }">
-          <v-btn icon v-bind="props">
-            <v-icon>mdi-account</v-icon>
+    <div class="d-flex align-center ga-2 pr-4">
+      <v-btn icon color="grey-darken-1">
+        <v-badge dot color="error">
+          <v-icon>mdi-bell-outline</v-icon>
+        </v-badge>
+      </v-btn>
+
+      <v-menu location="bottom end" transition="slide-y-transition">
+        <template v-slot:activator="{ props }">
+          <v-btn variant="text" class="text-capitalize pl-1 pr-2" rounded="xl" v-bind="props">
+            <v-avatar color="#195FA0" size="32" class="mr-2">
+              <span class="text-white text-caption font-weight-bold">
+                {{ profile.name?.substring(0, 2).toUpperCase() }}
+              </span>
+            </v-avatar>
+            <div class="d-flex flex-column align-start text-caption">
+              <span class="font-weight-bold text-grey-darken-3">{{ profile.name }}</span>
+              <span class="text-grey">{{ profile.role }}</span>
+            </div>
+            <v-icon icon="mdi-chevron-down" size="small" class="ml-2 text-grey-lighten-1"></v-icon>
           </v-btn>
         </template>
 
-        <v-card min-width="220" class="rounded-lg">
-          <v-list>
-            <v-list-item :title="profile.name" :subtitle="profile.role">
-              <template v-slot:prepend>
-                <v-avatar color="primary" variant="tonal">GL</v-avatar>
-              </template>
-            </v-list-item>
-          </v-list>
-          <v-divider></v-divider>
-          <v-list density="compact" nav>
-            <v-list-item prepend-icon="mdi-cog-outline" title="Configurações" @click="toConfigs">
-            </v-list-item>
-
-            <v-list-item prepend-icon="mdi-logout" color="error" title="Sair" @click="logout">
-            </v-list-item>
+        <v-card min-width="200" elevation="2" class="rounded-lg mt-2">
+          <v-list density="compact">
+            <v-list-item prepend-icon="mdi-account-cog-outline" title="Minha Conta" to="/account-config"></v-list-item>
+            <v-divider class="my-1"></v-divider>
+            <v-list-item prepend-icon="mdi-logout" title="Sair" color="error" @click="logout"></v-list-item>
           </v-list>
         </v-card>
       </v-menu>
-    </template>
+    </div>
   </v-app-bar>
 
-  <v-navigation-drawer v-model="ativo" color="#195FA0" border="none" width="280">
-
-    <div class="pa-4 text-center">
-      <v-avatar size="80" color="white" class="mb-3">
-        <v-img src="/cat.jpg" alt="Profile"></v-img>
+  <v-navigation-drawer v-model="ativo" color="#195FA0" width="280" border="none" class="sidebar-custom">
+    <div class="pa-6 text-center">
+      <v-avatar size="80" color="white" class="mb-3 elevation-2">
+        <v-img src="/cat.jpg" alt="Profile" cover></v-img>
       </v-avatar>
       <div class="text-white font-weight-bold text-h6">{{ profile.name }}</div>
-      <div class="text-white-darken-1 text-body-2">{{ profile.role }}</div>
+      <div class="text-white-darken-1 text-body-2 opacity-80">{{ profile.role }}</div>
     </div>
 
-    <v-divider class="mb-4 border-opacity-25" color="white"></v-divider>
+    <v-divider class="mb-2 border-opacity-25" color="white"></v-divider>
 
-    <v-list class="px-3" density="comfortable" nav>
+    <v-list density="compact" nav class="px-3">
 
-      <v-list-item to="/dashboard" prepend-icon="mdi-poll" title="Dashboard" rounded="xl" variant="outlined"
-        base-color="white" class="mb-2"></v-list-item>
+      <v-list-item to="/dashboard" prepend-icon="mdi-view-dashboard-outline" title="Dashboard" rounded="lg"
+        active-class="active-white" class="mb-1 text-body-2 font-weight-medium text-white"></v-list-item>
 
+      <v-list-item to="/visualizar" prepend-icon="mdi-calendar-multiselect" title="Agendamentos" rounded="lg"
+        active-class="active-white" class="mb-1 text-body-2 font-weight-medium text-white"></v-list-item>
 
-      <v-list-item to="/visualizar" prepend-icon="mdi-calendar-month-outline" title="Agendamentos" rounded="xl"
-        variant="outlined" base-color="white" class="mb-2"></v-list-item>
+      <v-list-item to="/recebimentos" prepend-icon="mdi-file-document-edit-outline" title="Planej. Recebimento"
+        rounded="lg" active-class="active-white" class="mb-1 text-body-2 font-weight-medium text-white"></v-list-item>
+
+      <div class="mt-4 mb-2 px-3 text-caption font-weight-bold text-blue-lighten-4 opacity-70">OPERAÇÃO</div>
 
       <v-list-group value="Programacao">
         <template v-slot:activator="{ props }">
-          <v-list-item v-bind=props prepend-icon="mdi-calendar-check" title="Programação" rounded="xl"
-            variant="outlined" base-color="white" class="mb-2">
-          </v-list-item>
+          <v-list-item v-bind="props" prepend-icon="mdi-clock-outline" title="Programação" rounded="lg"
+            class="text-white"></v-list-item>
         </template>
 
-        <v-list-item to="nova-grade" title="Nova Grade" prepend-icon="mdi-plus" rounded="xl" variant="text"
-          color="white" class="pl-6 mb-1 text-white"></v-list-item>
-
-        <v-list-item to="/visualizar-grades" prepend-icon="mdi-eye" title="Visualizar Grades" rounded="xl"
-          class="mb-2"></v-list-item>
-
-      </v-list-group value="Programacao">
+        <v-list-item to="nova-grade" title="Nova Grade" rounded="lg" class="pl-10 text-white mb-1 opacity-90"
+          active-class="active-white-sub"></v-list-item>
+        <v-list-item to="/visualizar-grades" title="Visualizar Grades" rounded="lg"
+          class="pl-10 text-white mb-1 opacity-90" active-class="active-white-sub"></v-list-item>
+      </v-list-group>
 
       <v-list-group value="Gerenciar">
         <template v-slot:activator="{ props }">
-          <v-list-item v-bind="props" prepend-icon="mdi-cog-box" title="Gerenciar" rounded="xl" variant="outlined"
-            base-color="white" class="mb-2"></v-list-item>
+          <v-list-item v-bind="props" prepend-icon="mdi-database-outline" title="Cadastros" rounded="lg"
+            class="text-white"></v-list-item>
         </template>
 
-        <div class="d-flex flex-column gap-1 mt-1">
-          <v-list-item title="Produtos" to="produtos" rounded="xl" variant="text" class="pl-6 text-white"
-            prepend-icon="mdi-package-variant-closed" density="compact" />
-          <v-list-item title="Descarga" to="locais" rounded="xl" variant="text" class="pl-6 text-white"
-            prepend-icon="mdi-truck-delivery" density="compact" />
-          <v-list-item title="Fornecedores" to="fornecedores" rounded="xl" variant="text" class="pl-6 text-white"
-            prepend-icon="mdi-domain" density="compact" />
-          <v-list-item title="Recebimento" to="recebimentos" rounded="xl" variant="text" class="pl-6 text-white"
-            prepend-icon="mdi-import" density="compact" />
-          <v-list-item title="Controle" to="/visualizar-recebimentos" rounded="xl" variant="text"
-            class="pl-6 text-white" prepend-icon="mdi-clipboard-list-outline" density="compact" />
-        </div>
+        <v-list-item to="produtos" title="Produtos" rounded="lg" class="pl-10 text-white mb-1 opacity-90"
+          active-class="active-white-sub"></v-list-item>
+        <v-list-item to="locais" title="Locais de Descarga" rounded="lg" class="pl-10 text-white mb-1 opacity-90"
+          active-class="active-white-sub"></v-list-item>
+        <v-list-item to="fornecedores" title="Fornecedores" rounded="lg" class="pl-10 text-white mb-1 opacity-90"
+          active-class="active-white-sub"></v-list-item>
       </v-list-group>
 
+      <div class="mt-4 mb-2 px-3 text-caption font-weight-bold text-blue-lighten-4 opacity-70">CONTROLE</div>
 
-      <v-list-item to="/bloqueios" prepend-icon="mdi-lock-outline" title="Bloqueios" rounded="xl" variant="outlined"
-        base-color="white" class="mb-2"></v-list-item>
+      <v-list-item to="/bloqueios" prepend-icon="mdi-shield-lock-outline" title="Bloqueios" rounded="lg"
+        active-class="active-white" class="mb-1 text-white"></v-list-item>
 
       <v-list-group value="Notificacoes">
         <template v-slot:activator="{ props }">
-          <v-list-item v-bind="props" prepend-icon="mdi-bell-ring-outline" title="Notificações" rounded="xl"
-            variant="outlined" base-color="white" class="mb-2"></v-list-item>
+          <v-list-item v-bind="props" prepend-icon="mdi-bell-badge-outline" title="Notificações" rounded="lg"
+            class="text-white"></v-list-item>
         </template>
-
-        <v-list-item to="reagendamentos" title="Reagendar Carga" prepend-icon="mdi-circle-small" rounded="xl"
-          variant="text" color="white" class="pl-6 mb-1 text-white"></v-list-item>
-
-        <v-list-item to="notificacoes-motoristas" title="Motoristas" prepend-icon="mdi-circle-small" rounded="xl"
-          variant="text" color="white" class="pl-6 mb-1 text-white"></v-list-item>
-
-        <v-list-item to="enviar-notificacao" title="Enviar notificação" prepend-icon="mdi-circle-small" rounded="xl"
-          variant="text" color="white" class="pl-6 mb-1 text-white"></v-list-item>
-
+        <v-list-item to="reagendamentos" title="Reagendamentos" rounded="lg" class="pl-10 text-white mb-1 opacity-90"
+          active-class="active-white-sub"></v-list-item>
+        <v-list-item to="enviar-notificacao" title="Enviar Nova" rounded="lg" class="pl-10 text-white mb-1 opacity-90"
+          active-class="active-white-sub"></v-list-item>
       </v-list-group>
 
-
-      <v-list-item to="/relatorios" prepend-icon="mdi-file-chart-outline" title="Relatórios" rounded="xl"
-        variant="outlined" base-color="white" class="mt-2"></v-list-item>
+      <v-list-item to="/relatorios" prepend-icon="mdi-chart-box-outline" title="Relatórios" rounded="lg"
+        active-class="active-white" class="mt-2 text-white"></v-list-item>
 
     </v-list>
   </v-navigation-drawer>
@@ -131,43 +122,52 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const accountModal = ref(false);
-const isActiveBell = ref(false);
 const ativo = ref(true);
 const authStore = useAuthStore();
 
 const profile = {
-  name: authStore.user?.unique_name,
-  role: authStore.user?.role
+  name: authStore.user?.unique_name || 'Usuário',
+  role: authStore.user?.role || 'Visitante'
 };
 
 function abrirNavegacao() {
   ativo.value = !ativo.value;
 }
 
-function openBellModal() {
-  isActiveBell.value = true;
-}
-
 function logout() {
-  router.push('/home');
-}
-
-function toConfigs() {
-  router.push('/account-config')
+  authStore.logout();
+  router.push('/login');
 }
 </script>
 
 <style scoped>
-:deep(.v-list-group__items .v-list-item) {
-  /* Ajuste fino para os subitens */
-  font-size: 0.9rem;
-  opacity: 0.9;
+/* =========================================
+   ESTILO MODERNO PARA SIDEBAR AZUL (#195FA0)
+   ========================================= */
+
+.active-white {
+  background-color: white !important;
+  color: #195FA0 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Efeito hover suave nos subitens */
-:deep(.v-list-group__items .v-list-item:hover) {
-  opacity: 1;
+.active-white-sub {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+:deep(.v-list-item:not(.active-white):not(.active-white-sub):hover) {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+:deep(.v-icon) {
+  opacity: 1;
+}
+
+:deep(.v-list-group__header .v-list-item__append) {
+  color: white;
+  opacity: 0.8;
 }
 </style>

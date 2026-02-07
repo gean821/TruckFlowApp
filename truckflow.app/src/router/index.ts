@@ -4,7 +4,6 @@ import Fornecedor from '@/views/FornecedorView.vue';
 import ProdutosView from '@/views/ProdutosView.vue';
 import RecebimentoView from '@/views/RecebimentoView.vue';
 import RecebimentoForm from '@/components/Forms/RecebimentoForm.vue';
-import RecebimentoTable from '@/components/data-table/RecebimentoTable.vue';
 import BloqueioView from '@/views/BloqueioView.vue';
 import VisualizarAgendamentoView from '@/views/VisualizarAgendamentoView.vue';
 import Relatorio from '@/views/Relatorio.vue';
@@ -130,7 +129,7 @@ const router = createRouter({
     {
       path: '/visualizar-recebimentos',
       name: 'visualizar-recebimentos',
-      component: RecebimentoTable,
+      component: RecebimentoView,
       meta: {
         requiresAuth: true,
         roles: ['Admin']

@@ -1,43 +1,16 @@
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import SummaryCards from '@/components/dashboard/SummaryCards.vue';
-import OccupancyChart from '@/components/dashboard/OccupancyChart.vue';
-import RecentActivity from '@/components/dashboard/RecentActivity.vue';
-import QuickActions from '@/components/dashboard/QuickActions.vue';
-
-const loading = ref(false);
-const dashboardData = ref({
-  stats: {
-    totalAgendamentos: 45,
-    emAndamento: 12,
-    finalizados: 28,
-    atrasados: 5
-  },
-  volume: {
-    totalKg: 450500,
-    progressoDiario: 75
-  },
-  docas: {
-    ocupacao: 68,
-    livres: 4,
-    ocupadas: 8
-  }
-});
-
-onMounted(() => {
-  loading.value = true;
-  setTimeout(() => loading.value = false, 1000);
-});
-</script>
-
 <template>
   <v-container fluid class="bg-grey-lighten-5 pa-6 pb-12">
 
-    <div class="mb-6">
-      <h1 class="text-h4 font-weight-bold text-grey-darken-3">Dashboard Operacional</h1>
-      <p class="text-subtitle-1 text-grey-darken-1">
-        Visão geral da operação logística • {{ new Date().toLocaleDateString('pt-BR') }}
-      </p>
+    <div class="mb-6 d-flex justify-space-between align-end">
+      <div>
+        <h1 class="text-h4 font-weight-bold text-grey-darken-3">Dashboard Operacional</h1>
+        <p class="text-subtitle-1 text-grey-darken-1">
+          Visão geral da operação logística • {{ new Date().toLocaleDateString('pt-BR') }}
+        </p>
+      </div>
+
+      <v-btn icon="mdi-refresh" variant="text" color="grey-darken-1" :loading="loading"
+        @click="dashboardStore.fetchDashboardData()"></v-btn>
     </div>
 
     <SummaryCards :stats="dashboardData.stats" :loading="loading" />
@@ -48,7 +21,10 @@ onMounted(() => {
       </v-col>
 
       <v-col cols="12" md="4">
-        <RecentActivity />
+        <RecentActivity 
+          :activities="dashboardData.recentActivity" 
+          @view-all="handleViewAllActivity" 
+        />
       </v-col>
     </v-row>
 
@@ -59,6 +35,34 @@ onMounted(() => {
 
   </v-container>
 </template>
+
+<script setup lang="ts">
+import { onMounted, computed } from 'vue';
+import { useDashboardStore } from '@/stores/DashboardStore';
+
+// Componentes
+import SummaryCards from '@/components/dashboard/SummaryCards.vue';
+import OccupancyChart from '@/components/dashboard/OccupancyChart.vue';
+import RecentActivity from '@/components/dashboard/RecentActivity.vue';
+import QuickActions from '@/components/dashboard/QuickActions.vue';
+import router from '@/router';
+
+const dashboardStore = useDashboardStore();
+
+const dashboardData = computed(() => dashboardStore.dashboardData);
+const loading = computed(() => dashboardStore.loading);
+
+onMounted(() => {
+  dashboardStore.fetchDashboardData();
+});
+
+const handleViewAllActivity = () => {
+  router.push('/atividades');
+}
+</script>
+
+
+
 
 <style scoped>
 .v-container {
