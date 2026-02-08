@@ -1,6 +1,5 @@
 import type IRecebimentoCreate from "@/Dtos/Recebimento/IRecebimentoCreate";
 import type IRecebimentoUpdate from "@/Dtos/Recebimento/IRecebimentoUpdate";
-import type IPlanejamentoRecebimento from "@/entities/IPlanejamentoRecebimento";
 import RecebimentoService from "@/services/RecebimentoService";
 import { defineStore } from "pinia";
 import { ref } from 'vue';
@@ -36,11 +35,6 @@ export const useRecebimentoStore = defineStore('Recebimento', () => {
         loading.value = true;
         try {
             const novo = await RecebimentoService.AddRecebimento(recebimento);
-            // O backend retorna o objeto criado, idealmente já no formato de resposta
-            // Se o formato bater, adiciona na lista:
-            // recebimentos.value.unshift(novo); // Adiciona no topo
-
-            // Se o backend retorna diferente do ResponseDTO da lista, recarrega tudo:
             await GetAll();
 
             toast.notify("Planejamento criado com sucesso!", "success");

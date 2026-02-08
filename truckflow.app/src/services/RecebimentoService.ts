@@ -15,6 +15,7 @@ export default class RecebimentoService {
     const { data } = await http.get<IRecebimentoResponse>(`/PlanejamentoRecebimento/${id}`);
     return data;
   }
+  
   static async AddRecebimento(recebimento: IRecebimentoCreate): Promise<IRecebimentoResponse> {
     const { data } = await http.post<IRecebimentoResponse>('/PlanejamentoRecebimento', recebimento);
     return data;
