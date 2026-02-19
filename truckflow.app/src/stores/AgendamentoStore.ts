@@ -47,7 +47,6 @@ export const useAgendamentoStore = defineStore('Agendamento', () => {
         atualizarStatusLocal(id, 'Cancelado');
     }
 
-
     function atualizarStatusLocal(id: string, novoStatus: string) {
         const index = agendamentos.value.findIndex(a => a.id === id);
         if (index !== -1) {

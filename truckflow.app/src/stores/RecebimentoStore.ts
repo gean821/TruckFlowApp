@@ -5,6 +5,7 @@ import { defineStore } from "pinia";
 import { ref } from 'vue';
 import { useToastStore } from "./ToastStore";
 import type IRecebimentoResponse from "@/Dtos/Recebimento/IRecebimentoResponse";
+import type { RegistrarEntradaDto } from "@/Dtos/Recebimento/RegistrarEntrada.dto";
 
 export const useRecebimentoStore = defineStore('Recebimento', () => {
     const recebimentos = ref<IRecebimentoResponse[]>([]);
@@ -76,6 +77,24 @@ export const useRecebimentoStore = defineStore('Recebimento', () => {
         }
     }
 
+    async function RegistrarEntrada(payload: RegistrarEntradaDto) {
+        loading.value = true;
+        try {
+            const { itemId, ...dto } = payload;
+
+            await RecebimentoService.RegistrarEntrada(itemId, dto);
+
+            await GetAll();
+            toast.notify("Entrada registrada com sucesso!", "success");
+        } catch (error) {
+            console.error(error);
+            toast.notify("Erro ao registrar entrada.", "error");
+            throw error;
+        } finally {
+            loading.value = false;
+        }
+    }
+
     return {
         recebimentos,
         loading,
@@ -83,7 +102,8 @@ export const useRecebimentoStore = defineStore('Recebimento', () => {
         GetById,
         UpdateRecebimento,
         DeleteRecebimento,
-        AddRecebimento
+        AddRecebimento,
+        RegistrarEntrada
     }
 })
 

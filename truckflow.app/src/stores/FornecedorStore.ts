@@ -3,9 +3,11 @@ import { defineStore } from 'pinia'
 import FornecedorService from '@/services/FornecedorService';
 import type IFornecedor from '@/entities/IFornecedor';
 import type IProduto from '@/entities/IProduto';
+import { useToastStore } from './ToastStore';
 
 export const useFornecedorStore = defineStore('Fornecedor', () => {
   const fornecedores = ref<IFornecedor[]>([]);
+  const toast = useToastStore();
 
   async function GetAll() {
     fornecedores.value = await FornecedorService.GetAll();
@@ -24,10 +26,11 @@ export const useFornecedorStore = defineStore('Fornecedor', () => {
     try {
       const fornecedor = await FornecedorService.AddFornecedor(Fornecedor);
       fornecedores.value.push(fornecedor);
+      toast.notify("Fornecedor criado com sucesso.", 'success');
       return true;
-      
-    } catch (error: any) {
-      alert(error.response?.data?.message || "Erro ao criar fornecedor");
+
+    } catch (er) {
+      toast.notify('Erro ao criar fornecedor', 'error')
       return false;
     }
   }
@@ -72,17 +75,22 @@ export const useFornecedorStore = defineStore('Fornecedor', () => {
   }
 
   async function deleteProdutoFromFornecedor(fornecedorId: string, produtoId: string) {
-    await FornecedorService.deleteProdutoFromFornecedor(fornecedorId, produtoId);
+    try {
+      await FornecedorService.deleteProdutoFromFornecedor(fornecedorId, produtoId);
 
-    const fornecedorIndex = fornecedores.value.findIndex(x => x.id === fornecedorId);
+      const fornecedorIndex = fornecedores.value.findIndex(x => x.id === fornecedorId);
 
-    if (fornecedorIndex !== -1) {
-      const fornecedor = fornecedores.value[fornecedorIndex];
-      const produtoIndex = fornecedor.produtos?.findIndex(p => p.id === produtoId);
+      if (fornecedorIndex !== -1) {
+        const fornecedor = fornecedores.value[fornecedorIndex];
+        const produtoIndex = fornecedor.produtos?.findIndex(p => p.id === produtoId);
 
-      if (produtoIndex !== -1) {
-        fornecedor.produtos?.splice(produtoIndex!, 1);
+        if (produtoIndex !== -1) {
+          fornecedor.produtos?.splice(produtoIndex!, 1);
+        }
+        toast.notify('Fornecedor exclúido com sucesso.', 'success');
       }
+    } catch (err) {
+      toast.notify('Erro ao excluir fornecedor', 'error');
     }
   }
 

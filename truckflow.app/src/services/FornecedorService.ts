@@ -12,11 +12,11 @@ export default class FornecedorService {
         return fornecedor.data;
     }
 
-    static async GetByCnpj(cnpj: string) : Promise<IFornecedor> {
+    static async GetByCnpj(cnpj: string): Promise<IFornecedor> {
         const fornecedor = await http.get(`/Fornecedor/cnpj/${cnpj}`);
         return fornecedor.data;
     }
-    
+
     static async AddFornecedor(Fornecedor: IFornecedor): Promise<IFornecedor> {
         const fornecedor = await http.post('/Fornecedor', Fornecedor);
         return fornecedor.data;
@@ -26,17 +26,17 @@ export default class FornecedorService {
         const fornecedor = await http.put(`/Fornecedor/${id}`, fornecedorAtualizado);
         return fornecedor.data;
     }
-    
+
     static async DeleteFornecedor(id: string): Promise<void> {
         await http.delete(`/Fornecedor/${id}`);
     }
-    
+
     static async addProdutoToFornecedor(fornecedorId: string, produtoId: string): Promise<IFornecedor> {
         const produtoAdicionado = await http.post(`/Fornecedor/${fornecedorId}/produtos/${produtoId}`)
         return produtoAdicionado.data;
     }
 
-    static async deleteProdutoFromFornecedor(fornecedorId: string, produtoId: string) : Promise<void> {
+    static async deleteProdutoFromFornecedor(fornecedorId: string, produtoId: string): Promise<void> {
         await http.delete(`/Fornecedor/${fornecedorId}/produtos/${produtoId}`);
     }
 }

@@ -122,19 +122,20 @@ import { ref, reactive, onMounted, computed, watch } from 'vue';
 import { useFornecedorStore } from '@/stores/FornecedorStore';
 import { useGradeStore } from '@/stores/GradeStore';
 import { useProdutoStore } from '@/stores/ProdutoStore';
-import { useUnidadeEntregaStore } from '@/stores/UnidadeEntregaStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { parseISO, getDay } from 'date-fns';
 import type gradeCreateDto from '@/Dtos/grade/gradeCreateDto';
+import { useUnidadeEntregaStore } from '@/stores/UnidadeEntregaStore';
 
 const produtoStore = useProdutoStore();
 const fornecedorStore = useFornecedorStore();
 const unidadeStore = useUnidadeEntregaStore();
+// const unidadeDescarga = useUnidadeEntregaStore();
 const gradeStore = useGradeStore();
-const toast = useToastStore(); // Instância do Toast
+const toast = useToastStore();
 
 const unidades = computed(() => unidadeStore.unidadeEntregas);
-const loading = computed(() => gradeStore.loading); // Use computed para loading
+const loading = computed(() => gradeStore.loading);
 
 const diasSelecionados = ref<string[]>([]);
 const intervalos = [10, 15, 20, 30, 45, 60, 90, 120];
@@ -180,10 +181,8 @@ async function cadastrar() {
   try {
     await gradeStore.AddGrade({ ...formModelGrade });
     toast.notify("Grade criada e vagas geradas com sucesso!", "success");
-
-    // Reset (Opcional: limpar form)
     diasSelecionados.value = [];
-    // Resetar campos do reactive se quiser...
+
 
   } catch (e: any) {
     console.error(e);
@@ -194,9 +193,7 @@ async function cadastrar() {
 watch(
   () => [formModelGrade.dataInicio, formModelGrade.dataFim],
   ([inicio, fim]) => {
-    // Se ambas as datas estiverem preenchidas
     if (inicio && fim) {
-      // Se for o mesmo dia, pré-seleciona o dia da semana correspondente
       if (inicio === fim) {
         const diaDaSemana = getDay(parseISO(inicio)); // 0 = Domingo, 1 = Segunda...
 

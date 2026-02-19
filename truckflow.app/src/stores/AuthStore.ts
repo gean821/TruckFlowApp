@@ -21,7 +21,8 @@ export const useAuthStore = defineStore("auth", {
     getters: {
         isAuthenticated: (state) => !!state.token,
         userRole: (state) => state.user?.role,
-        userId: (state) => state.user?.UserId
+        userId: (state) => state.user?.UserId,
+        empresaId: (state) => state.user?.empresaId
     },
 
     actions: {
@@ -77,7 +78,6 @@ export const useAuthStore = defineStore("auth", {
             } catch {
                 this.logout();
             }
-
         }
     }
 });

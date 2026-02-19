@@ -2,6 +2,7 @@ import http from "@/http/http";
 import type IRecebimentoCreate from '@/Dtos/Recebimento/IRecebimentoCreate';
 import type IRecebimentoUpdate from '@/Dtos/Recebimento/IRecebimentoUpdate';
 import type IRecebimentoResponse from '@/Dtos/Recebimento/IRecebimentoResponse';
+import type { RegistrarEntradaDto } from "@/Dtos/Recebimento/RegistrarEntrada.dto";
 
 export default class RecebimentoService {
 
@@ -15,7 +16,7 @@ export default class RecebimentoService {
     const { data } = await http.get<IRecebimentoResponse>(`/PlanejamentoRecebimento/${id}`);
     return data;
   }
-  
+
   static async AddRecebimento(recebimento: IRecebimentoCreate): Promise<IRecebimentoResponse> {
     const { data } = await http.post<IRecebimentoResponse>('/PlanejamentoRecebimento', recebimento);
     return data;
@@ -28,5 +29,12 @@ export default class RecebimentoService {
 
   static async DeleteRecebimento(id: string): Promise<void> {
     await http.delete(`/PlanejamentoRecebimento/${id}`);
+  }
+
+  static async RegistrarEntrada(itemId: string, dto: { quantidade: number, observacao?: string }): Promise<void> {
+    await http.post(`/recebimentos/registrar-entrada/${itemId}/`, {
+      quantidade: dto.quantidade,
+      observacao: dto.observacao
+    });
   }
 }

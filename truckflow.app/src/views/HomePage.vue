@@ -34,14 +34,14 @@
         <v-row align="center" justify="center" class="mt-16">
           <v-col cols="12" md="8" lg="7" class="text-center text-white">
             
-            <v-chip 
+            <!-- <v-chip 
               color="blue-lighten-4" 
               variant="flat" 
               size="small" 
               class="mb-6 font-weight-bold text-blue-darken-4 px-4"
             >
-              🚀 Logística Inteligente 4.0
-            </v-chip>
+              🚀 Logística Inteligente
+            </v-chip> -->
 
             <h1 class="text-h2 font-weight-black mb-6 leading-tight">
               Otimize o fluxo de <br/>
