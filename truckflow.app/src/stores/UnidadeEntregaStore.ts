@@ -1,56 +1,66 @@
 import type UnidadeEntregaCreateDto from "@/Dtos/unidadeEntrega/unidadeEntregaCreateDto";
-import type UnidadeEntregaUpdateDto from "@/Dtos/unidadeEntrega/UnidadeEntregaUpdateDto";
-import type IUnidadeEntrega from "@/entities/IUnidadeEntrega"
-import http from "@/http/http";
-import UnidadeEntregaService from "@/services/UnidadeEntregaService";
+import type { MudarStatusUnidadeDto, UnidadeEntregaResponse, UnidadeEntregaUpdateDto } from "@/entities/unidadeEntrega.types";
+import { UnidadeEntregaService } from "@/services/UnidadeEntregaService";
 import { defineStore } from "pinia";
-import { provide, ref } from 'vue';
+import { ref } from "vue";
 
-export const useUnidadeEntregaStore = defineStore('UnidadeEntrega', () => {
-    const unidadeEntregas = ref<IUnidadeEntrega[]>([]);
+export const useUnidadeEntregaStore = defineStore("unidadeEntrega", () => {
+    const service = UnidadeEntregaService();
 
-    async function GetAll() {
-        unidadeEntregas.value = await UnidadeEntregaService.GetAll();
+    const unidades = ref<UnidadeEntregaResponse[]>([]);
+    const loading = ref(false);
+
+    async function fetchAll() {
+        loading.value = true;
+        try {
+            unidades.value = await service.getAll();
+        } finally {
+            loading.value = false;
+        }
     }
 
-    async function GetById(id: string) {
-        return await UnidadeEntregaService.GetById(id);
+    async function create(payload: UnidadeEntregaCreateDto): Promise<UnidadeEntregaResponse> {
+        const nova = await service.create(payload);
+        unidades.value.push(nova);
+        return nova;
     }
 
-    async function AddUnidadeEntrega(unidadeEntrega: UnidadeEntregaCreateDto) {
-        const unidade = await UnidadeEntregaService.AddUnidadeEntrega(unidadeEntrega);
-        unidadeEntregas.value.push(unidade);
-        return unidade;
-    }
+    async function update(
+        id: string,
+        payload: UnidadeEntregaUpdateDto): Promise<UnidadeEntregaResponse> {
+        const atualizada = await service.update(id, payload);
 
-    async function UpdateUnidadeEntrega(id: string, unidadeEntregaAtualizado: UnidadeEntregaUpdateDto) {
-        const unidade = await UnidadeEntregaService.UpdateUnidadeEntrega(id, unidadeEntregaAtualizado);
-        const index = unidadeEntregas.value.findIndex(x => x.id === id);
-
+        const index = unidades.value.findIndex(u => u.id === id);
         if (index !== -1) {
-            unidadeEntregas.value[index] = unidade;
+            unidades.value[index] = atualizada;
         }
 
-        return unidade;
+        return atualizada;
     }
 
-    async function DeleteUnidadeEntrega(id: string) {
-        await UnidadeEntregaService.DeleteUnidadeEntrega(id);
-        const index = unidadeEntregas.value.findIndex(x => x.id === id);
+    async function remove(id: string) {
+        await service.remove(id);
+        unidades.value = unidades.value.filter(u => u.id !== id);
+    }
+
+    async function mudarStatus(id: string, payload: MudarStatusUnidadeDto) {
+        const atualizada = await service.mudarStatus(id, payload);
+        const index = unidades.value.findIndex(u => u.id === id);
 
         if (index !== -1) {
-            unidadeEntregas.value.splice(index, 1);
+            unidades.value[index] = atualizada;
         }
+
+        return atualizada;
     }
 
     return {
-        unidadeEntregas,
-        GetAll,
-        GetById,
-        UpdateUnidadeEntrega,
-        DeleteUnidadeEntrega,
-        AddUnidadeEntrega
-    }
-})
-
-
+        unidades,
+        loading,
+        fetchAll,
+        create,
+        update,
+        remove,
+        mudarStatus
+    };
+});

@@ -26,5 +26,3 @@ export default class LocalDescargaService {
         await http.delete(`/LocalDescarga/${id}`);
     }
 }
-
-

@@ -1,31 +1,57 @@
 
-import type UnidadeEntregaCreateDto from "@/Dtos/unidadeEntrega/unidadeEntregaCreateDto";
-import type UnidadeEntregaUpdateDto from "@/Dtos/unidadeEntrega/UnidadeEntregaUpdateDto";
-import type IUnidadeEntrega from "@/entities/IUnidadeEntrega";
+import type { MudarStatusUnidadeDto, UnidadeEntregaCreateDto, UnidadeEntregaResponse, UnidadeEntregaUpdateDto } from "@/entities/unidadeEntrega.types";
 import http from "@/http/http";
 
-export default class UnidadeEntregaService {
-    static async GetById(id: string): Promise<IUnidadeEntrega> {
-        const { data } = await http.get(`/UnidadeEntrega/${id}`);
-        return data;
-    }
+export const UnidadeEntregaService = () => {
 
-    static async GetAll(): Promise<IUnidadeEntrega[]> {
-        const { data } = await http.get('/UnidadeEntrega');
+    const getById = async (id: string): Promise<UnidadeEntregaResponse> => {
+        const { data } = await http.get<UnidadeEntregaResponse>(`/UnidadeEntrega/${id}`);
         return data;
-    }
+    };
 
-    static async AddUnidadeEntrega(UnidadeEntrega: UnidadeEntregaCreateDto): Promise<IUnidadeEntrega> {
-        const { data } = await http.post('/UnidadeEntrega', UnidadeEntrega);
+    const getAll = async (): Promise<UnidadeEntregaResponse[]> => {
+        const { data } = await http.get<UnidadeEntregaResponse[]>(`/UnidadeEntrega`);
         return data;
-    }
+    };
 
-    static async UpdateUnidadeEntrega(id: string, UnidadeEntregaAtualizado: UnidadeEntregaUpdateDto): Promise<IUnidadeEntrega> {
-        const { data } = await http.put(`/UnidadeEntrega/${id}`, UnidadeEntregaAtualizado);
+    const create = async (
+        payload: UnidadeEntregaCreateDto
+    ): Promise<UnidadeEntregaResponse> => {
+        const { data } = await http.post<UnidadeEntregaResponse>(
+            `/UnidadeEntrega`,
+            payload
+        );
         return data;
-    }
+    };
 
-    static async DeleteUnidadeEntrega(id: string): Promise<void> {
+    const update = async (
+        id: string,
+        payload: UnidadeEntregaUpdateDto
+    ): Promise<UnidadeEntregaResponse> => {
+        const { data } = await http.patch<UnidadeEntregaResponse>(
+            `/UnidadeEntrega/${id}`,
+            payload
+        );
+        return data;
+    };
+
+    const remove = async (id: string): Promise<void> => {
         await http.delete(`/UnidadeEntrega/${id}`);
+    };
+
+    const mudarStatus = async (
+        id: string,
+        status: MudarStatusUnidadeDto): Promise<UnidadeEntregaResponse> => {
+        const {data} = await http.patch(`UnidadeEntrega/${id}/`, status);
+        return data;
     }
-}
+
+    return {
+        getById,
+        getAll,
+        create,
+        update,
+        remove,
+        mudarStatus
+    };
+};

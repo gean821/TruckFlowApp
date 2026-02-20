@@ -90,7 +90,15 @@
         <v-list-item to="locais" title="Locais de Descarga" rounded="lg" class="pl-10 text-white mb-1 opacity-90"
           active-class="active-white-sub"></v-list-item>
         <v-list-item to="fornecedores" title="Fornecedores" rounded="lg" class="pl-10 text-white mb-1 opacity-90"
-          active-class="active-white-sub"></v-list-item>
+          active-class="active-white-sub">
+        </v-list-item>
+
+        <v-list-item to="unidades-entregas"
+          title="Unidades de entrega" 
+          rounded="lg"
+          class="pl-10 text-white mb-1 opacity-90"
+          active-class="active-white-sub">
+        </v-list-item>
       </v-list-group>
 
       <div class="mt-4 mb-2 px-3 text-caption font-weight-bold text-blue-lighten-4 opacity-70">CONTROLE</div>
@@ -141,9 +149,6 @@ function logout() {
 </script>
 
 <style scoped>
-/* =========================================
-   ESTILO MODERNO PARA SIDEBAR AZUL (#195FA0)
-   ========================================= */
 
 .active-white {
   background-color: white !important;
