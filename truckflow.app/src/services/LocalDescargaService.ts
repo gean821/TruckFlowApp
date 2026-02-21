@@ -1,28 +1,47 @@
-import type ILocalDescarga from "@/entities/ILocalDescarga";
+import type { CreateLocalDescargaDto, LocalDescargaResponse, MudarStatusLocalDto, UpdateLocalDescargaDto } from "@/Entities/localDescarga.types";
+import type { MudarStatusUnidadeDto, UnidadeEntregaResponse } from "@/entities/unidadeEntrega.types";
 import http from "@/http/http";
 
-export default class LocalDescargaService {
-    static async GetAll(): Promise<ILocalDescarga[]> {
+export const LocalDescargaService = () => {
+    const getAll = async (): Promise<LocalDescargaResponse[]> => {
         const locais = await http.get('/LocalDescarga');
         return locais.data;
     }
 
-    static async GetById(id: string): Promise<ILocalDescarga> {
+    const getById = async (id: string): Promise<LocalDescargaResponse> => {
         const local = await http.get(`/LocalDescarga/${id}`);
         return local.data;
     }
 
-    static async AddLocalDescarga(localDescarga: ILocalDescarga): Promise<ILocalDescarga> {
+    const create = async (localDescarga: CreateLocalDescargaDto): Promise<LocalDescargaResponse> => {
         const local = await http.post('/LocalDescarga', localDescarga);
         return local.data;
     }
 
-    static async UpdateLocalDescarga(id: string, localAtualizado: ILocalDescarga): Promise<ILocalDescarga> {
-        const local = await http.put(`/LocalDescarga/${id}`, localAtualizado);
+    const update = async (
+        id: string,
+        localAtualizado: UpdateLocalDescargaDto): Promise<LocalDescargaResponse> => {
+        const local = await http.patch(`/LocalDescarga/${id}`, localAtualizado);
         return local.data;
     }
 
-    static async DeleteLocalDescarga(id: string): Promise<void> {
+    const remove = async (id: string): Promise<void> => {
         await http.delete(`/LocalDescarga/${id}`);
     }
+
+    const mudarStatus = async (
+        id: string,
+        status: MudarStatusLocalDto): Promise<LocalDescargaResponse> => {
+        const {data} = await http.patch(`/LocalDescarga/${id}/`, status);
+        return data;
+    }
+
+    return {
+        getById,
+        getAll,
+        create,
+        update,
+        remove,
+        mudarStatus
+    };
 }

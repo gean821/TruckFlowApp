@@ -151,8 +151,8 @@
 import { computed, ref } from 'vue';
 import type { VDataTable } from 'vuetify/components';
 import { formatarData } from '@/utils/date-format';
-import type IProduto from '@/entities/IProduto';
-import type IFornecedor from '@/entities/IFornecedor';
+import type IProduto from '@/Entities/produto.types';
+import type IFornecedor from '@/Entities/fornecedor.types';
 
 export type VDataTableHeader = InstanceType<typeof VDataTable>['$props']['headers'];
 

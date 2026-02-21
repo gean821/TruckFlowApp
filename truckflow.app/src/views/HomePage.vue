@@ -2,9 +2,18 @@
   <v-app>
     <v-app-bar color="transparent" elevation="0" class="px-md-16 px-4 pt-4" absolute>
       <div class="d-flex align-center">
-        <v-avatar color="white" size="40" class="mr-3 elevation-2">
+        <!-- <v-avatar color="white" size="40" class="mr-3 elevation-2">
           <v-icon color="#195FA0" icon="mdi-truck-fast"></v-icon>
-        </v-avatar>
+        </v-avatar> -->
+
+          <v-img 
+            src="/Rectangle.svg" 
+            alt="Logo TruckFlow" 
+            width="160"
+            max-height="80"
+            contain
+            class="d-inline-block">
+          </v-img>
         <span class="text-h6 font-weight-bold text-white tracking-wide">TruckFlow</span>
       </div>
 

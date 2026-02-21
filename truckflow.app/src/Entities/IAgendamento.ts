@@ -1,5 +1,5 @@
 import type { StatusAgendamento } from "@/enums/StatusAgendamento";
-import type IFornecedor from "./IFornecedor";
+import type IFornecedor from "./fornecedor.types";
 import type IGrade from "./IGrade";
 import type NotaFiscal from "./INotaFiscal";
 import type INotificacoes from "./INotificacoes";

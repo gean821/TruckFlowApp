@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import type IFornecedor from '@/entities/IFornecedor'
+import type IFornecedor from '@/Entities/fornecedor.types'
 
 const props = defineProps<{
   modelValue: boolean

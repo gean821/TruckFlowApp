@@ -1,6 +1,6 @@
 import type EntidadeBase from "./IEntidadeBase";
-import type IFornecedor from "./IFornecedor";
-import type IProduto from "./IProduto";
+import type IFornecedor from "./fornecedor.types";
+import type IProduto from "./produto.types";
 
 
 export default interface IGrade extends EntidadeBase {

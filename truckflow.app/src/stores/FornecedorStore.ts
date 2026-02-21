@@ -1,121 +1,48 @@
-import { ref } from 'vue'
-import { defineStore } from 'pinia'
-import FornecedorService from '@/services/FornecedorService';
-import type IFornecedor from '@/entities/IFornecedor';
-import type IProduto from '@/entities/IProduto';
-import { useToastStore } from './ToastStore';
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
+import { FornecedorService } from '@/services/FornecedorService';
+import type { FornecedorResponse, FornecedorCreateDto, FornecedorUpdateDto } from '@/entities/fornecedor.types';
 
-export const useFornecedorStore = defineStore('Fornecedor', () => {
-  const fornecedores = ref<IFornecedor[]>([]);
-  const toast = useToastStore();
+export const useFornecedorStore = defineStore('fornecedor', () => {
+  const service = FornecedorService();
+  const fornecedores = ref<FornecedorResponse[]>([]);
+  const loading = ref(false);
 
-  async function GetAll() {
-    fornecedores.value = await FornecedorService.GetAll();
+  async function fetchAll() {
+    loading.value = true;
+    try { fornecedores.value = await service.getAll(); }
+    finally { loading.value = false; }
   }
 
-  async function GetById(id: string) {
-    await FornecedorService.GetById(id);
+  async function create(payload: FornecedorCreateDto) {
+    const novo = await service.create(payload);
+    fornecedores.value.push(novo);
+    return novo;
   }
 
-  async function GetByCnpj(cnpj: string) {
-    const fornecedor = await FornecedorService.GetByCnpj(cnpj);
-    return fornecedor;
+  async function update(id: string, payload: FornecedorUpdateDto) {
+    const atualizado = await service.update(id, payload);
+    const index = fornecedores.value.findIndex(f => f.id === id);
+    if (index !== -1) fornecedores.value[index] = atualizado;
+    return atualizado;
   }
 
-  async function AddFornecedor(Fornecedor: IFornecedor) {
-    try {
-      const fornecedor = await FornecedorService.AddFornecedor(Fornecedor);
-      fornecedores.value.push(fornecedor);
-      toast.notify("Fornecedor criado com sucesso.", 'success');
-      return true;
-
-    } catch (er) {
-      toast.notify('Erro ao criar fornecedor', 'error')
-      return false;
-    }
+  async function remove(id: string) {
+    await service.remove(id);
+    fornecedores.value = fornecedores.value.filter(f => f.id !== id);
   }
 
-  async function UpdateFornecedor(id: string, fornecedorAtualizado: IFornecedor) {
-    const fornecedor = await FornecedorService.UpdateFornecedor(id, fornecedorAtualizado);
-    const index = fornecedores.value.findIndex(x => x.id === fornecedorAtualizado.id);
-
-    if (index !== -1) {
-      fornecedores.value[index] = fornecedor;
-    }
+  async function linkProduto(fornecedorId: string, produtoId: string) {
+    const atualizado = await service.addProduto(fornecedorId, produtoId);
+    const index = fornecedores.value.findIndex(f => f.id === fornecedorId);
+    if (index !== -1) fornecedores.value[index] = atualizado;
   }
 
-  async function DeleteFornecedor(id: string) {
-    await FornecedorService.DeleteFornecedor(id);
-    const index = fornecedores.value.findIndex(x => x.id === id);
-
-    if (index !== -1) {
-      fornecedores.value.splice(index, 1);
-    }
+  async function unlinkProduto(fornecedorId: string, produtoId: string) {
+    const atualizado = await service.removeProduto(fornecedorId, produtoId);
+    const index = fornecedores.value.findIndex(f => f.id === fornecedorId);
+    if (index !== -1) fornecedores.value[index] = atualizado;
   }
 
-  async function addProdutoToFornecedor(fornecedorId: string, produtoId: string) {
-    try {
-      const fornecedorAtualizado = await FornecedorService.addProdutoToFornecedor(fornecedorId, produtoId);
-
-      if (fornecedorAtualizado) {
-
-        const index = fornecedores.value.findIndex(f => f.id === fornecedorId);
-
-        if (index !== -1) {
-          fornecedores.value[index] = fornecedorAtualizado;
-        } else {
-          console.warn('Fornecedor não encontrado no estado local, recarregando lista...');
-          await GetAll();
-        }
-      }
-      return fornecedorAtualizado;
-    } catch (error) {
-      console.error("Erro ao adicionar produto ao fornecedor na store:", error);
-    }
-  }
-
-  async function deleteProdutoFromFornecedor(fornecedorId: string, produtoId: string) {
-    try {
-      await FornecedorService.deleteProdutoFromFornecedor(fornecedorId, produtoId);
-
-      const fornecedorIndex = fornecedores.value.findIndex(x => x.id === fornecedorId);
-
-      if (fornecedorIndex !== -1) {
-        const fornecedor = fornecedores.value[fornecedorIndex];
-        const produtoIndex = fornecedor.produtos?.findIndex(p => p.id === produtoId);
-
-        if (produtoIndex !== -1) {
-          fornecedor.produtos?.splice(produtoIndex!, 1);
-        }
-        toast.notify('Fornecedor exclúido com sucesso.', 'success');
-      }
-    } catch (err) {
-      toast.notify('Erro ao excluir fornecedor', 'error');
-    }
-  }
-
-  function updateProdutoInFornecedores(produtoAtualizado: IProduto) {
-    fornecedores.value.forEach(fornecedor => {
-      const produtoIndex = fornecedor.produtos?.findIndex(p => p.id === produtoAtualizado.id);
-
-      if (produtoIndex !== -1) {
-        fornecedor.produtos![produtoIndex!] = produtoAtualizado;
-      }
-    });
-  }
-
-  return {
-    fornecedores,
-    GetAll,
-    GetById,
-    GetByCnpj,
-    AddFornecedor,
-    UpdateFornecedor,
-    DeleteFornecedor,
-    addProdutoToFornecedor,
-    deleteProdutoFromFornecedor,
-    updateProdutoInFornecedores
-  }
-})
-
-
+  return { fornecedores, loading, fetchAll, create, update, remove, linkProduto, unlinkProduto };
+});
