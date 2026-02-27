@@ -101,7 +101,6 @@ import FornecedorFormModal from "@/components/Forms/FornecedorFormModal.vue";
 import ConfirmDeleteDialog from "@/components/modals/ConfirmDeleteDialog.vue";
 import ProdutoSelectModal from "@/components/modals/ProdutoSelectModal.vue";
 import { useFornecedor } from "@/hooks/useFornecedor";
-import { all } from "axios";
 
 const { fornecedores, loading, create, update, remove, linkProduto, unlinkProduto } = useFornecedor();
 const produtoStore = useProdutoStore();
@@ -117,14 +116,17 @@ const editingFornecedor = ref<any>(null);
 const targetFornecedor = ref<any>(null);
 const allProdutos = computed(() => produtoStore.produtos);
 
+onMounted(()=> {
+    if (allProdutos.value.length === 0) {
+        produtoStore.getAll();
+    } 
+})
+
+
 const counts = computed(() => ({
     all: fornecedores.value.length,
     withProducts: fornecedores.value.filter(f => f.produtos?.length).length
 }));
-
-onMounted(() => {
-    produtoStore.getAll
-})
 
 const filteredFornecedores = computed(() => {
     return fornecedores.value.filter(f => {

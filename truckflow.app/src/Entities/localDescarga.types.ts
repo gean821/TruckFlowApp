@@ -1,5 +1,5 @@
 import type EntidadeBase from "./IEntidadeBase";
-import type IGrade from "./IGrade";
+import type IGrade from "./grade.types";
 import type IProduto from "./produto.types";
 
 export interface ILocalDescarga extends EntidadeBase {

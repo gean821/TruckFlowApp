@@ -1,4 +1,4 @@
-import type { ProdutoCreateDto, ProdutoResponse, ProdutoUpdateDto } from "@/Entities/produto.types";
+import type { ProdutoCreateDto, ProdutoResponse, ProdutoUpdateDto } from "@/entities/produto.types";
 import http from "@/http/http";
 
 export const ProdutoService = () => {

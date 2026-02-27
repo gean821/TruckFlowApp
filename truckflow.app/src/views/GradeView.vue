@@ -22,7 +22,7 @@
             prepend-inner-icon="mdi-magnify" hide-details bg-color="white" class="filter-input"
             style="min-width: 250px;"></v-text-field>
 
-          <v-select v-model="filtroUnidade" :items="unidadesDisponiveis" label="Filtrar Doca" density="compact"
+          <v-select v-model="filtroLocal" :items="locaisDisponiveis" label="Filtrar Doca" density="compact"
             variant="outlined" hide-details bg-color="white" class="filter-input" style="max-width: 200px;" clearable
             placeholder="Todas"></v-select>
         </div>
@@ -56,10 +56,10 @@
         </div>
       </template>
 
-      <template #item.unidadeEntrega="{ item }">
+      <template #item.localDescarga="{ item }">
         <div class="d-flex align-center text-grey-darken-2">
           <v-icon size="small" class="mr-2 text-grey-lighten-1">mdi-map-marker</v-icon>
-          <span class="text-body-2 font-weight-medium">{{ item.unidadeEntrega }}</span>
+          <span class="text-body-2 font-weight-medium">{{ item.localDescarga }}</span>
         </div>
       </template>
 
@@ -112,8 +112,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import type GradeResponseDto from '@/Dtos/grade/gradeResponseDto';
 import { format, parseISO } from 'date-fns';
+import type { GradeResponseDto } from '@/entities/grade.types';
 
 const props = defineProps<{
   items: GradeResponseDto[];
@@ -123,49 +123,53 @@ const props = defineProps<{
 const emit = defineEmits(['edit', 'delete']);
 
 const search = ref('');
-const filtroUnidade = ref(null);
+const filtroLocal = ref<string | null>(null);
 
-
-const unidadesDisponiveis = computed(() => {
-  // Cria um Set para pegar valores únicos
-  const unidades = new Set(props.items.map(i => i.unidadeEntrega));
-  return Array.from(unidades).sort();
+const locaisDisponiveis = computed(() => {
+  const locais = new Set(props.items.map(i => i.localDescarga));
+  return Array.from(locais).sort();
 });
 
-// Cabeçalhos
 const headers = [
   { title: 'FORNECEDOR & PRODUTO', key: 'fornecedor', align: 'start', width: '30%' },
-  { title: 'LOCAL', key: 'unidadeEntrega', align: 'start', width: '15%' },
+  { title: 'LOCAL', key: 'localDescarga' },
   { title: 'VIGÊNCIA', key: 'periodo', sortable: false, width: '15%' },
   { title: 'DIAS', key: 'diasSemana', sortable: false, width: '15%' },
   { title: 'HORÁRIO', key: 'horario', align: 'center', sortable: false, width: '15%' },
   { title: '', key: 'actions', align: 'end', sortable: false },
 ] as const;
 
-// Filtro Combinado
 const itemsFiltrados = computed(() => {
   let lista = props.items;
 
-  if (filtroUnidade.value) {
-    lista = lista.filter(i => i.unidadeEntrega === filtroUnidade.value);
+  if (filtroLocal.value) {
+    lista = lista.filter(i => i.localDescarga === filtroLocal.value);
   }
 
   return lista;
 });
 
-// Formatters
 function formatData(dateStr: string) {
-  if (!dateStr) return '-';
+  if (!dateStr) {
+    return '-';
+  }
+
   return format(parseISO(dateStr), 'dd/MM/yyyy');
 }
 
 function formatHora(timeStr: string) {
-  if (!timeStr) return '-';
+  if (!timeStr) {
+    return '-';
+  }
+
   return timeStr.substring(0, 5);
 }
 
 function parseDias(diasStr: string) {
-  if (!diasStr) return [];
+  if (!diasStr) {
+    return [];
+  }
+
   const mapDias = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
   const mapNomes = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
   return diasStr.split(',').map(d => parseInt(d)).sort((a, b) => a - b).map(d => ({

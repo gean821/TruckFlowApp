@@ -58,10 +58,8 @@
 </template>
 
 <script setup lang="ts">
-import type { ProdutoResponse } from '@/Entities/produto.types';
-import { useProdutoStore } from '@/stores/ProdutoStore';
+import type { ProdutoResponse } from '@/entities/produto.types';
 import { ref, computed } from 'vue';
-const {produtos} = useProdutoStore();
 
 const props = defineProps<{
   produtos: ProdutoResponse[];

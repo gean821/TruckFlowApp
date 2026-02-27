@@ -1,6 +1,6 @@
 <template>
   <v-container class="pa-4 d-flex justify-center">
-    <v-card class="w-100 rounded-xl" max-width="900" elevation="2" :loading="loading">
+    <v-card class="w-100 rounded-xl" max-width="900" elevation="2" :loading="isCreating">
 
       <div class="bg-primary px-6 py-4 d-flex align-center">
         <v-icon size="32" class="mr-4 text-white">mdi-calendar-clock</v-icon>
@@ -37,7 +37,7 @@
           </v-col>
 
           <v-col cols="12" md="4">
-            <v-select v-model="formModelGrade.unidadeEntregaId" :items="unidades" item-title="nome" item-value="id"
+            <v-select v-model="formModelGrade.localDescargaId" :items="locais" item-title="nome" item-value="id"
               label="Local de Descarga" placeholder="Selecione a doca" variant="outlined" density="comfortable"
               color="primary" hide-details="auto" class="mb-3">
               <template v-slot:prepend-inner>
@@ -103,7 +103,7 @@
         </div>
 
         <div class="d-flex justify-end mt-8">
-          <v-btn color="primary" size="large" rounded="lg" type="submit" :loading="loading"
+          <v-btn color="primary" size="large" rounded="lg" type="submit" :loading="isCreating"
             class="px-8 text-capitalize font-weight-bold" elevation="2">
             Gerar Vagas
             <template v-slot:append>
@@ -120,46 +120,45 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed, watch } from 'vue';
 import { useFornecedorStore } from '@/stores/FornecedorStore';
-import { useGradeStore } from '@/stores/GradeStore';
 import { useProdutoStore } from '@/stores/ProdutoStore';
 import { useToastStore } from '@/stores/ToastStore';
+import { useLocalDescargaStore } from '@/stores/LocalDescargaStore';
+import { useGrade } from '@/hooks/useGrade2';
 import { parseISO, getDay } from 'date-fns';
-import type gradeCreateDto from '@/Dtos/grade/gradeCreateDto';
-import { useUnidadeEntregaStore } from '@/stores/UnidadeEntregaStore';
+import type { GradeCreateDto } from '@/entities/grade.types';
 
 const produtoStore = useProdutoStore();
+const descargaStore = useLocalDescargaStore();
 const fornecedorStore = useFornecedorStore();
-const unidadeStore = useUnidadeEntregaStore();
-// const unidadeDescarga = useUnidadeEntregaStore();
-const gradeStore = useGradeStore();
 const toast = useToastStore();
 
-const unidades = computed(() => unidadeStore.unidadeEntregas);
-const loading = computed(() => gradeStore.loading);
+const locais = computed(() => descargaStore.locais);
+
+const { createGrade, isCreating } = useGrade();
 
 const diasSelecionados = ref<string[]>([]);
 const intervalos = [10, 15, 20, 30, 45, 60, 90, 120];
 
-const formModelGrade = reactive<gradeCreateDto>({
+const formModelGrade = reactive<GradeCreateDto>({
   fornecedorId: '',
   produtoId: '',
-  unidadeEntregaId: '',
+  localDescargaId: '',
   dataInicio: '',
   dataFim: '',
   horaInicial: '',
   horaFinal: '',
   intervaloMinutos: 30,
-  diasSemana: ''
+  diasSemana: '',
 });
 
 onMounted(async () => {
   try {
     await Promise.all([
-      produtoStore.GetAll(),
-      fornecedorStore.GetAll(),
-      unidadeStore.GetAll()
+      produtoStore.getAll(),
+      fornecedorStore.fetchAll(),
+      descargaStore.fetchAll(),
     ]);
-  } catch (e) {
+  } catch {
     toast.notify('Erro ao carregar dados iniciais.', 'error');
   }
 });
@@ -170,38 +169,29 @@ async function cadastrar() {
     return;
   }
 
-  // Validações básicas (opcional, pode melhorar)
-  if (!formModelGrade.fornecedorId || !formModelGrade.produtoId || !formModelGrade.unidadeEntregaId) {
+  if (
+    !formModelGrade.fornecedorId ||
+    !formModelGrade.produtoId ||
+    !formModelGrade.localDescargaId
+  ) {
     toast.notify("Preencha todos os campos obrigatórios.", "warning");
     return;
   }
 
   formModelGrade.diasSemana = diasSelecionados.value.join(',');
 
-  try {
-    await gradeStore.AddGrade({ ...formModelGrade });
-    toast.notify("Grade criada e vagas geradas com sucesso!", "success");
-    diasSelecionados.value = [];
+  await createGrade({ ...formModelGrade });
 
-
-  } catch (e: any) {
-    console.error(e);
-    toast.notify("Falha ao criar grade. Verifique os dados.", "error");
-  }
+  diasSelecionados.value = [];
 }
 
 watch(
   () => [formModelGrade.dataInicio, formModelGrade.dataFim],
   ([inicio, fim]) => {
-    if (inicio && fim) {
-      if (inicio === fim) {
-        const diaDaSemana = getDay(parseISO(inicio)); // 0 = Domingo, 1 = Segunda...
-
-        // Limpa e seleciona apenas o dia atual
-        diasSelecionados.value = [diaDaSemana.toString()];
-
-        toast.notify("Dia da semana selecionado automaticamente com base na data.", "info");
-      }
+    if (inicio && fim && inicio === fim) {
+      const diaDaSemana = getDay(parseISO(inicio));
+      diasSelecionados.value = [diaDaSemana.toString()];
+      toast.notify("Dia selecionado automaticamente com base na data.", "info");
     }
   }
 );
