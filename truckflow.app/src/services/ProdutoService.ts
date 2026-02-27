@@ -1,28 +1,39 @@
-import type IProduto from "@/entities/IProduto";
+import type { ProdutoCreateDto, ProdutoResponse, ProdutoUpdateDto } from "@/entities/produto.types";
 import http from "@/http/http";
 
-export default class ProdutoService {
-    static async GetAll(): Promise<IProduto[]> {
+export const ProdutoService = () => {
+    const getAll = async (): Promise<ProdutoResponse[]> => {
         const produtos = await http.get('/Produto');
         return produtos.data;
     }
 
-    static async GetById(id: string): Promise<IProduto> {
+    const getById = async (id: string): Promise<ProdutoResponse> => {
         const local = await http.get(`/Produto/${id}`);
         return local.data;
     }
 
-    static async AddProduto(Produto: IProduto): Promise<IProduto> {
-        const produto = await http.post('/Produto', Produto);
+    const addProduto = async (dto: ProdutoCreateDto): Promise<ProdutoResponse> => {
+        const produto = await http.post('/Produto', dto);
         return produto.data;
     }
 
-    static async UpdateProduto(id: string, produtoAtualizado: IProduto): Promise<IProduto> {
-        const produto = await http.put(`/Produto/${id}`, produtoAtualizado);
+    const updateProduto = async (
+        id: string,
+        dto: ProdutoUpdateDto
+    ): Promise<ProdutoResponse> => {
+        const produto = await http.patch(`/Produto/${id}`, dto);
         return produto.data;
     }
 
-    static async DeleteProduto(id: string): Promise<void> {
+    const remove = async (id: string): Promise<void> => {
         await http.delete(`/Produto/${id}`);
+    }
+
+    return {
+        addProduto,
+        getAll,
+        getById,
+        remove,
+        updateProduto
     }
 }

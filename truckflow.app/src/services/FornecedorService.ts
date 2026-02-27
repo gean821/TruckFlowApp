@@ -1,44 +1,35 @@
-import type IFornecedor from "@/entities/IFornecedor";
 import http from "@/http/http";
+import type {
+    FornecedorResponse,
+    FornecedorCreateDto,
+    FornecedorUpdateDto
+} from "@/entities/fornecedor.types";
 
-export default class FornecedorService {
-    static async GetAll(): Promise<IFornecedor[]> {
-        const fornecedores = await http.get('/Fornecedor');
-        return fornecedores.data;
-    }
+export const FornecedorService = () => {
+    const getAll = async () => (await http.get<FornecedorResponse[]>('/Fornecedor')).data;
 
-    static async GetById(id: string): Promise<IFornecedor> {
-        const fornecedor = await http.get(`/Fornecedor/${id}`);
-        return fornecedor.data;
-    }
+    const getById = async (id: string) =>
+        (await http.get<FornecedorResponse>(`/Fornecedor/${id}`)).data;
 
-    static async GetByCnpj(cnpj: string): Promise<IFornecedor> {
-        const fornecedor = await http.get(`/Fornecedor/cnpj/${cnpj}`);
-        return fornecedor.data;
-    }
+    const create = async (payload: FornecedorCreateDto) =>
+        (await http.post<FornecedorResponse>('/Fornecedor', payload)).data;
 
-    static async AddFornecedor(Fornecedor: IFornecedor): Promise<IFornecedor> {
-        const fornecedor = await http.post('/Fornecedor', Fornecedor);
-        return fornecedor.data;
-    }
+    const update = async (
+        id: string,
+        payload: FornecedorUpdateDto) =>
+        (await http.patch<FornecedorResponse>(`/Fornecedor/${id}`, payload)).data;
 
-    static async UpdateFornecedor(id: string, fornecedorAtualizado: IFornecedor): Promise<IFornecedor> {
-        const fornecedor = await http.put(`/Fornecedor/${id}`, fornecedorAtualizado);
-        return fornecedor.data;
-    }
+    const remove = async (id: string) => await http.delete(`/Fornecedor/${id}`);
 
-    static async DeleteFornecedor(id: string): Promise<void> {
-        await http.delete(`/Fornecedor/${id}`);
-    }
+    const addProduto = async (
+        fornecedorId: string,
+        produtoId: string) =>
+        (await http.post<FornecedorResponse>(`/Fornecedor/${fornecedorId}/produtos/${produtoId}`)).data;
 
-    static async addProdutoToFornecedor(fornecedorId: string, produtoId: string): Promise<IFornecedor> {
-        const produtoAdicionado = await http.post(`/Fornecedor/${fornecedorId}/produtos/${produtoId}`)
-        return produtoAdicionado.data;
-    }
+    const removeProduto = async (
+        fornecedorId: string,
+        produtoId: string) =>
+        (await http.delete<FornecedorResponse>(`/Fornecedor/${fornecedorId}/produtos/${produtoId}`)).data;
 
-    static async deleteProdutoFromFornecedor(fornecedorId: string, produtoId: string): Promise<void> {
-        await http.delete(`/Fornecedor/${fornecedorId}/produtos/${produtoId}`);
-    }
-}
-
-
+    return { getAll, getById, create, update, remove, addProduto, removeProduto };
+};

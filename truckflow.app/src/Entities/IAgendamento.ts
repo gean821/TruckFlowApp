@@ -1,9 +1,9 @@
 import type { StatusAgendamento } from "@/enums/StatusAgendamento";
-import type IFornecedor from "./IFornecedor";
-import type IGrade from "./IGrade";
+import type IFornecedor from "./fornecedor.types";
+import type IGrade from "./grade.types";
 import type NotaFiscal from "./INotaFiscal";
 import type INotificacoes from "./INotificacoes";
-import type UnidadeEntrega from "./IUnidadeEntrega";
+import type UnidadeEntrega from "./unidadeEntrega.types";
 import type Usuario from "./IUsuario";
 import type { TipoCarga } from "@/enums/TipoCarga";
 import type EntidadeBase from "./IEntidadeBase";

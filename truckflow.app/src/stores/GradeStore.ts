@@ -1,21 +1,19 @@
-import type gradeCreateDto from "@/Dtos/grade/gradeCreateDto";
-import type GradeResponseDto from "@/Dtos/grade/gradeResponseDto";
-import type GradeUpdateDto from "@/Dtos/grade/gradeUpdateDto";
-import GradeService from "@/services/GradeService";
-import { defineStore } from "pinia";
 import { ref } from 'vue';
 import { useToastStore } from '@/stores/ToastStore'; // Importe a Store de Toast
+import { defineStore } from 'pinia';
+import type { GradeCreateDto, GradeResponseDto, GradeUpdateDto } from '@/entities/grade.types';
+import { GradeService } from '@/services/GradeService';
 
 export const useGradeStore = defineStore('Grade', () => {
     const grades = ref<GradeResponseDto[]>([]);
     const loading = ref(false);
     const error = ref<string | null>(null);
     const toast = useToastStore(); // Instância do Toast
-
+    const service = GradeService();
     async function GetAll() {
         loading.value = true;
         try {
-            grades.value = await GradeService.GetAll();
+            grades.value = await service.getAll();
         } catch (err) {
             error.value = "Erro ao buscar grades";
             console.error(err);
@@ -26,13 +24,13 @@ export const useGradeStore = defineStore('Grade', () => {
     }
 
     async function GetById(id: string) {
-        return await GradeService.GetById(id);
+        return await service.getById(id);
     }
 
-    async function AddGrade(grade: gradeCreateDto) {
+    async function AddGrade(grade: GradeCreateDto) {
         loading.value = true;
         try {
-            const gradeAdicionado = await GradeService.AddGrade(grade);
+            const gradeAdicionado = await service.addGrade(grade);
             grades.value.push(gradeAdicionado);
             toast.notify("Grade criada com sucesso!", "success");
             return gradeAdicionado;
@@ -45,10 +43,12 @@ export const useGradeStore = defineStore('Grade', () => {
         }
     }
 
-    async function UpdateGrade(id: string, gradeAtualizado: GradeUpdateDto) {
+    async function UpdateGrade(
+        id: string,
+        gradeAtualizado: GradeUpdateDto) {
         loading.value = true;
         try {
-            const grade = await GradeService.UpdateGrade(id, gradeAtualizado);
+            const grade = await service.updateGrade(id, gradeAtualizado);
             const index = grades.value.findIndex(x => x.id === id);
             if (index !== -1) {
                 grades.value[index] = grade;
@@ -66,7 +66,7 @@ export const useGradeStore = defineStore('Grade', () => {
     async function DeleteGrade(id: string) {
         loading.value = true;
         try {
-            await GradeService.DeleteGrade(id);
+            await service.deleteGrade(id);
             grades.value = grades.value.filter(x => x.id !== id);
             toast.notify("Grade removida.", "info");
         } catch (err) {

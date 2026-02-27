@@ -1,49 +1,67 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import LocalDescargaService from '@/services/LocalDescargaService';
-import type ILocalDescarga from '@/entities/ILocalDescarga';
+import type { CreateLocalDescargaDto, LocalDescargaResponse, MudarStatusLocalDto, UpdateLocalDescargaDto } from '@/Entities/localDescarga.types';
+import { LocalDescargaService } from '@/services/LocalDescargaService';
 
 export const useLocalDescargaStore = defineStore('localDescarga', () => {
-  const locaisDeDescarga = ref<ILocalDescarga[]>([]);
+  const service = LocalDescargaService();
 
-  async function GetAll() {
-    locaisDeDescarga.value = await LocalDescargaService.GetAll();
-  }
+  const locais = ref<LocalDescargaResponse[]>([]);
+  const loading = ref(false);
 
-  async function GetById(id: string) {
-    await LocalDescargaService.GetById(id);
-  }
-
-  async function AddLocalDescarga(localDescarga: ILocalDescarga) {
-    const local = await LocalDescargaService.AddLocalDescarga(localDescarga);
-    locaisDeDescarga.value.push(local);
-  }
-
-  async function UpdateLocalDescarga(id: string, localAtualizado: ILocalDescarga) {
-    const local = await LocalDescargaService.UpdateLocalDescarga(id, localAtualizado);
-    const index = locaisDeDescarga.value.findIndex(x => x.id === localAtualizado.id);
-
-    if (index !== -1) {
-      locaisDeDescarga.value[index] = local;
+  async function fetchAll() {
+    loading.value = true;
+    try {
+      locais.value = await service.getAll();
+    } finally {
+      loading.value = false;
     }
   }
 
-  async function DeleteLocalDescarga(id: string) {
-    await LocalDescargaService.DeleteLocalDescarga(id);
-    const index = locaisDeDescarga.value.findIndex(x => x.id === id);
-    
-    if (index !== -1) {
-      locaisDeDescarga.value.splice(index, 1);
-    }
+  async function create(payload: CreateLocalDescargaDto): Promise<LocalDescargaResponse> {
+    const nova = await service.create(payload);
+    locais.value.push(nova);
+    return nova;
   }
+
+  async function update(
+    id: string,
+    payload: UpdateLocalDescargaDto): Promise<LocalDescargaResponse> {
+    const atualizada = await service.update(id, payload);
+
+    const index = locais.value.findIndex(u => u.id === id);
+    if (index !== -1) {
+      locais.value[index] = atualizada;
+    }
+
+    return atualizada;
+  }
+
+  async function remove(id: string) {
+    await service.remove(id);
+    locais.value = locais.value.filter(u => u.id !== id);
+  }
+
+  async function mudarStatus(id: string, payload: MudarStatusLocalDto) {
+    const atualizada = await service.mudarStatus(id, payload);
+    const index = locais.value.findIndex(u => u.id === id);
+
+    if (index !== -1) {
+      locais.value[index] = atualizada;
+    }
+
+    return atualizada;
+  }
+
 
   return {
-    locaisDeDescarga,
-    GetAll,
-    GetById,
-    AddLocalDescarga,
-    UpdateLocalDescarga,
-    DeleteLocalDescarga
+    locais,
+    fetchAll,
+    loading,
+    remove,
+    create,
+    update,
+    mudarStatus
   }
 })
 

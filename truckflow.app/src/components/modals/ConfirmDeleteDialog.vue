@@ -1,24 +1,28 @@
 <template>
-  <v-dialog v-model="internalValue" max-width="450">
-    <v-card class="rounded-xl pa-4">
-      <div class="text-center pt-4">
-        <v-avatar color="red-lighten-5" size="64" class="mb-4">
-          <v-icon color="error" size="32">mdi-alert-circle-outline</v-icon>
+  <v-dialog v-model="internalValue" max-width="400" persistent>
+    <v-card class="rounded-xl pa-4 shadow-lg">
+      <v-card-text class="text-center pt-6">
+        <v-avatar color="error-lighten-5" size="72" class="mb-6">
+          <v-icon color="error" size="36">mdi-alert-circle-outline</v-icon>
         </v-avatar>
-        <h3 class="text-h6 font-weight-bold text-grey-darken-3 mb-2">
-          Tem certeza?
+        
+        <h3 class="text-h5 font-weight-bold text-slate-900 mb-3">
+          Confirmar Exclusão
         </h3>
-        <p class="text-body-2 text-grey-darken-1 px-6">
-          {{ message || 'Esta ação não poderá ser desfeita.' }}
+        
+        <p class="text-body-1 text-medium-emphasis px-2">
+          {{ message || 'Tem certeza que deseja excluir este registro? Esta ação não poderá ser revertida.' }}
         </p>
-      </div>
+      </v-card-text>
 
-      <div class="d-flex gap-3 justify-center mt-6 pb-2">
+      <v-card-actions class="justify-center pb-6 pt-4 px-6">
         <v-btn
-          variant="text"
+          variant="tonal"
           color="grey-darken-1"
-          class="text-capitalize px-6"
+          class="text-none px-6 py-2 flex-grow-1"
           rounded="lg"
+          size="large"
+          :disabled="loading"
           @click="close"
         >
           Cancelar
@@ -27,14 +31,15 @@
         <v-btn
           color="error"
           variant="flat"
-          class="text-capitalize px-6"
+          class="text-none px-6 py-2 flex-grow-1"
           rounded="lg"
+          size="large"
           :loading="loading"
           @click="confirm"
         >
-          Sim, excluir
+          Excluir
         </v-btn>
-      </div>
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
@@ -55,11 +60,6 @@ const internalValue = computed({
   set: (val) => emit('update:modelValue', val)
 });
 
-function close() {
-  internalValue.value = false;
-}
-
-function confirm() {
-  emit('confirm');
-}
+const close = () => { internalValue.value = false; };
+const confirm = () => { emit('confirm'); };
 </script>
