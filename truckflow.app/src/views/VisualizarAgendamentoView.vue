@@ -61,7 +61,7 @@
 
       <template #item.status="{ value }">
         <v-chip size="small" :color="getStatusColor(value)" variant="flat" class="font-weight-bold text-uppercase">
-          {{ value }}
+          {{ formatStatus(value) }}
         </v-chip>
       </template>
 
@@ -72,14 +72,14 @@
             v-if="isStatus(item.status, 'Agendado') || isStatus(item.status, 'Confirmado')">
             <template v-slot:activator="{ props }">
               <v-btn icon="mdi-login-variant" color="blue-darken-2" variant="tonal" size="small" v-bind="props"
-                @click="handleCheckIn(item)" :loading="loadingAction === item.id" />
+                @click="handleCheckIn2(item)" :loading="loadingAction === item.id" />
             </template>
           </v-tooltip>
 
           <v-tooltip text="Finalizar Operação (Check-out)" location="top" v-if="isStatus(item.status, 'EmAndamento')">
             <template v-slot:activator="{ props }">
               <v-btn icon="mdi-check-all" color="green-darken-1" variant="tonal" size="small" v-bind="props"
-                @click="handleCheckOut(item)" :loading="loadingAction === item.id" />
+                @click="handleCheckOut2(item)" :loading="loadingAction === item.id" />
             </template>
           </v-tooltip>
 
@@ -93,7 +93,7 @@
                 <v-list-item-title>Editar Dados</v-list-item-title>
               </v-list-item>
               <v-divider class="my-1"></v-divider>
-              <v-list-item @click="handleCancelar(item)" prepend-icon="mdi-cancel" base-color="red">
+              <v-list-item @click="handleCancelar2(item)" prepend-icon="mdi-cancel" base-color="red">
                 <v-list-item-title class="text-red">Cancelar Agendamento</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -103,6 +103,17 @@
       </template>
 
     </CrudTable>
+
+    <ConfirmDialog
+      v-model="confirmDialog.show"
+      :title="confirmDialog.title"
+      :message="confirmDialog.message"
+      :color="confirmDialog.color"
+      :icon="confirmDialog.icon"
+      :confirm-text="confirmDialog.confirmText"
+      :loading="loadingAction === 'dialog'"
+  @confirm="executeConfirmAction"
+/>
   </v-container>
 </template>
 
@@ -113,11 +124,22 @@ import { useAgendamentoStore } from '@/stores/AgendamentoStore';
 import { computed, ref, onMounted } from 'vue';
 import { format, parseISO } from 'date-fns';
 import { TipoVeiculoLabels } from '@/utils/tipoVeiculoLabels';
+import ConfirmDialog from '@/components/modals/ConfirmDialog.vue';
 
 const loading = ref(false);
 const agendamentoStore = useAgendamentoStore();
 const agendamentos = computed(() => agendamentoStore.agendamentos);
 const loadingAction = ref<string | null>(null);
+
+const confirmDialog = ref({
+  show: false,
+  title: '',
+  message: '',
+  color: 'primary',
+  icon: 'mdi-help-circle-outline',
+  confirmText: 'Confirmar',
+  action: null as (() => Promise<void>) | null
+});
 
 const headers: VDataTableHeader = [
   { title: "HORÁRIO / DATA", key: "dataInicio", width: "200px", align: 'start' },
@@ -139,6 +161,25 @@ onMounted(async () => {
   }, 30000);
 
 });
+
+function askConfirmation(config: {
+  title: string,
+  message: string,
+  color?: string,
+  icon?: string,
+  confirmText?: string,
+  action: () => Promise<void>
+}) {
+  confirmDialog.value = {
+    show: true,
+    title: config.title,
+    message: config.message,
+    color: config.color || 'primary',
+    icon: config.icon || 'mdi-help-circle-outline',
+    confirmText: config.confirmText || 'Confirmar',
+    action: config.action
+  };
+}
 
 async function fetchAgendamentos() {
   loading.value = true;
@@ -186,6 +227,63 @@ function getStatusColor(status: string) {
     case 'concluido': return 'grey-darken-2';
     case 'cancelado': return 'red-lighten-1';
     default: return 'grey';
+  }
+}
+
+
+async function handleCheckIn2(item: any) {
+  askConfirmation({
+    title: 'Confirmar Check-in',
+    message: `Deseja registrar a entrada do veículo ${item.placaVeiculo || 'sem placa'}?`,
+    color: 'blue-darken-2',
+    icon: 'mdi-login-variant',
+    confirmText: 'Confirmar Entrada',
+    action: async () => {
+      await agendamentoStore.realizarCheckIn(item.id);
+      await fetchAgendamentos();
+    }
+  });
+}
+
+async function handleCheckOut2(item: any) {
+  askConfirmation({
+    title: 'Finalizar Operação',
+    message: 'Confirmar liberação do veículo e conclusão da descarga?',
+    color: 'green-darken-1',
+    icon: 'mdi-check-all',
+    confirmText: 'Finalizar',
+    action: async () => {
+      await agendamentoStore.realizarCheckOut(item.id);
+      await fetchAgendamentos();
+    }
+  });
+}
+
+async function handleCancelar2(item: any) {
+  askConfirmation({
+    title: 'Cancelar Agendamento',
+    message: 'Esta ação irá remover o agendamento da grade. Deseja continuar?',
+    color: 'error',
+    icon: 'mdi-cancel',
+    confirmText: 'Sim, Cancelar',
+    action: async () => {
+      await agendamentoStore.cancelarAgendamento(item.id);
+      await fetchAgendamentos();
+    }
+  });
+}
+
+async function executeConfirmAction() {
+  if (confirmDialog.value.action) {
+    loadingAction.value = 'dialog';
+    try {
+      await confirmDialog.value.action();
+      confirmDialog.value.show = false;
+    } catch (e: any) {
+      alert(e.response?.data?.message || "Erro na operação");
+    } finally {
+      loadingAction.value = null;
+    }
   }
 }
 
@@ -257,5 +355,13 @@ function formatTipoVeiculo(tipo: any) {
 
 function newAgendamento() {
   router.push('/programacao');
+}
+
+function formatStatus(status: string) {
+  if (!status) {
+    return '-';
+  }
+
+  return status.replace(/([A-Z])/g, ' $1').trim();
 }
 </script>
