@@ -45,7 +45,7 @@
 
     <v-data-table
       :headers="headers"
-      :items="filteredItems"
+      :items="items"
       item-value="id"
       show-expand
       hover
@@ -148,7 +148,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref, watch } from 'vue';
 import type { VDataTable } from 'vuetify/components';
 import { formatarData } from '@/utils/date-format';
 import type IProduto from '@/entities/IProduto';
@@ -174,19 +174,15 @@ const emit = defineEmits<{
   (e: 'vincular-sub', parent: IFornecedor): void;
   (e: 'edit-sub', item: IProduto): void;
   (e: 'delete-sub', fornecedorId: any, produtoId: any): void;
+  (e: 'search', value: string): void;
 }>();
 
 const search = ref('');
 
-const filteredItems = computed(() => {
-  if (!search.value) return props.items;
-  const termo = search.value.toLowerCase();
-  return props.items.filter((item) =>
-    Object.values(item).some((val) =>
-      String(val).toLowerCase().includes(termo)
-    )
-  );
+watch(search, (value) => {
+  emit('search', value);
 });
+
 </script>
 
 <style scoped>

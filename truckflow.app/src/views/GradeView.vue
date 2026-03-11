@@ -22,14 +22,14 @@
             prepend-inner-icon="mdi-magnify" hide-details bg-color="white" class="filter-input"
             style="min-width: 250px;"></v-text-field>
 
-          <v-select v-model="filtroUnidade" :items="unidadesDisponiveis" label="Filtrar Doca" density="compact"
+          <v-select v-model="filtroUnidade" :items="unidadesDisponiveis" label="Local de Descarga" density="compact"
             variant="outlined" hide-details bg-color="white" class="filter-input" style="max-width: 200px;" clearable
             placeholder="Todas"></v-select>
         </div>
       </div>
     </div>
 
-    <v-data-table :headers="headers" :items="itemsFiltrados" :loading="loading" :search="search" hover
+    <v-data-table :headers="headers" :items="items" :loading="loading" hover
       class="grade-table custom-typography">
       <template v-slot:loading>
         <v-skeleton-loader type="table-row@5"></v-skeleton-loader>
@@ -111,24 +111,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import type GradeResponseDto from '@/Dtos/grade/gradeResponseDto';
 import { format, parseISO } from 'date-fns';
+import { useGradeStore } from '@/stores/GradeStore';
+import { onMounted, ref, computed, watch } from 'vue';
 
-const props = defineProps<{
-  items: GradeResponseDto[];
-  loading: boolean;
-}>();
+const gradeStore = useGradeStore();
 
-const emit = defineEmits(['edit', 'delete']);
+const items = computed(() => gradeStore.grades);
+const loading = computed(() => gradeStore.loading);
 
 const search = ref('');
 const filtroUnidade = ref(null);
 
-
 const unidadesDisponiveis = computed(() => {
-  // Cria um Set para pegar valores únicos
-  const unidades = new Set(props.items.map(i => i.unidadeEntrega));
+  const unidades = new Set(items.value.map(i => i.unidadeEntrega));
   return Array.from(unidades).sort();
 });
 
@@ -142,15 +138,21 @@ const headers = [
   { title: '', key: 'actions', align: 'end', sortable: false },
 ] as const;
 
-// Filtro Combinado
-const itemsFiltrados = computed(() => {
-  let lista = props.items;
+onMounted(() => {
+  gradeStore.GetAll({
+    pageNumber: 1,
+    pageSize: 10
+  });
+});
 
-  if (filtroUnidade.value) {
-    lista = lista.filter(i => i.unidadeEntrega === filtroUnidade.value);
-  }
-
-  return lista;
+// Search backend
+watch([search, filtroUnidade], () => {
+  gradeStore.GetAll({
+    pageNumber: 1,
+    pageSize: gradeStore.pageSize,
+    search: search.value || undefined,
+    localDescargaId: filtroUnidade.value || undefined
+  });
 });
 
 // Formatters
