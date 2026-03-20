@@ -123,7 +123,7 @@ import { useFornecedorStore } from '@/stores/FornecedorStore';
 import { useProdutoStore } from '@/stores/ProdutoStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { useLocalDescargaStore } from '@/stores/LocalDescargaStore';
-import { useGrade } from '@/hooks/useGrade2';
+import { useGrade } from '@/hooks/useGrade';
 import { parseISO, getDay } from 'date-fns';
 import type { GradeCreateDto } from '@/entities/grade.types';
 

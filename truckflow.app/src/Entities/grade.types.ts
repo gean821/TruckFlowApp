@@ -37,6 +37,7 @@ export type GradeResponseDto = {
     horaFinal: string;
     unidadeEntrega: string;
     localDescarga: string;
+    localDescargaId: string;
     diasSemana: string;
     tempoDuracao: string;
     createdAt: string;
@@ -54,4 +55,15 @@ export type GradeUpdateDto = {
     horaFinal?: string;
     intervaloMinutos?: number;
     diasSemana?: string;
+}
+
+export type GradeListQueryDto = {
+    pageNumber: number;
+    pageSize: number;
+    produtoId?: string;
+    fornecedorId?: string;
+    LocalDescargaId?: string;
+    DataInicio?: string;
+    DataFim?: string;
+    search?: string;
 }

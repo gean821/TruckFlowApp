@@ -26,19 +26,17 @@ import { onMounted, ref } from 'vue';
 import { useGradeStore } from '@/stores/GradeStore';
 import GradeView from './GradeView.vue';
 import ConfirmDeleteDialog from '@/components/modals/ConfirmDeleteDialog.vue';
-
 const gradeStore = useGradeStore();
 
 // Estado do Modal de Exclusão
 const showDeleteDialog = ref(false);
 const itemToDeleteId = ref<string | null>(null);
-const isDeleting = ref(false); // Loading local do botão do modal
+const isDeleting = ref(false); 
 
 onMounted(() => {
   gradeStore.GetAll();
 });
 
-// 1. Chamado quando clica na lixeira na lista
 function openDeleteDialog(id: string) {
   itemToDeleteId.value = id;
   showDeleteDialog.value = true;
@@ -59,7 +57,6 @@ async function confirmDelete() {
 }
 
 function handleEdit(item: any) {
-  // Lógica de edição futura (Redirecionar ou abrir outro modal)
   console.log("Editar", item);
 }
 </script>
