@@ -15,6 +15,7 @@ import RegisterView from '@/views/RegisterView.vue';
 import DashboardView from '@/views/DashboardView.vue';
 import { useAuthStore } from '@/stores/AuthStore';
 import UnidadeEntregaView from '@/views/UnidadeEntregaView.vue';
+import SaibaMais from '@/views/SaibaMais.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,6 +24,12 @@ const router = createRouter({
       path: '/home',
       name: 'home',
       component: HomePage,
+      meta: { layout: 'public' }
+    },
+    {
+      path: '/more',
+      name: 'more',
+      component: SaibaMais,
       meta: { layout: 'public' }
     },
     {
