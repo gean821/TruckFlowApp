@@ -74,6 +74,7 @@
               </v-btn>
               
               <v-btn 
+                to="/more"
                 variant="outlined" 
                 color="white" 
                 size="x-large" 
