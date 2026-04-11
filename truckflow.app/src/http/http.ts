@@ -2,7 +2,7 @@ import axios from "axios";
 
 const http = axios.create(
   {
-    baseURL: 'http://localhost:7100/v1/',
+    baseURL: 'import.meta.env.VITE_API_UR',
     headers: { 'X-Custom-Header': 'foobar' }
   });
 
