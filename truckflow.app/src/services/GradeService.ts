@@ -1,4 +1,5 @@
-import type { GradeCreateDto, GradeResponseDto, GradeUpdateDto } from "@/entities/grade.types";
+import type { GradeCreateDto, GradeListQueryDto, GradeResponseDto, GradeUpdateDto } from "@/entities/grade.types";
+import type { PaginatedResponse } from "@/entities/paginatedResponse";
 import http from "@/http/http";
 
 export const GradeService = () => {
@@ -7,8 +8,11 @@ export const GradeService = () => {
         return data;
     }
 
-    const getAll = async (): Promise<GradeResponseDto[]> => {
-        const { data } = await http.get('/Grade');
+    const getAll = async (query: GradeListQueryDto): Promise<PaginatedResponse<GradeResponseDto>> => {
+        const { data } = await http.get('/Grade', {
+            params: query
+        });
+
         return data;
     }
 

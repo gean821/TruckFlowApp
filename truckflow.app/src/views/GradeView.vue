@@ -16,21 +16,34 @@
           </div>
         </div>
 
-        <div class="d-flex gap-3 flex-wrap flex-grow-1 justify-end" style="max-width: 800px;">
+        <div class="d-flex gap-3 flex-wrap flex-grow-1 justify-end" style="max-width: 1100px;">
+          <v-text-field v-model="search" density="compact" variant="outlined" label="Buscar..."
+            prepend-inner-icon="mdi-magnify" hide-details bg-color="white" style="min-width: 200px;" flex-grow-1 />
 
-          <v-text-field v-model="search" density="compact" variant="outlined" label="Buscar grade..."
-            prepend-inner-icon="mdi-magnify" hide-details bg-color="white" class="filter-input"
-            style="min-width: 250px;"></v-text-field>
+          <v-text-field v-model="filtroDataInicio" type="date" label="Início" density="compact" variant="outlined"
+            hide-details bg-color="white" style="max-width: 160px;" clearable />
 
-          <v-select v-model="filtroLocal" :items="locaisDisponiveis" label="Filtrar Doca" density="compact"
-            variant="outlined" hide-details bg-color="white" class="filter-input" style="max-width: 200px;" clearable
-            placeholder="Todas"></v-select>
+          <v-text-field v-model="filtroDataFim" type="date" label="Fim" density="compact" variant="outlined"
+            hide-details bg-color="white" style="max-width: 160px;" clearable />
+
+          <v-select v-model="filtroLocal" :items="locaisDisponiveis" label="Doca" density="compact" variant="outlined"
+            hide-details bg-color="white" style="max-width: 150px;" clearable placeholder="Todas" />
+
+          <v-select v-model="filtroFornecedor" :items="fornecedores" item-title="nome" item-value="id"
+            label="Fornecedor" density="compact" variant="outlined" hide-details bg-color="white"
+            style="max-width: 180px;" clearable placeholder="Todos" />
+
+          <v-select v-model="filtroProduto" :items="produtos" item-title="nome" item-value="id" label="Produto"
+            density="compact" variant="outlined" hide-details bg-color="white" style="max-width: 180px;" clearable
+            placeholder="Todos" />
         </div>
       </div>
     </div>
 
-    <v-data-table :headers="headers" :items="itemsFiltrados" :loading="loading" :search="search" hover
+    <v-data-table :headers="headers" :items="data?.items ?? []" :loading="isLoading" :page="page"
+      :items-per-page="pageSize" :items-length="data?.totalCount ?? 0" @update:page="page = $event" hover
       class="grade-table custom-typography">
+
       <template v-slot:loading>
         <v-skeleton-loader type="table-row@5"></v-skeleton-loader>
       </template>
@@ -111,23 +124,85 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { format, parseISO } from 'date-fns';
-import type { GradeResponseDto } from '@/entities/grade.types';
+import type { GradeListQueryDto } from '@/entities/grade.types';
+import { useGradeQuery } from '@/queries/grade.queries';
+import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
+import { useLocalDescarga } from '@/hooks/useLocalDescarga';
+import { useFornecedor } from '@/hooks/useFornecedor';
+import { useProduto } from '@/hooks/useProdutos';
 
-const props = defineProps<{
-  items: GradeResponseDto[];
-  loading: boolean;
-}>();
+const route = useRoute();
+const router = useRouter();
+const page = ref(Number(route.query.page) || 1)
+const searchDebounced = ref('')
+
+const search = ref(route.query.search?.toString() || '')
+
+const filtroLocal = ref(route.query.local?.toString() || null)
+const filtroFornecedor = ref(route.query.fornecedor?.toString() || null)
+const filtroProduto = ref(route.query.produto?.toString() || null)
+const filtroDataInicio = ref(route.query.dataInicio?.toString() || null)
+const filtroDataFim = ref(route.query.dataFim?.toString() || null)
+
+const { locais } = useLocalDescarga();
+const { fornecedores } = useFornecedor();
+const { produtos } = useProduto();
+
+let timeout: ReturnType<typeof setTimeout>
+
+watch(search, (val) => {
+  clearTimeout(timeout)
+  timeout = setTimeout(() => {
+    searchDebounced.value = val
+  }, 400)
+})
+
+const pageSize = ref(10)
+
+watch([
+  searchDebounced,
+  filtroLocal,
+  filtroFornecedor,
+  filtroProduto,
+  filtroDataInicio,
+  filtroDataFim,
+  page], () => {
+    router.replace({
+      query: {
+        search: searchDebounced.value || undefined,
+        local: filtroLocal.value || undefined,
+        fornecedor: filtroFornecedor.value || undefined,
+        produto: filtroProduto.value || undefined,
+        dataInicio: filtroDataInicio.value || undefined,
+        dataFim: filtroDataFim.value || undefined,
+        page: page.value !== 1 ? page.value : undefined
+      }
+    })
+  })
+
+const params = computed<GradeListQueryDto>(() => ({
+  pageNumber: page.value,
+  pageSize: pageSize.value,
+  search: searchDebounced.value || undefined,
+  localDescargaId: filtroLocal.value || undefined,
+  fornecedorId: filtroFornecedor.value || undefined,
+  produtoId: filtroProduto.value || undefined,
+  dataInicio: filtroDataInicio.value || undefined,
+  dataFim: filtroDataFim.value || undefined,
+}))
+
+const { data, isLoading } = useGradeQuery(params)
 
 const emit = defineEmits(['edit', 'delete']);
 
-const search = ref('');
-const filtroLocal = ref<string | null>(null);
-
 const locaisDisponiveis = computed(() => {
-  const locais = new Set(props.items.map(i => i.localDescarga));
-  return Array.from(locais).sort();
+  return (locais.value ?? []).map(l => ({
+    title: l.nome,
+    value: l.id
+  }));
 });
 
 const headers = [
@@ -139,21 +214,8 @@ const headers = [
   { title: '', key: 'actions', align: 'end', sortable: false },
 ] as const;
 
-const itemsFiltrados = computed(() => {
-  let lista = props.items;
-
-  if (filtroLocal.value) {
-    lista = lista.filter(i => i.localDescarga === filtroLocal.value);
-  }
-
-  return lista;
-});
-
 function formatData(dateStr: string) {
-  if (!dateStr) {
-    return '-';
-  }
-
+  if (!dateStr) return '-';
   return format(parseISO(dateStr), 'dd/MM/yyyy');
 }
 
@@ -172,16 +234,20 @@ function parseDias(diasStr: string) {
 
   const mapDias = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
   const mapNomes = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-  return diasStr.split(',').map(d => parseInt(d)).sort((a, b) => a - b).map(d => ({
-    val: d,
-    sigla: mapDias[d],
-    nomeCompleto: mapNomes[d]
-  }));
+
+  return diasStr
+    .split(',')
+    .map(d => parseInt(d))
+    .sort((a, b) => a - b)
+    .map(d => ({
+      val: d,
+      sigla: mapDias[d],
+      nomeCompleto: mapNomes[d]
+    }));
 }
 </script>
 
 <style scoped>
-/* Header da Tabela */
 :deep(.v-data-table__th) {
   font-size: 0.7rem !important;
   text-transform: uppercase;
@@ -198,7 +264,6 @@ function parseDias(diasStr: string) {
   height: 64px !important;
 }
 
-/* Badges de Dias */
 .day-badge {
   width: 22px;
   height: 22px;
