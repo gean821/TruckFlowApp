@@ -4,7 +4,7 @@ import type EntidadeBase from "./IEntidadeBase";
 import type IMotorista from "./IMotorista";
 
 
-export default interface Usuario extends EntidadeBase {
+export default interface IUsuario extends EntidadeBase {
     administrador?: IAdministrador;
     motorista?: IMotorista;
     agendamentos: IAgendamento[]
