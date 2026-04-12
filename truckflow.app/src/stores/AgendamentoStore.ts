@@ -2,7 +2,7 @@ import type CreateAgendamentoAdminDto from "@/Dtos/agendamento/agendamentoAdminC
 import type AgendamentoAdminResponse from "@/Dtos/agendamento/agendamentoAdminResponse.dto";
 import type AgendamentoAdminUpdateDto from "@/Dtos/agendamento/agendamentoAdminUpdate.dto";
 import type IAgendamentoFilterDto from "@/Dtos/agendamento/agendamentoFilterDto";
-import AgendamentoService from "@/services/AgendamentoService";
+import { AgendamentoService } from "@/services/AgendamentoService";
 import { defineStore } from "pinia";
 import { ref } from 'vue';
 
@@ -10,16 +10,17 @@ export const useAgendamentoStore = defineStore('Agendamento', () => {
     const agendamentosFiltrados = ref<IAgendamentoFilterDto[]>([]);
     const agendamentos = ref<AgendamentoAdminResponse[]>([]);
     const loading = ref(false);
+    const service = AgendamentoService();
 
     async function GetById(id: string) {
-        return await AgendamentoService.GetById(id);
+        return await service.getById(id);
     }
 
     async function getByFilters(filters: IAgendamentoFilterDto) {
         loading.value = true;
 
         try {
-            const result = await AgendamentoService.getByFilters(filters);
+            const result = await service.getByFilters(filters);
             agendamentos.value = result.map(x => ({ ...x }));
         } finally {
             loading.value = false;
@@ -27,23 +28,23 @@ export const useAgendamentoStore = defineStore('Agendamento', () => {
     }
 
     async function AddAgendamento(agendamento: CreateAgendamentoAdminDto) {
-        const agendamentoAdicionado = await AgendamentoService.AddAgendamento(agendamento);
+        const agendamentoAdicionado = await service.create(agendamento);
         agendamentos.value.push(agendamentoAdicionado);
         return agendamentoAdicionado;
     }
 
     async function realizarCheckIn(id: string) {
-        await AgendamentoService.checkIn(id);
+        await service.checkIn(id);
         atualizarStatusLocal(id, 'EmAndamento');
     }
 
     async function realizarCheckOut(id: string) {
-        await AgendamentoService.checkOut(id);
+        await service.checkOut(id);
         atualizarStatusLocal(id, 'Finalizado');
     }
 
     async function cancelarAgendamento(id: string) {
-        await AgendamentoService.cancelar(id);
+        await service.cancelar(id);
         atualizarStatusLocal(id, 'Cancelado');
     }
 
@@ -55,7 +56,7 @@ export const useAgendamentoStore = defineStore('Agendamento', () => {
     }
 
     async function UpdateAgendamento(id: string, agendamentoAtualizado: AgendamentoAdminUpdateDto) {
-        const agendamento = await AgendamentoService.UpdateAgendamento(id, agendamentoAtualizado);
+        const agendamento = await service.update(id, agendamentoAtualizado);
         const index = agendamentos.value.findIndex(x => x.id === id);
 
         if (index !== -1) {
@@ -66,7 +67,7 @@ export const useAgendamentoStore = defineStore('Agendamento', () => {
     }
 
     async function DeleteAgendamento(id: string) {
-        await AgendamentoService.DeleteAgendamento(id);
+        await service.remove(id);
         const index = agendamentos.value.findIndex(x => x.id === id);
 
         if (index !== -1) {
