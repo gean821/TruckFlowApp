@@ -47,7 +47,7 @@
                 :items="produtos"
                 item-title="nome"
                 item-value="id"
-                label="Produto (Opcional)"
+                label="Produto"
                 variant="outlined"
                 density="comfortable"
                 hide-details="auto"
@@ -303,7 +303,7 @@ const submit = async () => {
   const validation = await formRef.value?.validate();
   if (!validation?.valid) {
     return;
-  } 
+  }
 
   try {
     if (!form.fornecedorId || !form.localDescargaId) {
@@ -314,13 +314,17 @@ const submit = async () => {
     const payload: CreateAgendamentoAdminDto = {
       fornecedorId: form.fornecedorId,
       localDescargaId: form.localDescargaId,
-      produtoId: form.produtoId ?? '',
+      produtoId: form.produtoId ?? "",
       placaVeiculo: form.placaVeiculo || undefined,
       tipoVeiculo: form.tipoVeiculo ?? undefined,
       volumeCarga: form.volumeCarga,
       tipoCarga: form.tipoCarga,
-      dataInicio: `${dataAvulsa.value}T${horaAvulsaInicio.value}:00`,
-      dataFim: `${dataAvulsa.value}T${horaAvulsaFim.value}:00`,
+      dataInicio: new Date(
+        `${dataAvulsa.value}T${horaAvulsaInicio.value}:00`,
+      ).toISOString(),
+      dataFim: new Date(
+        `${dataAvulsa.value}T${horaAvulsaFim.value}:00`,
+      ).toISOString(),
       motoristaId: undefined,
       notaFiscalId: undefined,
     };
@@ -328,7 +332,6 @@ const submit = async () => {
     await createAgendamento(payload);
     emit("saved");
     closeDialog();
-
   } catch (error: unknown) {
     console.error(error);
     const err = error as { response?: { data?: { message?: string } } };

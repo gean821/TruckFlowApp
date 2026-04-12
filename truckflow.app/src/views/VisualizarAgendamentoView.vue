@@ -8,7 +8,7 @@
       :headers="headers"
       :items="agendamentos"
       :loading="loading"
-      @abrir-dialog="criarAgendamento()"
+      @abrir-dialog="criarAgendamento"
       @delete="deleteAgendamento"
       @refresh="refresh"
     >
@@ -176,6 +176,11 @@
       </template>
     </CrudTable>
 
+    <AgendamentoAvulsoModal 
+      @saved="refresh"
+      v-model="showDialogAvulso"
+    />
+
     <ConfirmDialog
       v-model="confirmDialog.show"
       :title="confirmDialog.title"
@@ -193,31 +198,18 @@
 import CrudTable, {
   type VDataTableHeader,
 } from "@/components/data-table/CrudTable.vue";
-import router from "@/router";
 import { useAgendamentoStore } from "@/stores/AgendamentoStore";
-import { computed, ref, onMounted, reactive } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { format, parseISO } from "date-fns";
 import { TipoVeiculoLabels } from "@/utils/tipoVeiculoLabels";
 import ConfirmDialog from "@/components/modals/ConfirmDialog.vue";
-import type CreateAgendamentoAdminDto from "@/Dtos/agendamento/agendamentoAdminCreate.dto";
+import AgendamentoAvulsoModal from "@/components/modals/AgendamentoAvulsoModal.vue";
 
 const loading = ref(false);
 const agendamentoStore = useAgendamentoStore();
 const agendamentos = computed(() => agendamentoStore.agendamentos);
 const loadingAction = ref<string | null>(null);
-
-const formAgendamentoAvulso = reactive<CreateAgendamentoAdminDto>({
-  fornecedorId: "",
-  produtoId: "",
-  localDescargaId: "",
-  dataInicio: "",
-  dataFim: "",
-  placaVeiculo: "",
-  motoristaId: "",
-  notaFiscalId: "",
-  tipoCarga: 0,
-  volumeCarga: 0,
-});
+const showDialogAvulso = ref<boolean>(false);
 
 const confirmDialog = ref({
   show: false,
@@ -411,5 +403,7 @@ function formatStatus(status: string) {
   return status.replace(/([A-Z])/g, " $1").trim();
 }
 
-const criarAgendamento = () => {};
+const criarAgendamento = () => {
+  showDialogAvulso.value = true;
+};
 </script>
