@@ -4,7 +4,6 @@ import Fornecedor from '@/views/FornecedorView.vue';
 import ProdutosView from '@/views/ProdutosView.vue';
 import RecebimentoView from '@/views/RecebimentoView.vue';
 import RecebimentoForm from '@/components/Forms/RecebimentoForm.vue';
-import BloqueioView from '@/views/BloqueioView.vue';
 import VisualizarAgendamentoView from '@/views/VisualizarAgendamentoView.vue';
 import Relatorio from '@/views/Relatorio.vue';
 import GradeCard from '@/components/cards/GradeCard.vue';
@@ -80,15 +79,15 @@ const router = createRouter({
         roles: ['Admin']
       }
     },
-    {
-      path: '/bloqueios',
-      name: 'bloqueios',
-      component: BloqueioView,
-      meta: {
-        requiresAuth: true,
-        roles: ['Admin']
-      }
-    },
+    // {
+    //   path: '/bloqueios',
+    //   name: 'bloqueios',
+    //   component: BloqueioView,
+    //   meta: {
+    //     requiresAuth: true,
+    //     roles: ['Admin']
+    //   }
+    // },
     {
       path: '/produtos',
       name: 'produtos',

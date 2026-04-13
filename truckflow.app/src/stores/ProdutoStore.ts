@@ -1,7 +1,7 @@
 import { ProdutoService } from "@/services/ProdutoService";
 import { defineStore } from "pinia";
 import { ref } from 'vue';
-import type { ProdutoCreateDto, ProdutoResponse, ProdutoUpdateDto } from "@/Entities/produto.types";
+import type { ProdutoCreateDto, ProdutoResponse, ProdutoUpdateDto } from "@/entities/produto.types";
 
 export const useProdutoStore = defineStore('Produto', () => {
     const produtos = ref<ProdutoResponse[]>([]);

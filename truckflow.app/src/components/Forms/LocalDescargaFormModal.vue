@@ -57,7 +57,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { useUnidadeEntregaStore } from '@/stores/UnidadeEntregaStore';
-import type { CreateLocalDescargaDto } from '@/Entities/localDescarga.types';
+import type { CreateLocalDescargaDto } from '@/entities/localDescarga.types';
 
 const props = defineProps<{ open: boolean; initialData?: any }>();
 const emit = defineEmits(["close", "submit"]);

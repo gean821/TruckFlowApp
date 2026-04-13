@@ -48,6 +48,7 @@ export const useGrade = () => {
 
   return {
     deleteGrade: deleteMutation.mutateAsync,
+    isDeleting: deleteMutation.isPending,
     updateGrade: updateMutation.mutateAsync,
     createGrade: createMutation.mutateAsync,
     isCreating: createMutation.isPending
