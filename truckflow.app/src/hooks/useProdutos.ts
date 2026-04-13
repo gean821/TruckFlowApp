@@ -1,4 +1,4 @@
-import type { ProdutoCreateDto, ProdutoUpdateDto } from "@/Entities/produto.types";
+import type { ProdutoCreateDto, ProdutoUpdateDto } from "@/entities/produto.types";
 import { useProdutoStore } from "@/stores/ProdutoStore";
 import { useToastStore } from "@/stores/ToastStore";
 import { storeToRefs } from "pinia";

@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import type ItemPlanejamento from '@/Entities/ItemPlanejamento';
+import type ItemPlanejamento from '@/entities/ItemPlanejamento';
 import { ref, computed, reactive, watch } from 'vue';
 
 const props = defineProps<{

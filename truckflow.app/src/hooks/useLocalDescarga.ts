@@ -2,7 +2,7 @@ import { useToastStore } from "@/stores/ToastStore";
 import { useLocalDescargaStore } from "@/stores/LocalDescargaStore";
 import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
-import type { CreateLocalDescargaDto, MudarStatusLocalDto, UpdateLocalDescargaDto } from "@/Entities/localDescarga.types";
+import type { CreateLocalDescargaDto, MudarStatusLocalDto, UpdateLocalDescargaDto } from "@/entities/localDescarga.types";
 
 export function useLocalDescarga() {
   const store = useLocalDescargaStore();

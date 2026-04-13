@@ -172,7 +172,7 @@ import { ref, computed } from "vue";
 import ProdutoFormModal from "@/components/Forms/ProdutoFormModal.vue";
 import ConfirmDeleteDialog from "@/components/modals/ConfirmDeleteDialog.vue";
 import { useProduto } from "@/hooks/useProdutos";
-import type { ProdutoCreateDto, ProdutoResponse } from "@/Entities/produto.types";
+import type { ProdutoCreateDto, ProdutoResponse } from "@/entities/produto.types";
 
 const { produtos, loading, create, update, remove } = useProduto();
 

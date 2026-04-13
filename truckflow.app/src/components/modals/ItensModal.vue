@@ -1,6 +1,5 @@
 <template>
-  <v-dialog v-model="open" 
-    max-width="950">
+  <v-dialog v-model="open" max-width="950">
     <v-card>
       <v-card-title class="d-flex align-center">
         <div>
@@ -34,7 +33,7 @@
           density="compact"
         >
           <template #item.produto="{ item }">
-            {{ item.produto ?? item.produto ?? '—' }}
+            {{ item.produto ?? item.produto ?? "—" }}
           </template>
 
           <template #item.quantidadeTotalPlanejada="{ item }">
@@ -50,13 +49,16 @@
           </template>
 
           <template #item.faltaReceber="{ item }">
-            {{ item.faltaReceber ?? ( (item.quantidadeTotalPlanejada ?? 0) - (item.quantidadeTotalRecebida ?? 0) ) }}
+            {{
+              item.faltaReceber ??
+              (item.quantidadeTotalPlanejada ?? 0) - (item.quantidadeTotalRecebida ?? 0)
+            }}
           </template>
 
           <template #item.createdAt="{ item }">
             {{ formatarData(item.createdAt) }}
           </template>
- 
+
           <template #item.actions="{ item }">
             <v-tooltip location="top">
               <template #activator="{ props }">
@@ -79,19 +81,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
-import { useItemPlanejamentoStore } from '@/stores/ItemPlanejamentoStore';
-import { useRecebimentoStore } from '@/stores/RecebimentoStore';
-import { formatarData } from '@/utils/date-format';
-import type { VDataTableHeader } from '../data-table/CrudTable.vue';
-import type ItemPlanejamentoResponse from '@/Dtos/Item/ItemResponseDto';
-import type IRecebimentoResponse from '@/Dtos/Recebimento/IRecebimentoResponse';
+import { ref, watch, computed } from "vue";
+import { useItemPlanejamentoStore } from "@/stores/ItemPlanejamentoStore";
+import { useRecebimentoStore } from "@/stores/RecebimentoStore";
+import { formatarData } from "@/utils/date-format";
+import type { VDataTableHeader } from "../data-table/CrudTable.vue";
+import type ItemPlanejamentoResponse from "@/Dtos/Item/ItemResponseDto";
+import type IRecebimentoResponse from "@/Dtos/Recebimento/IRecebimentoResponse";
 
 const props = defineProps<{ recebimento: IRecebimentoResponse | null }>();
 const emit = defineEmits<{
-  (e: 'close'): void
+  (e: "close"): void;
 }>();
-
 
 const itemStore = useItemPlanejamentoStore();
 const recebimentoStore = useRecebimentoStore();
@@ -99,14 +100,14 @@ const recebimentoStore = useRecebimentoStore();
 const open = ref(true);
 const localItems = ref<ItemPlanejamentoResponse[]>([]);
 
-const tableHeaders : VDataTableHeader = [
-  { title: 'PRODUTO', key: 'produto' },
-  { title: 'QUANTIDADE TOTAL (T)', key: 'quantidadeTotalPlanejada', align: 'end' },
-  { title: 'CADÊNCIA DIÁRIA (T)', key: 'cadenciaDiariaPlanejada', align: 'end' },
-  { title: 'RECEBIDO (T)', key: 'quantidadeTotalRecebida', align: 'end' },
-  { title: 'FALTA RECEBER (T)', key: 'faltaReceber', align: 'end' },
-  { title: 'CRIADO EM', key: 'createdAt' },
-  { title: 'AÇÕES', key: 'actions', sortable: false, align: 'center' },
+const tableHeaders: VDataTableHeader = [
+  { title: "PRODUTO", key: "produto" },
+  { title: "QUANTIDADE TOTAL (T)", key: "quantidadeTotalPlanejada", align: "end" },
+  { title: "CADÊNCIA DIÁRIA (T)", key: "cadenciaDiariaPlanejada", align: "end" },
+  { title: "RECEBIDO (T)", key: "quantidadeTotalRecebida", align: "end" },
+  { title: "FALTA RECEBER (T)", key: "faltaReceber", align: "end" },
+  { title: "CRIADO EM", key: "createdAt" },
+  { title: "AÇÕES", key: "actions", sortable: false, align: "center" },
 ];
 
 // quando receber um novo recebimento via prop, popula localItems e abre o modal
@@ -120,7 +121,7 @@ watch(
     }
 
     // clona os itens (evita problemas com reatividade/proxy)
-    localItems.value = (r.itens ?? []).map(i => ({ ...i }));
+    localItems.value = (r.itens ?? []).map((i) => ({ ...i }));
   },
   { immediate: true }
 );
@@ -132,17 +133,19 @@ function getItemId(item: any): string | undefined {
 
 function closeModal() {
   open.value = false;
-  emit('close');
+  emit("close");
 }
 
 async function onDeleteItem(item: any) {
   const id = getItemId(item);
   if (!id) {
-    localItems.value = localItems.value.filter(x => x !== item);
+    localItems.value = localItems.value.filter((x) => x !== item);
     return;
   }
 
-  const confirmMsg = `Remover o item "${item.produto ?? item.produtoNome ?? id}"? Esta ação é irreversível.`;
+  const confirmMsg = `Remover o item "${
+    item.produto ?? item.produtoNome ?? id
+  }"? Esta ação é irreversível.`;
   if (!confirm(confirmMsg)) {
     return;
   }
@@ -150,7 +153,7 @@ async function onDeleteItem(item: any) {
   try {
     await itemStore.Deleteitem(id);
     // atualiza a UI local imediatamente
-    localItems.value = localItems.value.filter(i => getItemId(i) !== id);
+    localItems.value = localItems.value.filter((i) => getItemId(i) !== id);
 
     // sincroniza as stores (atualiza listas globais)
     await itemStore.GetAll();
@@ -161,17 +164,16 @@ async function onDeleteItem(item: any) {
       try {
         const updated = await recebimentoStore.GetById(props.recebimento.id);
         // atualiza localItems a partir do recebimento atualizado
-        localItems.value = (updated.itemPlanejamentos ?? []).map((i: any) => ({ ...i }));
+        localItems.value = (updated.itens ?? []).map((i: any) => ({ ...i }));
       } catch {
         // ignore
       }
     }
   } catch (err) {
-    console.error('Erro ao apagar item:', err);
-    alert('Falha ao remover item. Veja o console para mais detalhes.');
+    console.error("Erro ao apagar item:", err);
+    alert("Falha ao remover item. Veja o console para mais detalhes.");
   }
 }
-
 </script>
 
 <style scoped>
@@ -179,7 +181,7 @@ async function onDeleteItem(item: any) {
   font-weight: 600;
 }
 .subtitle-2 {
-  color: rgba(0,0,0,0.6);
+  color: rgba(0, 0, 0, 0.6);
   font-size: 0.9rem;
 }
 </style>

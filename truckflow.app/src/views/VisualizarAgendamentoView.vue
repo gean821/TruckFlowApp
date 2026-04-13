@@ -279,8 +279,8 @@ async function fetchAgendamentos() {
     proximaSemana.setDate(hoje.getDate() + 7);
 
     await agendamentoStore.getByFilters({
-      dataInicio: hoje.toISOString().split("T")[0],
-      dataFim: proximaSemana.toISOString().split("T")[0],
+      dataInicio: toStartOfDay(hoje),
+      dataFim: toEndOfDay(proximaSemana),
     });
   } finally {
     loading.value = false;
@@ -401,6 +401,18 @@ function formatStatus(status: string) {
   }
 
   return status.replace(/([A-Z])/g, " $1").trim();
+}
+
+function toStartOfDay(date: Date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString();
+}
+
+function toEndOfDay(date: Date) {
+  const d = new Date(date);
+  d.setHours(23, 59, 59, 999);
+  return d.toISOString();
 }
 
 const criarAgendamento = () => {

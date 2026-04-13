@@ -7,8 +7,11 @@
 
     <v-row>
       <v-col cols="12">
-        <GradeView :items="gradeStore.grades" :loading="gradeStore.loading" @delete="openDeleteDialog"
-          @edit="handleEdit" />
+        <GradeView  
+          @delete="openDeleteDialog"
+          @edit="handleEdit" 
+
+        />
       </v-col>
     </v-row>
 
@@ -23,19 +26,12 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { useGradeStore } from '@/stores/GradeStore';
 import GradeView from './GradeView.vue';
 import ConfirmDeleteDialog from '@/components/modals/ConfirmDeleteDialog.vue';
-const gradeStore = useGradeStore();
-
-// Estado do Modal de Exclusão
+import { useGrade } from '@/hooks/useGrade';
+const {deleteGrade, isDeleting} = useGrade();
 const showDeleteDialog = ref(false);
 const itemToDeleteId = ref<string | null>(null);
-const isDeleting = ref(false); 
-
-onMounted(() => {
-  gradeStore.GetAll();
-});
 
 function openDeleteDialog(id: string) {
   itemToDeleteId.value = id;
@@ -43,11 +39,13 @@ function openDeleteDialog(id: string) {
 }
 
 async function confirmDelete() {
-  if (!itemToDeleteId.value) return;
+  if (!itemToDeleteId.value) {
+    return;
+  } 
 
   isDeleting.value = true; 
   try {
-    await gradeStore.DeleteGrade(itemToDeleteId.value);
+    await deleteGrade(itemToDeleteId.value);
     showDeleteDialog.value = false; 
   } catch (error) {
   } finally {

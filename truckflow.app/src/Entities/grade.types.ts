@@ -1,9 +1,9 @@
 import type { FornecedorResponse } from "./fornecedor.types";
 import type EntidadeBase from "./IEntidadeBase";
-import type IProduto from "./produto.types";
+import type { ProdutoResponse } from "./produto.types";
 
 export interface IGrade extends EntidadeBase {
-    produto: IProduto;
+    produto: ProdutoResponse;
     produtoId: string;
     fornecedor: FornecedorResponse;
     fornecedorId: string;

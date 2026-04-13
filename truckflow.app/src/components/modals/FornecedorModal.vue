@@ -42,21 +42,21 @@
 </template>
 
 <script setup lang="ts">
+import type { FornecedorResponse } from '@/entities/fornecedor.types';
 import { ref, watch } from 'vue'
-import type IFornecedor from '@/Entities/fornecedor.types'
 
 const props = defineProps<{
   modelValue: boolean
   isEditing: boolean
-  fornecedor?: IFornecedor
+  fornecedor?: FornecedorResponse
 }>()
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
-  (e: 'salvar', fornecedor: IFornecedor): void
+  (e: 'salvar', fornecedor: FornecedorResponse): void
 }>()
 
-const form = ref<IFornecedor>({
+const form = ref<FornecedorResponse>({
   id: props.fornecedor?.id,
   nome: props.fornecedor?.nome ?? '',
   cnpj: props.fornecedor?.cnpj ?? '',
@@ -97,10 +97,9 @@ const rules = {
 function save() {
   const payload = {
     ...form.value,
-    cnpj: form.value.cnpj?.replace(/\D/g, '') // Envia só números
+    cnpj: form.value.cnpj?.replace(/\D/g, '')
   };
   
-  // Validação extra antes de enviar
   if(!payload.nome || !payload.cnpj || payload.cnpj.length !== 14) {
     alert("Preencha os campos corretamente.");
     return;
