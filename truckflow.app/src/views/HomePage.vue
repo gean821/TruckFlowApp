@@ -672,7 +672,7 @@
                   box-shadow: 0 14px 26px rgba(0,0,0,0.12);
                 "
               >
-                Conate-nos
+                Fale Com a nossa equipe
               </v-btn>
 
               <v-btn
