@@ -36,6 +36,8 @@
           <v-list density="compact">
             <v-list-item prepend-icon="mdi-account-cog-outline" title="Minha Conta" to="/account-config"></v-list-item>
             <v-divider class="my-1"></v-divider>
+            <v-list-item prepend-icon="mdi-account-edit-outline" title="Editar Informações" @click="openEditModal"></v-list-item>
+            <v-divider class="my-1"></v-divider>
             <v-list-item prepend-icon="mdi-logout" title="Sair" color="error" @click="logout"></v-list-item>
           </v-list>
         </v-card>
@@ -122,21 +124,31 @@
 
     </v-list>
   </v-navigation-drawer>
+  <EditProfileModal
+    v-model="openProfile"
+    :profile="profile"
+  />
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/AuthStore';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import EditProfileModal from '@/components/modals/EditProfileModal.vue';
 
 const router = useRouter();
 const ativo = ref(true);
 const authStore = useAuthStore();
+const openProfile = ref(false);
 
 const profile = {
   name: authStore.user?.unique_name || 'Usuário',
   role: authStore.user?.role || 'Visitante'
 };
+
+function openEditModal() {
+  openProfile.value = true;
+}
 
 function abrirNavegacao() {
   ativo.value = !ativo.value;
