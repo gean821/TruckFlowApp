@@ -9,7 +9,7 @@
               <v-img
                 src="/Rectangle.svg"
                 alt="TruckFlow"
-                width="250"
+                width="350"
                 class="mb-6 float-logo"
                 contain
               />

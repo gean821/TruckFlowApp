@@ -10,7 +10,7 @@ import GradeCard from '@/components/cards/GradeCard.vue';
 import ProgramacaoView from '@/views/ProgramacaoView.vue';
 import HomePage from '@/views/HomePage.vue';
 import LoginView from '@/views/LoginView.vue';
-import RegisterView from '@/views/RegisterView.vue';
+import ContatoView from '@/views/ContatoView.vue';
 import DashboardView from '@/views/DashboardView.vue';
 import { useAuthStore } from '@/stores/AuthStore';
 import UnidadeEntregaView from '@/views/UnidadeEntregaView.vue';
@@ -42,9 +42,9 @@ const router = createRouter({
       meta: { layout: 'public' }
     },
     {
-      path: '/register',
-      name: 'register',
-      component: RegisterView,
+      path: '/contact',
+      name: 'contact',
+      component: ContatoView,
       meta: { layout: 'public' }
     },
     {

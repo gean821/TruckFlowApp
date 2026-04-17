@@ -40,7 +40,7 @@
 
       <div class="d-none d-md-flex align-center" style="gap: 10px;">
         <v-btn
-          to="/login"
+          to="/more"
           variant="text"
           class="text-capitalize premium-btn"
           style="
@@ -48,11 +48,23 @@
             font-weight: 700;
           "
         >
-          Login
+          Funcionalidades
         </v-btn>
 
         <v-btn
-          to="/register"
+          to="/contact"
+          variant="text"
+          class="text-capitalize premium-btn"
+          style="
+            color: white;
+            font-weight: 700;
+          "
+        >
+          Contate-nos
+        </v-btn>
+
+        <v-btn
+          to="/login"
           rounded="pill"
           class="text-capitalize premium-btn"
           style="
@@ -64,7 +76,7 @@
             box-shadow: 0 5px 5px rgba(47,127,245,0.24);
           "
         >
-          Começar Agora
+          Login
         </v-btn>
       </div>
 
@@ -136,29 +148,6 @@
       >
         <v-row justify="center">
           <v-col cols="12" lg="10" xl="9" class="text-center text-white">
-            <div
-              class="d-inline-flex align-center justify-center mb-0 reveal reveal-delay-1"
-              style="
-                padding: 0px 18px;
-                border-radius: 999px;
-                background: rgba(255,255,255,0.10);
-                border: 1px solid rgba(255,255,255,0.14);
-                backdrop-filter: blur(12px);
-                -webkit-backdrop-filter: blur(12px);
-              "
-            >
-              <span
-                style="
-                  font-size: 0.92rem;
-                  font-weight: 700;
-                  color: #eef6ff;
-                  letter-spacing: 0.01em;
-                "
-              >
-                A nova era da logística
-              </span>
-            </div>
-
             <h1
               class="reveal reveal-delay-2"
               style="
@@ -198,7 +187,7 @@
               style="gap: 14px;"
             >
               <v-btn
-                to="/register"
+                to="/more"
                 rounded="lg"
                 size="x-large"
                 elevation="0"
@@ -212,29 +201,8 @@
                   box-shadow: 0 14px 30px rgba(47,127,245,0.24);
                 "
               >
-                Começar Agora
-                <v-icon end icon="mdi-arrow-right" size="18" />
-              </v-btn>
-
-              <v-btn
-                to="/more"
-                rounded="lg"
-                size="x-large"
-                variant="outlined"
-                elevation="0"
-                class="premium-btn"
-                style="
-                  min-width: 220px;
-                  min-height: 56px;
-                  color: white;
-                  border-color: rgba(255,255,255,0.26);
-                  background: rgba(255,255,255,0.04);
-                  backdrop-filter: blur(10px);
-                  -webkit-backdrop-filter: blur(10px);
-                  font-weight: 700;
-                "
-              >
                 Clique para saber mais
+                <v-icon end icon="mdi-arrow-right" size="18" />
               </v-btn>
             </div>
 
@@ -690,7 +658,7 @@
 
             <div class="d-flex flex-wrap justify-center" style="gap: 14px;">
               <v-btn
-                to="/register"
+                to="/contact"
                 rounded="lg"
                 size="x-large"
                 elevation="0"
@@ -704,7 +672,7 @@
                   box-shadow: 0 14px 26px rgba(0,0,0,0.12);
                 "
               >
-                Criar conta
+                Conate-nos
               </v-btn>
 
               <v-btn
@@ -723,7 +691,7 @@
                   font-weight: 700;
                 "
               >
-                Já tenho conta
+                Fazer Login
               </v-btn>
             </div>
           </div>
