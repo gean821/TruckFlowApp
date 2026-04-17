@@ -1,7 +1,8 @@
-import type ItemPlanejamentoCreate from "../Item/ItemPlanejamentoCreate";
+import type ItemPlanejamentoUpdate from "../Item/ItemPlanejamentoUpdate";
 
 export default interface IRecebimentoUpdate {
     fornecedorId: string;
-    dataInicio: Date | null;
-    itensPlanejamento: ItemPlanejamentoCreate[];
+    dataInicio: string | null;
+    dataFim: string | null;
+    itensPlanejamento: ItemPlanejamentoUpdate[];
 }

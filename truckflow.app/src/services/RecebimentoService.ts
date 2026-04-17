@@ -1,40 +1,101 @@
 import http from "@/http/http";
-import type IRecebimentoCreate from '@/Dtos/Recebimento/IRecebimentoCreate';
-import type IRecebimentoUpdate from '@/Dtos/Recebimento/IRecebimentoUpdate';
-import type IRecebimentoResponse from '@/Dtos/Recebimento/IRecebimentoResponse';
+import type IRecebimentoCreate from "@/Dtos/Recebimento/IRecebimentoCreate";
+import type IRecebimentoUpdate from "@/Dtos/Recebimento/IRecebimentoUpdate";
+import type IRecebimentoResponse from "@/Dtos/Recebimento/IRecebimentoResponse";
+import type IPlanejamentoListQuery from "@/Dtos/Recebimento/IPlanejamentoListQuery";
+import type IPlanejamentoDashboard from "@/Dtos/Recebimento/IPlanejamentoDashboard";
+import type IPlanejamentoRelatorio from "@/Dtos/Recebimento/IPlanejamentoRelatorio";
+import type { PaginatedResponse } from "@/entities/paginatedResponse";
 import type { RegistrarEntradaDto } from "@/Dtos/Recebimento/RegistrarEntrada.dto";
 
-export default class RecebimentoService {
+export const RecebimentoService = () => {
 
-  static async GetAll(): Promise<IRecebimentoResponse[]> {
-    const { data } = await http.get<IRecebimentoResponse[]>('/PlanejamentoRecebimento');
+  const getPaged = async (
+    query: IPlanejamentoListQuery
+  ): Promise<PaginatedResponse<IRecebimentoResponse>> => {
+    const { data } = await http.get("/PlanejamentoRecebimento", { params: query });
     return data;
-  }
+  };
 
+  const getAll = async (): Promise<IRecebimentoResponse[]> => {
+    const { data } = await http.get<IRecebimentoResponse[]>("/PlanejamentoRecebimento/all");
+    return data;
+  };
 
-  static async GetById(id: string): Promise<IRecebimentoResponse> {
+  const getById = async (id: string): Promise<IRecebimentoResponse> => {
     const { data } = await http.get<IRecebimentoResponse>(`/PlanejamentoRecebimento/${id}`);
     return data;
-  }
+  };
 
-  static async AddRecebimento(recebimento: IRecebimentoCreate): Promise<IRecebimentoResponse> {
-    const { data } = await http.post<IRecebimentoResponse>('/PlanejamentoRecebimento', recebimento);
+  const getDashboard = async (
+    id: string,
+    data?: string
+  ): Promise<IPlanejamentoDashboard> => {
+    const resp = await http.get<IPlanejamentoDashboard>(
+      `/PlanejamentoRecebimento/${id}/dashboard`,
+      { params: data ? { data } : undefined }
+    );
+    return resp.data;
+  };
+
+  const getRelatorio = async (id: string): Promise<IPlanejamentoRelatorio> => {
+    const { data } = await http.get<IPlanejamentoRelatorio>(
+      `/PlanejamentoRecebimento/${id}/relatorio`
+    );
     return data;
-  }
+  };
 
-  static async UpdateRecebimento(id: string, recebimentoAtualizado: IRecebimentoUpdate): Promise<IRecebimentoResponse> {
-    const { data } = await http.put<IRecebimentoResponse>(`/PlanejamentoRecebimento/${id}`, recebimentoAtualizado);
+  const create = async (
+    recebimento: IRecebimentoCreate
+  ): Promise<IRecebimentoResponse> => {
+    const { data } = await http.post<IRecebimentoResponse>(
+      "/PlanejamentoRecebimento",
+      recebimento
+    );
     return data;
-  }
+  };
 
-  static async DeleteRecebimento(id: string): Promise<void> {
+  const update = async (
+    id: string,
+    payload: IRecebimentoUpdate
+  ): Promise<IRecebimentoResponse> => {
+    const { data } = await http.put<IRecebimentoResponse>(
+      `/PlanejamentoRecebimento/${id}`,
+      payload
+    );
+    return data;
+  };
+
+  const remove = async (id: string): Promise<void> => {
     await http.delete(`/PlanejamentoRecebimento/${id}`);
-  }
+  };
 
-  static async RegistrarEntrada(itemId: string, dto: { quantidade: number, observacao?: string }): Promise<void> {
+  const encerrar = async (id: string): Promise<void> => {
+    await http.post(`/PlanejamentoRecebimento/${id}/encerrar`);
+  };
+
+  const registrarEntrada = async (
+    itemId: string,
+    dto: Omit<RegistrarEntradaDto, "itemId">
+  ): Promise<void> => {
     await http.post(`/recebimentos/registrar-entrada/${itemId}/`, {
       quantidade: dto.quantidade,
       observacao: dto.observacao
     });
-  }
-}
+  };
+
+  return {
+    getPaged,
+    getAll,
+    getById,
+    getDashboard,
+    getRelatorio,
+    create,
+    update,
+    remove,
+    encerrar,
+    registrarEntrada
+  };
+};
+
+export default RecebimentoService;
