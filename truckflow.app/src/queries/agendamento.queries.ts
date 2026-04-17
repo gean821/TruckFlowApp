@@ -6,12 +6,14 @@ import type AgendamentoAdminResponseDtoFilterDto from "@/Dtos/agendamento/agenda
 const service = AgendamentoService();
 
 export function useAgendamentoQuery(
-  params: MaybeRef<AgendamentoAdminResponseDtoFilterDto>
+  params: MaybeRef<AgendamentoAdminResponseDtoFilterDto>,
+  options?: { refetchInterval?: number }
 ) {
   return useQuery({
     queryKey: ["agendamentos", params],
     queryFn: async () => await service.getByFilters(unref(params)),
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
+    refetchInterval: options?.refetchInterval
   });
 }
 

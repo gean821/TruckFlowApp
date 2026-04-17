@@ -21,7 +21,7 @@ export const useAgendamentoStore = defineStore('Agendamento', () => {
 
         try {
             const result = await service.getByFilters(filters);
-            agendamentos.value = result.map(x => ({ ...x }));
+            agendamentos.value = (result.items ?? []).map(x => ({ ...x }));
         } finally {
             loading.value = false;
         }

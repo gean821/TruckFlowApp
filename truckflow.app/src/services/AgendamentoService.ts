@@ -3,6 +3,7 @@ import type CreateAgendamentoAdminDto from "@/Dtos/agendamento/agendamentoAdminC
 import type AgendamentoAdminUpdateDto from "@/Dtos/agendamento/agendamentoAdminUpdate.dto";
 import type AgendamentoAdminResponseDtoFilterDto from "@/Dtos/agendamento/agendamentoFilterDto";
 import type AgendamentoAdminResponse from "@/Dtos/agendamento/agendamentoAdminResponse.dto";
+import type { PaginatedResponse } from "@/entities/paginatedResponse";
 
 export const AgendamentoService = () => {
 
@@ -13,7 +14,7 @@ export const AgendamentoService = () => {
 
   const getByFilters = async (
     filters: AgendamentoAdminResponseDtoFilterDto
-  ): Promise<AgendamentoAdminResponse[]> => {
+  ): Promise<PaginatedResponse<AgendamentoAdminResponse>> => {
 
     const { data } = await http.get("/AgendamentoAdmin", {
       params: filters
