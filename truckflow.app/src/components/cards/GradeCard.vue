@@ -100,6 +100,7 @@
               color="primary"
               hide-details="auto"
               class="mb-3"
+              :min="hoje"
             />
           </v-col>
           <v-col cols="12" md="6">
@@ -112,6 +113,7 @@
               color="primary"
               hide-details="auto"
               class="mb-3"
+              :min="formModelGrade.dataInicio || hoje"
             />
           </v-col>
         </v-row>
@@ -143,6 +145,8 @@
               color="primary"
               hide-details="auto"
               class="mb-3"
+              :hint="isCrossDay ? 'Passa da meia-noite (vira o dia)' : undefined"
+              persistent-hint
             >
               <template v-slot:prepend-inner>
                 <v-icon size="small" color="grey">mdi-clock-end</v-icon>
@@ -179,31 +183,72 @@
             color="primary"
             class="d-flex flex-wrap w-100 mt-1 rounded-lg overflow-hidden border-opacity-50"
           >
-            <v-btn value="1" class="flex-grow-1 text-caption font-weight-bold"
-              >Seg</v-btn
-            >
-            <v-btn value="2" class="flex-grow-1 text-caption font-weight-bold"
-              >Ter</v-btn
-            >
-            <v-btn value="3" class="flex-grow-1 text-caption font-weight-bold"
-              >Qua</v-btn
-            >
-            <v-btn value="4" class="flex-grow-1 text-caption font-weight-bold"
-              >Qui</v-btn
-            >
-            <v-btn value="5" class="flex-grow-1 text-caption font-weight-bold"
-              >Sex</v-btn
-            >
-            <v-btn value="6" class="flex-grow-1 text-caption font-weight-bold"
-              >Sáb</v-btn
-            >
             <v-btn
-              value="0"
-              class="flex-grow-1 text-caption font-weight-bold text-error"
-              >Dom</v-btn
+              v-for="dia in diasOpcoes"
+              :key="dia.value"
+              :value="dia.value"
+              :disabled="!diasNoRange.has(dia.value)"
+              class="flex-grow-1 text-caption font-weight-bold"
+              :class="{ 'text-error': dia.value === '0' }"
             >
+              {{ dia.label }}
+            </v-btn>
           </v-btn-toggle>
+          <div class="text-caption text-grey mt-1 ml-1" v-if="rangeInvalido">
+            Defina início e fim da vigência para habilitar os dias.
+          </div>
         </div>
+
+        <v-alert
+          v-if="preview.total > 0"
+          class="mt-5"
+          type="info"
+          variant="tonal"
+          density="comfortable"
+          border="start"
+          icon="mdi-calendar-check"
+        >
+          <div class="d-flex align-center justify-space-between flex-wrap ga-2">
+            <div>
+              <div class="font-weight-bold text-body-1">
+                {{ preview.total }} vaga{{ preview.total > 1 ? "s" : "" }} serão geradas
+              </div>
+              <div class="text-caption text-grey-darken-1">
+                {{ preview.diasAtivos }} dia{{ preview.diasAtivos > 1 ? "s" : "" }} operados
+                × {{ preview.slotsPorDia }} slot{{ preview.slotsPorDia > 1 ? "s" : "" }}
+                de {{ formModelGrade.intervaloMinutos }} min
+                <span v-if="isCrossDay"> · janela cruza a meia-noite</span>
+              </div>
+            </div>
+            <v-chip size="small" color="primary" variant="flat">
+              {{ preview.janelaLabel }}
+            </v-chip>
+          </div>
+        </v-alert>
+
+        <v-alert
+          v-else-if="temJanela && diasSelecionados.length === 0"
+          class="mt-5"
+          type="info"
+          variant="tonal"
+          density="comfortable"
+          border="start"
+          icon="mdi-gesture-tap"
+        >
+          Selecione ao menos um dia de operação para gerar as vagas.
+        </v-alert>
+
+        <v-alert
+          v-else-if="temJanela && preview.diasAtivos === 0"
+          class="mt-5"
+          type="warning"
+          variant="tonal"
+          density="comfortable"
+          border="start"
+          icon="mdi-alert-outline"
+        >
+          Os dias selecionados não ocorrem no range de vigência escolhido.
+        </v-alert>
 
         <div class="d-flex justify-end mt-8">
           <v-btn
@@ -212,6 +257,7 @@
             rounded="lg"
             type="submit"
             :loading="isCreating"
+            :disabled="preview.total === 0"
             class="px-8 text-capitalize font-weight-bold"
             elevation="2"
           >
@@ -233,7 +279,7 @@ import { useProdutoStore } from "@/stores/ProdutoStore";
 import { useToastStore } from "@/stores/ToastStore";
 import { useLocalDescargaStore } from "@/stores/LocalDescargaStore";
 import { useGrade } from "@/hooks/useGrade";
-import { parseISO, getDay } from "date-fns";
+import { parseISO, getDay, format } from "date-fns";
 import type { GradeCreateDto } from "@/entities/grade.types";
 
 const produtoStore = useProdutoStore();
@@ -247,6 +293,18 @@ const { createGrade, isCreating } = useGrade();
 
 const diasSelecionados = ref<string[]>([]);
 const intervalos = [10, 15, 20, 30, 45, 60, 90, 120];
+
+const diasOpcoes = [
+  { value: "1", label: "Seg" },
+  { value: "2", label: "Ter" },
+  { value: "3", label: "Qua" },
+  { value: "4", label: "Qui" },
+  { value: "5", label: "Sex" },
+  { value: "6", label: "Sáb" },
+  { value: "0", label: "Dom" },
+];
+
+const hoje = format(new Date(), "yyyy-MM-dd");
 
 const formModelGrade = reactive<GradeCreateDto>({
   fornecedorId: "",
@@ -272,6 +330,105 @@ onMounted(async () => {
   }
 });
 
+const rangeInvalido = computed(() => {
+  const { dataInicio, dataFim } = formModelGrade;
+  if (!dataInicio || !dataFim) {
+    return true;
+  }   
+
+  return parseISO(dataFim) < parseISO(dataInicio);
+});
+
+const diasNoRange = computed(() => {
+  const set = new Set<string>();
+  const { dataInicio, dataFim } = formModelGrade;
+  
+  if (!dataInicio || !dataFim) {
+    return set;
+  } 
+
+  const ini = parseISO(dataInicio);
+  const fim = parseISO(dataFim);
+  
+  if (fim < ini) {
+    return set;
+  } 
+
+  const totalDias = Math.floor((fim.getTime() - ini.getTime()) / 86400000) + 1;
+  const limite = Math.min(totalDias, 7);
+
+  for (let i = 0; i < limite; i++) {
+    const d = new Date(ini);
+    d.setDate(ini.getDate() + i);
+    set.add(String(d.getDay()));
+  }
+
+  return set;
+});
+
+watch(diasNoRange, (novosDias) => {
+  diasSelecionados.value = diasSelecionados.value.filter((d) => novosDias.has(d));
+});
+
+const temJanela = computed(
+  () =>
+    !!formModelGrade.horaInicial &&
+    !!formModelGrade.horaFinal &&
+    formModelGrade.horaInicial !== formModelGrade.horaFinal
+);
+
+const isCrossDay = computed(() => {
+  if (!temJanela.value) {
+    return false;
+  } 
+
+  return formModelGrade.horaFinal < formModelGrade.horaInicial;
+});
+
+function minutosDaJanela(): number {
+  if (!temJanela.value) {
+    return 0;
+  } 
+  
+  const [hi, mi] = formModelGrade.horaInicial.split(":").map(Number);
+  const [hf, mf] = formModelGrade.horaFinal.split(":").map(Number);
+  let diff = hf * 60 + mf - (hi * 60 + mi);
+  if (diff <= 0) diff += 24 * 60;
+  return diff;
+}
+
+const preview = computed(() => {
+  const intervalo = Number(formModelGrade.intervaloMinutos) || 0;
+  const minutos = minutosDaJanela();
+  const slotsPorDia = intervalo > 0 ? Math.floor(minutos / intervalo) : 0;
+
+  if (!formModelGrade.dataInicio || !formModelGrade.dataFim || rangeInvalido.value) {
+    return { total: 0, diasAtivos: 0, slotsPorDia, janelaLabel: "" };
+  }
+
+  const ini = parseISO(formModelGrade.dataInicio);
+  const fim = parseISO(formModelGrade.dataFim);
+  const diasSelecionadosSet = new Set(diasSelecionados.value);
+
+  let diasAtivos = 0;
+  const cursor = new Date(ini);
+  while (cursor <= fim) {
+    if (diasSelecionadosSet.has(String(cursor.getDay()))) diasAtivos++;
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  const janelaLabel = temJanela.value
+    ? `${formModelGrade.horaInicial} → ${formModelGrade.horaFinal}${isCrossDay.value ? " (+1d)" : ""}`
+    : "";
+
+  return {
+    total: diasAtivos * slotsPorDia,
+    diasAtivos,
+    slotsPorDia,
+    janelaLabel,
+  };
+});
+
 async function cadastrar() {
   if (diasSelecionados.value.length === 0) {
     toast.notify("Selecione pelo menos um dia de operação.", "warning");
@@ -284,6 +441,11 @@ async function cadastrar() {
     !formModelGrade.localDescargaId
   ) {
     toast.notify("Preencha todos os campos obrigatórios.", "warning");
+    return;
+  }
+
+  if (preview.value.total === 0) {
+    toast.notify("A combinação atual não gera nenhuma vaga.", "warning");
     return;
   }
 
@@ -302,6 +464,6 @@ watch(
       diasSelecionados.value = [diaDaSemana.toString()];
       toast.notify("Dia selecionado automaticamente com base na data.", "info");
     }
-  },
+  }
 );
 </script>
