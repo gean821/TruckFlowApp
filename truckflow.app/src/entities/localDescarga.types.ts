@@ -1,10 +1,11 @@
+import type { IGrade } from "./grade.types";
 import type EntidadeBase from "./IEntidadeBase";
-import type IGrade from "./grade.types";
-import type IProduto from "./produto.types";
+import type { ProdutoResponse } from "./produto.types";
+
 
 export interface ILocalDescarga extends EntidadeBase {
     nome: string;
-    produtos?: IProduto[]
+    produtos?: ProdutoResponse[]
     grades?: IGrade[];
     unidadeEntregaId: string;
     status?: boolean;

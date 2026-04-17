@@ -151,16 +151,15 @@
 import { computed, ref } from 'vue';
 import type { VDataTable } from 'vuetify/components';
 import { formatarData } from '@/utils/date-format';
-import type IProduto from '@/Entities/produto.types';
-import type IFornecedor from '@/Entities/fornecedor.types';
-
+import type { FornecedorResponse } from '@/entities/fornecedor.types';
+import type { ProdutoResponse } from '@/entities/produto.types';
 export type VDataTableHeader = InstanceType<typeof VDataTable>['$props']['headers'];
 
 const props = defineProps<{
   headers: VDataTableHeader;
   subHeaders?: VDataTableHeader;
   items: Array<any>;
-  getSubItems?: (item: IFornecedor) => any[];
+  getSubItems?: (item: FornecedorResponse) => any[];
   title?: string;
   subtitle?: string;
   icon?: string;
@@ -168,11 +167,11 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'add-main'): void;
-  (e: 'edit-main',item: IFornecedor): void;
+  (e: 'edit-main',item: FornecedorResponse): void;
   (e: 'delete-main', id: string): void;
-  (e: 'add-sub', parent: IFornecedor): void;
-  (e: 'vincular-sub', parent: IFornecedor): void;
-  (e: 'edit-sub', item: IProduto): void;
+  (e: 'add-sub', parent: FornecedorResponse): void;
+  (e: 'vincular-sub', parent: FornecedorResponse): void;
+  (e: 'edit-sub', item: ProdutoResponse): void;
   (e: 'delete-sub', fornecedorId: any, produtoId: any): void;
 }>();
 

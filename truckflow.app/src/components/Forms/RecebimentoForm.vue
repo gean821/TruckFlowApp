@@ -162,8 +162,8 @@ const formItem = ref<ItemPlanejamentoCreate>({
 onMounted(async () => {
   try {
     await Promise.all([
-      fornecedorStore.GetAll(),
-      produtoStore.GetAll()
+      fornecedorStore.fetchAll(),
+      produtoStore.getAll()
     ]);
   } catch (e) {
     toast.notify("Erro ao carregar listas de dados.", "error");

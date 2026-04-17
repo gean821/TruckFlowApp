@@ -40,23 +40,23 @@
 </template>
 
 <script setup lang="ts">
+import type { ProdutoResponse } from "@/entities/produto.types";
 import { ref, watch } from "vue";
-import type IProduto from "@/Entities/produto.types";
 
 const props = defineProps<{
   modelValue: boolean;
   isEditing: boolean;
-  produto: IProduto;
+  produto: ProdutoResponse;
   locais: Array<any>
 }>();
 
 const emit = defineEmits<{
   (e: "update:modelValue", value: boolean): void;
-  (e: "salvar", value: IProduto): void;
+  (e: "salvar", value: ProdutoResponse): void;
 }>();
 
 const dialog = ref(props.modelValue);
-const formModel = ref<IProduto>({ ...props.produto });
+const formModel = ref<ProdutoResponse>({ ...props.produto });
 
 watch(() => props.modelValue, val => (dialog.value = val));
 watch(() => dialog.value, val => emit("update:modelValue", val));

@@ -57,7 +57,6 @@
       </v-col>
     </v-row>
 
-    <!-- Grid de Produtos (Paginado) -->
     <v-row v-else-if="paginatedProdutos.length > 0">
       <v-col v-for="produto in paginatedProdutos" :key="produto.id" cols="12" sm="6" md="4">
         <v-card 
@@ -128,18 +127,16 @@
       </v-col>
     </v-row>
 
-    <!-- Estado de Procura Vazia -->
     <v-row v-else class="justify-center py-12">
       <v-col cols="12" class="text-center">
         <v-avatar size="80" color="grey-lighten-4" class="mb-4">
           <v-icon size="40" color="grey-lighten-1">mdi-package-variant-remove</v-icon>
         </v-avatar>
-        <p class="text-h6 text-medium-emphasis">Não encontrámos nenhum produto.</p>
+        <p class="text-h6 text-medium-emphasis">Não encontramos nenhum produto.</p>
         <p class="text-body-2 text-disabled">Tente ajustar os seus termos de pesquisa.</p>
       </v-col>
     </v-row>
 
-    <!-- Navegação: Paginação -->
     <v-row v-if="totalPages > 1" class="mt-8">
       <v-col cols="12" class="d-flex justify-center">
         <v-pagination
@@ -153,7 +150,6 @@
       </v-col>
     </v-row>
 
-    <!-- Modais de Suporte -->
     <ProdutoFormModal
       :key="editingProduto?.id || 'new-product'"
       :open="modalOpen"
@@ -176,7 +172,7 @@ import { ref, computed } from "vue";
 import ProdutoFormModal from "@/components/Forms/ProdutoFormModal.vue";
 import ConfirmDeleteDialog from "@/components/modals/ConfirmDeleteDialog.vue";
 import { useProduto } from "@/hooks/useProdutos";
-import type { ProdutoCreateDto, ProdutoResponse } from "@/Entities/produto.types";
+import type { ProdutoCreateDto, ProdutoResponse } from "@/entities/produto.types";
 
 const { produtos, loading, create, update, remove } = useProduto();
 
@@ -202,24 +198,20 @@ const filteredProdutos = computed(() => {
   });
 });
 
-// 2. Cálculo do total de páginas
 const totalPages = computed(() => Math.ceil(filteredProdutos.value.length / itemsPerPage.value));
 
-// 3. Fatiamento do array para a página atual (Otimização de renderização)
 const paginatedProdutos = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value;
   const end = start + itemsPerPage.value;
   return filteredProdutos.value.slice(start, end);
 });
 
-// Mensagem de confirmação dinâmica
 const deleteMessage = computed(() => 
   targetProduto.value 
     ? `Tem a certeza que deseja eliminar o produto "${targetProduto.value.nome}"? Esta ação não pode ser revertida.` 
     : ""
 );
 
-// Métodos de Gestão de Modais
 const openCreateModal = () => { 
   editingProduto.value = undefined; 
   modalOpen.value = true; 

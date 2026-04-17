@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { CreateLocalDescargaDto, LocalDescargaResponse, MudarStatusLocalDto, UpdateLocalDescargaDto } from '@/Entities/localDescarga.types';
+import type { CreateLocalDescargaDto, LocalDescargaResponse, MudarStatusLocalDto, UpdateLocalDescargaDto } from '@/entities/localDescarga.types';
 import { LocalDescargaService } from '@/services/LocalDescargaService';
 
 export const useLocalDescargaStore = defineStore('localDescarga', () => {

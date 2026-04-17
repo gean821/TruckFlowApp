@@ -1,4 +1,4 @@
-import type { CreateLocalDescargaDto, LocalDescargaResponse, MudarStatusLocalDto, UpdateLocalDescargaDto } from "@/Entities/localDescarga.types";
+import type { CreateLocalDescargaDto, LocalDescargaResponse, MudarStatusLocalDto, UpdateLocalDescargaDto } from "@/entities/localDescarga.types";
 import type { MudarStatusUnidadeDto, UnidadeEntregaResponse } from "@/entities/unidadeEntrega.types";
 import http from "@/http/http";
 

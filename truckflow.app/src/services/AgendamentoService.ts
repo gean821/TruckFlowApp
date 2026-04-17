@@ -4,46 +4,65 @@ import type AgendamentoAdminUpdateDto from "@/Dtos/agendamento/agendamentoAdminU
 import type AgendamentoAdminResponseDtoFilterDto from "@/Dtos/agendamento/agendamentoFilterDto";
 import type AgendamentoAdminResponse from "@/Dtos/agendamento/agendamentoAdminResponse.dto";
 
-export default class AgendamentoService {
+export const AgendamentoService = () => {
 
-  static async GetById(id: string): Promise<AgendamentoAdminResponse> {
+  const getById = async (id: string): Promise<AgendamentoAdminResponse> => {
     const { data } = await http.get(`/AgendamentoAdmin/${id}`);
     return data;
-  }
+  };
 
-  static async getByFilters(
+  const getByFilters = async (
     filters: AgendamentoAdminResponseDtoFilterDto
-  ): Promise<AgendamentoAdminResponse[]> {
-    const { data } = await http.get('/AgendamentoAdmin', {
+  ): Promise<AgendamentoAdminResponse[]> => {
+
+    const { data } = await http.get("/AgendamentoAdmin", {
       params: filters
     });
 
     return data;
-  }
+  };
 
-  static async AddAgendamento(agendamento: CreateAgendamentoAdminDto): Promise<AgendamentoAdminResponse> {
-    const { data } = await http.post('/AgendamentoAdmin', agendamento);
+  const create = async (
+    payload: CreateAgendamentoAdminDto
+  ): Promise<AgendamentoAdminResponse> => {
+
+    const { data } = await http.post("/AgendamentoAdmin", payload);
     return data;
-  }
+  };
 
-  static async checkIn(agendamentoId: string): Promise<void> {
-    await http.patch(`/AgendamentoAdmin/${agendamentoId}/check-in`);
-  }
+  const update = async (
+    id: string,
+    payload: AgendamentoAdminUpdateDto
+  ): Promise<AgendamentoAdminResponse> => {
 
-  static async checkOut(agendamentoId: string): Promise<void> {
-    await http.patch(`AgendamentoAdmin/${agendamentoId}/check-out`);
-  }
-
-  static async cancelar(agendamentoId: string): Promise<void> {
-    await http.patch(`/AgendamentoAdmin/${agendamentoId}/cancelar`);
-  }
-
-  static async UpdateAgendamento(id: string, agendamentoAtualizado: AgendamentoAdminUpdateDto): Promise<AgendamentoAdminResponse> {
-    const { data } = await http.put(`/AgendamentoAdmin/${id}`, agendamentoAtualizado);
+    const { data } = await http.put(`/AgendamentoAdmin/${id}`, payload);
     return data;
-  }
+  };
 
-  static async DeleteAgendamento(id: string): Promise<void> {
+  const remove = async (id: string): Promise<void> => {
     await http.delete(`/AgendamentoAdmin/${id}`);
-  }
-}
+  };
+
+  const checkIn = async (id: string): Promise<void> => {
+    await http.patch(`/AgendamentoAdmin/${id}/check-in`);
+  };
+
+  const checkOut = async (id: string): Promise<void> => {
+    await http.patch(`/AgendamentoAdmin/${id}/check-out`);
+  };
+
+  const cancelar = async (id: string): Promise<void> => {
+    await http.patch(`/AgendamentoAdmin/${id}/cancelar`);
+  };
+
+  return {
+    getById,
+    getByFilters,
+    create,
+    update,
+    remove,
+    checkIn,
+    checkOut,
+    cancelar
+  };
+};

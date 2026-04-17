@@ -9,7 +9,7 @@
               <v-img
                 src="/Rectangle.svg"
                 alt="TruckFlow"
-                width="250"
+                width="350"
                 class="mb-6 float-logo"
                 contain
               />
@@ -40,7 +40,7 @@
 
               <div class="d-flex gap-4 flex-wrap mb-10 hero-actions-left">
                 <v-btn
-                  to="/register"
+                  to="/home"
                   color="white"
                   size="x-large"
                   class="text-primary font-weight-bold px-8"
@@ -48,20 +48,9 @@
                   rounded="lg"
                   style="min-width: 210px;"
                 >
-                  Começar Agora
-                </v-btn>
-
-                <v-btn
-                  to="/home"
-                  variant="outlined"
-                  color="white"
-                  size="x-large"
-                  class="px-8"
-                  rounded="lg"
-                  style="min-width: 210px; border-color: rgba(255,255,255,0.28);"
-                >
                   Voltar ao Início
                 </v-btn>
+
               </div>
 
               <v-row>

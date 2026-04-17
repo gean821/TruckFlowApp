@@ -162,7 +162,7 @@ import { ref, computed } from "vue";
 import { useLocalDescarga } from "@/hooks/useLocalDescarga";
 import LocalDescargaFormModal from "@/components/Forms/LocalDescargaFormModal.vue";
 import ConfirmDeleteDialog from "@/components/modals/ConfirmDeleteDialog.vue";
-import type { LocalDescargaResponse, CreateLocalDescargaDto } from "@/Entities/localDescarga.types";
+import type { LocalDescargaResponse, CreateLocalDescargaDto } from "@/entities/localDescarga.types";
 
 const { locais, loading, create, update, remove } = useLocalDescarga();
 
