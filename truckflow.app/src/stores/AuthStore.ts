@@ -78,6 +78,11 @@ export const useAuthStore = defineStore("auth", {
             } catch {
                 this.logout();
             }
+        },
+
+        updateUser(data: Partial<JwtPayload>) {
+            if (!this.user) return;
+            this.user = { ...this.user, ...data };
         }
     }
 });

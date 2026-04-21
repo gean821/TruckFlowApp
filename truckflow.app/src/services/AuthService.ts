@@ -17,8 +17,13 @@ export class AuthService {
         return data;
     }
 
+    static async getById(id: string): Promise<AdminResponseDto> {
+        const { data } = await http.get(`/AuthAdmin/${id}`);
+        return data;
+ }
+
     static async update(id: string, dto: AdminUpdateDto): Promise<AdminResponseDto> {
-        const adminAtualizado = await http.put(`/AuthAdmin/update/${id}`, dto);
+        const adminAtualizado = await http.put(`/AuthAdmin/${id}`, dto);
         return adminAtualizado.data;
     }
 

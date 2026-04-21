@@ -1,205 +1,159 @@
 <template>
   <v-dialog
     :model-value="modelValue"
-    max-width="760"
+    max-width="520"
     @update:model-value="emit('update:modelValue', $event)"
   >
-    <v-card class="rounded-xl">
-      <v-card-title class="d-flex justify-space-between align-center px-6 pt-6 pb-2">
-        <span class="text-h5 font-weight-bold">Editar Informações</span>
+    <v-card class="modal-card" elevation="0">
 
-        <v-btn
-          icon="mdi-close"
-          variant="text"
-          @click="closeModal"
-        />
-      </v-card-title>
+      <div class="modal-header px-8 pt-8 pb-6">
+        <div class="d-flex justify-space-between align-center">
+          <div>
+            <div class="modal-title">Meu Perfil</div>
+            <div class="modal-subtitle">Edite suas informações pessoais</div>
+          </div>
+          <v-btn icon="mdi-close" variant="text" density="comfortable" class="close-btn" @click="closeModal" />
+        </div>
 
-      <v-card-text class="px-6 pb-6">
+        <div class="d-flex align-center ga-4 mt-6">
+          <div class="avatar-wrapper" @click="triggerFileInput">
+            <v-avatar size="72" class="profile-avatar">
+              <v-img v-if="previewPhotoUrl || photoUrl" :src="previewPhotoUrl || photoUrl" cover />
+              <span v-else class="avatar-initials">{{ initials }}</span>
+            </v-avatar>
+            <div class="avatar-overlay">
+              <v-icon size="18" color="white">mdi-camera</v-icon>
+            </div>
+            <input ref="fileInput" type="file" accept="image/*" class="d-none" @change="onFileChange" />
+          </div>
+          <div>
+            <div class="user-name">{{ form.username || 'Usuário' }}</div>
+            <div class="user-email">{{ form.email || '' }}</div>
+            <div class="change-photo-link mt-1" @click="triggerFileInput">Alterar foto</div>
+          </div>
+        </div>
+      </div>
+
+      <v-card-text class="px-8 pb-8 pt-5">
         <v-form @submit.prevent="submitForm">
-          <div class="d-flex flex-column align-center mb-6">
-            <div class="avatar-wrapper">
-              <v-avatar size="96" class="profile-avatar">
-                <v-img
-                  v-if="previewPhotoUrl || photoUrl"
-                  :src="previewPhotoUrl || photoUrl"
-                  cover
-                />
-                <span v-else class="text-h5 font-weight-bold">
-                  {{ initials }}
-                </span>
-              </v-avatar>
 
-              <input
-                ref="fileInput"
-                type="file"
-                accept="image/*"
-                class="d-none"
-                @change="onFileChange"
-              />
+          <div class="section-label">Informações da Conta</div>
 
-              <v-btn
-                icon="mdi-camera"
-                size="small"
-                color="primary"
-                class="camera-btn"
-                @click="triggerFileInput"
+          <div class="field-group">
+            <div class="field-wrapper">
+              <label class="field-label">Usuário</label>
+              <v-text-field
+                v-model="form.username"
+                variant="outlined"
+                density="compact"
+                prepend-inner-icon="mdi-account-outline"
+                placeholder="Seu nome de usuário"
+                :error-messages="errors.username"
+                hide-details="auto"
+                class="modern-field"
               />
             </div>
 
-            <div class="text-caption text-medium-emphasis mt-3">
-              Clique na câmera para alterar a foto
+            <div class="field-wrapper">
+              <label class="field-label">E-mail</label>
+              <v-text-field
+                v-model="form.email"
+                variant="outlined"
+                density="compact"
+                prepend-inner-icon="mdi-email-outline"
+                placeholder="seu@email.com"
+                :error-messages="errors.email"
+                hide-details="auto"
+                class="modern-field"
+              />
+            </div>
+
+            <div class="field-wrapper">
+              <label class="field-label">Telefone / WhatsApp</label>
+              <v-text-field
+                v-model="form.telefone"
+                variant="outlined"
+                density="compact"
+                prepend-inner-icon="mdi-phone-outline"
+                placeholder="(11) 99999-9999"
+                :error-messages="errors.telefone"
+                hide-details="auto"
+                class="modern-field"
+                @input="formatPhone"
+              />
             </div>
           </div>
 
-          <v-card variant="outlined" class="mb-4 rounded-lg">
-            <v-card-text>
-              <div class="text-subtitle-1 font-weight-bold mb-3">
-                Escolha o que deseja editar
-              </div>
+          <div class="section-label mt-5">Segurança</div>
 
-              <v-row>
-                <v-col cols="12" sm="6">
-                  <v-switch
-                    v-model="edit.photo"
-                    label="Foto de perfil"
-                    color="primary"
-                    hide-details
-                  />
-                </v-col>
-
-                <v-col cols="12" sm="6">
-                  <v-switch
-                    v-model="edit.username"
-                    label="Usuário"
-                    color="primary"
-                    hide-details
-                  />
-                </v-col>
-
-                <v-col cols="12" sm="6">
-                  <v-switch
-                    v-model="edit.email"
-                    label="E-mail"
-                    color="primary"
-                    hide-details
-                  />
-                </v-col>
-
-                <v-col cols="12" sm="6">
-                  <v-switch
-                    v-model="edit.telefone"
-                    label="Telefone / WhatsApp"
-                    color="primary"
-                    hide-details
-                  />
-                </v-col>
-
-                <v-col cols="12" sm="6">
-                  <v-switch
-                    v-model="edit.password"
-                    label="Senha"
-                    color="primary"
-                    hide-details
-                  />
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
-
-          <v-row>
-            <v-col cols="12">
-              <v-text-field
-                v-model="form.username"
-                label="Usuário"
-                variant="outlined"
-                density="comfortable"
-                prepend-inner-icon="mdi-account-outline"
-                :disabled="!edit.username"
-                :error-messages="errors.username"
-              />
-            </v-col>
-
-            <v-col cols="12">
-              <v-text-field
-                v-model="form.email"
-                label="E-mail Corporativo"
-                variant="outlined"
-                density="comfortable"
-                prepend-inner-icon="mdi-email-outline"
-                :disabled="!edit.email"
-                :error-messages="errors.email"
-              />
-            </v-col>
-
-            <v-col cols="12">
-              <v-text-field
-                v-model="form.telefone"
-                label="Telefone / WhatsApp"
-                variant="outlined"
-                density="comfortable"
-                prepend-inner-icon="mdi-phone-outline"
-                :disabled="!edit.telefone"
-                :error-messages="errors.telefone"
-                @input="formatPhone"
-                placeholder="(11) 99999-9999"
-              />
-            </v-col>
-
-            <v-col cols="12">
+          <div class="field-group">
+            <div class="field-wrapper">
+              <label class="field-label">
+                Nova Senha <span class="optional">(opcional)</span>
+              </label>
               <v-text-field
                 v-model="form.password"
-                label="Senha"
                 variant="outlined"
-                density="comfortable"
+                density="compact"
                 prepend-inner-icon="mdi-lock-outline"
                 :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
                 :type="showPassword ? 'text' : 'password'"
-                :disabled="!edit.password"
+                placeholder="••••••••"
                 :error-messages="errors.password"
+                hide-details="auto"
+                class="modern-field"
                 @click:append-inner="showPassword = !showPassword"
               />
-            </v-col>
+            </div>
 
-            <v-col cols="12">
+            <div class="field-wrapper">
+              <label class="field-label">Confirmar Nova Senha</label>
               <v-text-field
                 v-model="form.confirmPassword"
-                label="Confirmar Senha"
                 variant="outlined"
-                density="comfortable"
+                density="compact"
                 prepend-inner-icon="mdi-lock-check-outline"
                 :type="showPassword ? 'text' : 'password'"
-                :disabled="!edit.password"
+                placeholder="••••••••"
                 :error-messages="errors.confirmPassword"
+                hide-details="auto"
+                class="modern-field"
+                :disabled="!form.password"
               />
-            </v-col>
-          </v-row>
+            </div>
 
-          <v-alert
-            v-if="edit.password"
-            type="info"
-            variant="tonal"
-            class="mt-2"
-          >
-            A senha deve ter no mínimo 6 caracteres, com letra maiúscula,
-            letra minúscula, número e caractere especial.
+            <div v-if="form.password" class="password-hints">
+              <div class="hint-item" :class="{ active: form.password.length >= 6 }">
+                <v-icon size="13">{{ form.password.length >= 6 ? 'mdi-check-circle' : 'mdi-circle-outline' }}</v-icon>
+                Mínimo 6 caracteres
+              </div>
+              <div class="hint-item" :class="{ active: /[A-Z]/.test(form.password) }">
+                <v-icon size="13">{{ /[A-Z]/.test(form.password) ? 'mdi-check-circle' : 'mdi-circle-outline' }}</v-icon>
+                Letra maiúscula
+              </div>
+              <div class="hint-item" :class="{ active: /\d/.test(form.password) }">
+                <v-icon size="13">{{ /\d/.test(form.password) ? 'mdi-check-circle' : 'mdi-circle-outline' }}</v-icon>
+                Número
+              </div>
+              <div class="hint-item" :class="{ active: /[^A-Za-z0-9]/.test(form.password) }">
+                <v-icon size="13">{{ /[^A-Za-z0-9]/.test(form.password) ? 'mdi-check-circle' : 'mdi-circle-outline' }}</v-icon>
+                Caractere especial
+              </div>
+            </div>
+          </div>
+
+          <v-alert v-if="successMessage" type="success" variant="tonal" density="compact" class="mt-4 rounded-lg">
+            {{ successMessage }}
+          </v-alert>
+          <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact" class="mt-4 rounded-lg">
+            {{ errorMessage }}
           </v-alert>
 
-          <div class="d-flex justify-end ga-3 mt-5">
-            <v-btn
-              variant="text"
-              color="default"
-              @click="closeModal"
-            >
+          <div class="d-flex ga-3 mt-6">
+            <v-btn variant="outlined" color="grey" class="flex-1 action-btn" @click="closeModal">
               Cancelar
             </v-btn>
-
-            <v-btn
-              color="primary"
-              type="submit"
-              :loading="loading"
-              class="px-6"
-            >
+            <v-btn color="#195FA0" type="submit" :loading="saving" class="flex-1 action-btn save-btn">
               Salvar Alterações
             </v-btn>
           </div>
@@ -211,7 +165,8 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import type AdminUpdateDto from '@/Dtos/adm/adminUpdateDto'
+import { AuthService } from '@/services/AuthService'
+import { useAuthStore } from '@/stores/AuthStore'
 
 type EditProfileForm = {
   email: string
@@ -221,41 +176,23 @@ type EditProfileForm = {
   telefone: string
 }
 
-type EditFlags = {
-  photo: boolean
-  email: boolean
-  password: boolean
-  username: boolean
-  telefone: boolean
-}
-
-type SavePayload = AdminUpdateDto & {
-  photoFile?: File | null
-  changedFields: {
-    photo: boolean
-    email: boolean
-    password: boolean
-    username: boolean
-    telefone: boolean
-  }
-}
-
 const props = defineProps<{
   modelValue: boolean
-  adminData?: Partial<AdminUpdateDto> | null
-  loading?: boolean
   photoUrl?: string
 }>()
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
-  (e: 'save', value: SavePayload): void
 }>()
+
+const authStore = useAuthStore()
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const showPassword = ref(false)
-const selectedPhotoFile = ref<File | null>(null)
 const previewPhotoUrl = ref('')
+const saving = ref(false)
+const successMessage = ref('')
+const errorMessage = ref('')
 
 const form = reactive<EditProfileForm>({
   email: '',
@@ -265,75 +202,40 @@ const form = reactive<EditProfileForm>({
   telefone: ''
 })
 
-const edit = reactive<EditFlags>({
-  photo: false,
-  email: false,
-  password: false,
-  username: false,
-  telefone: false
-})
-
 const errors = reactive<Record<string, string>>({
   email: '',
   password: '',
   confirmPassword: '',
   username: '',
-  telefone: '',
-  photo: ''
+  telefone: ''
 })
 
-const photoUrl = computed(() => props.photoUrl || '')
-
 const initials = computed(() => {
-  const text = form.username?.trim() || 'U'
+  const text = form.username?.trim() || authStore.user?.unique_name || 'U'
   return text.substring(0, 2).toUpperCase()
 })
 
-watch(
-  () => props.modelValue,
-  (isOpen) => {
-    if (isOpen) {
-      fillForm()
-      resetEditFlags()
-      clearErrors()
-      showPassword.value = false
-      selectedPhotoFile.value = null
-      previewPhotoUrl.value = ''
-    }
-  },
-  { immediate: true }
-)
-
-watch(
-  () => props.adminData,
-  () => {
-    if (props.modelValue) {
-      fillForm()
-    }
-  },
-  { deep: true }
-)
+watch(() => props.modelValue, (isOpen) => {
+  if (isOpen) {
+    fillForm()
+    clearErrors()
+    showPassword.value = false
+    previewPhotoUrl.value = ''
+    successMessage.value = ''
+    errorMessage.value = ''
+  }
+}, { immediate: true })
 
 function fillForm() {
-  form.email = props.adminData?.email || ''
+  form.email = authStore.user?.email || ''
   form.password = ''
   form.confirmPassword = ''
-  form.username = props.adminData?.username || ''
-  form.telefone = props.adminData?.telefone || ''
-}
-
-function resetEditFlags() {
-  edit.photo = false
-  edit.email = false
-  edit.password = false
-  edit.username = false
-  edit.telefone = false
+  form.username = authStore.user?.unique_name || ''
+  form.telefone = ''
 }
 
 function clearErrors() {
-  Object.keys(errors).forEach((key) => {
-    errors[key] = ''
-  })
+  Object.keys(errors).forEach((key) => { errors[key] = '' })
 }
 
 function closeModal() {
@@ -341,24 +243,18 @@ function closeModal() {
 }
 
 function triggerFileInput() {
-  edit.photo = true
   fileInput.value?.click()
 }
 
 function onFileChange(event: Event) {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
-
   if (!file) return
-
-  selectedPhotoFile.value = file
   previewPhotoUrl.value = URL.createObjectURL(file)
-  edit.photo = true
 }
 
 function formatPhone() {
   const digits = form.telefone.replace(/\D/g, '').slice(0, 11)
-
   if (digits.length <= 10) {
     form.telefone = digits
       .replace(/^(\d{0,2})/, '($1')
@@ -378,22 +274,12 @@ function isValidBrazilPhone(value: string) {
 }
 
 function isValidIdentityPassword(value: string) {
-  const hasMinLength = value.length >= 6
-  const hasUpper = /[A-Z]/.test(value)
-  const hasLower = /[a-z]/.test(value)
-  const hasNumber = /\d/.test(value)
-  const hasSpecial = /[^A-Za-z0-9]/.test(value)
-
-  return hasMinLength && hasUpper && hasLower && hasNumber && hasSpecial
-}
-
-function hasAtLeastOneChange() {
   return (
-    edit.photo ||
-    edit.email ||
-    edit.password ||
-    edit.username ||
-    edit.telefone
+    value.length >= 6 &&
+    /[A-Z]/.test(value) &&
+    /[a-z]/.test(value) &&
+    /\d/.test(value) &&
+    /[^A-Za-z0-9]/.test(value)
   )
 }
 
@@ -401,51 +287,32 @@ function validateForm() {
   clearErrors()
   let isValid = true
 
-  if (!hasAtLeastOneChange()) {
-    errors.username = 'Selecione pelo menos uma informação para editar'
+  if (!form.username.trim()) {
+    errors.username = 'Usuário é obrigatório'
+    isValid = false
+  } else if (form.username.trim().length < 3) {
+    errors.username = 'Usuário deve ter pelo menos 3 caracteres'
     isValid = false
   }
 
-  if (edit.username) {
-    if (!form.username.trim()) {
-      errors.username = 'Usuário é obrigatório'
-      isValid = false
-    } else if (form.username.trim().length < 3) {
-      errors.username = 'Usuário deve ter pelo menos 3 caracteres'
-      isValid = false
-    }
+  if (!form.email.trim()) {
+    errors.email = 'E-mail é obrigatório'
+    isValid = false
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+    errors.email = 'E-mail inválido'
+    isValid = false
   }
 
-  if (edit.email) {
-    if (!form.email.trim()) {
-      errors.email = 'E-mail é obrigatório'
-      isValid = false
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      errors.email = 'E-mail inválido'
-      isValid = false
-    }
+  if (form.telefone && !isValidBrazilPhone(form.telefone)) {
+    errors.telefone = 'Telefone inválido. Use DDD + número'
+    isValid = false
   }
 
-  if (edit.telefone) {
-    if (!form.telefone.trim()) {
-      errors.telefone = 'Telefone é obrigatório'
-      isValid = false
-    } else if (!isValidBrazilPhone(form.telefone)) {
-      errors.telefone = 'Telefone inválido. Use DDD + número'
+  if (form.password) {
+    if (!isValidIdentityPassword(form.password)) {
+      errors.password = 'Senha fraca. Verifique os requisitos abaixo'
       isValid = false
     }
-  }
-
-  if (edit.password) {
-    if (!form.password) {
-      errors.password = 'Senha é obrigatória'
-      isValid = false
-    } else if (!isValidIdentityPassword(form.password)) {
-      errors.password =
-        'A senha deve conter maiúscula, minúscula, número, símbolo e mínimo de 6 caracteres'
-      isValid = false
-    }
-
     if (!form.confirmPassword) {
       errors.confirmPassword = 'Confirme a senha'
       isValid = false
@@ -455,48 +322,209 @@ function validateForm() {
     }
   }
 
-  if (edit.photo && !selectedPhotoFile.value && !previewPhotoUrl.value) {
-    errors.photo = 'Selecione uma foto válida'
-    isValid = false
-  }
-
   return isValid
 }
 
-function submitForm() {
+async function submitForm() {
   if (!validateForm()) return
 
-  emit('save', {
-    email: edit.email ? form.email.trim() : '',
-    password: edit.password ? form.password.trim() : '',
-    username: edit.username ? form.username.trim() : '',
-    telefone: edit.telefone ? form.telefone.trim() : '',
-    photoFile: edit.photo ? selectedPhotoFile.value : null,
-    changedFields: {
-      photo: edit.photo,
-      email: edit.email,
-      password: edit.password,
-      username: edit.username,
-      telefone: edit.telefone
+  const userId = authStore.userId
+  if (!userId) {
+    errorMessage.value = 'Usuário não identificado. Faça login novamente.'
+    return
+  }
+
+  saving.value = true
+  errorMessage.value = ''
+  successMessage.value = ''
+
+  try {
+    const dto = {
+        username: form.username.trim(),
+        email: form.email.trim(),
+        telefone: form.telefone.trim() || undefined,
+        password: form.password.trim() || undefined,
     }
-  })
+
+    await AuthService.update(userId, dto)
+    
+    authStore.updateUser({
+        unique_name: dto.username,
+        email: dto.email
+    })
+
+      successMessage.value = 'Informações atualizadas com sucesso!'
+      setTimeout(() => closeModal(), 1500)
+  } catch (err: any) {
+      errorMessage.value = err?.response?.data?.message || 'Erro ao salvar. Tente novamente.'
+  } finally {
+      saving.value = false
+  }
 }
 </script>
 
 <style scoped>
+.modal-card {
+  border-radius: 20px !important;
+  overflow: hidden;
+}
+
+.modal-header {
+  background: linear-gradient(135deg, rgb(24, 103, 192) 0%, rgb(24, 103, 192) 100%);
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.3px;
+}
+
+.modal-subtitle {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 2px;
+}
+
+.close-btn {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
 .avatar-wrapper {
   position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .profile-avatar {
-  border: 2px solid #eeeeee;
-  background: rgba(25, 95, 160, 0.12);
+  border: 3px solid rgba(255, 255, 255, 0.35);
+  transition: opacity 0.2s;
 }
 
-.camera-btn {
+.avatar-wrapper:hover .profile-avatar {
+  opacity: 0.8;
+}
+
+.avatar-overlay {
   position: absolute;
-  right: -6px;
-  bottom: -6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.avatar-wrapper:hover .avatar-overlay {
+  opacity: 1;
+}
+
+.avatar-initials {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: white;
+}
+
+.user-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+}
+
+.user-email {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.65);
+  margin-top: 2px;
+}
+
+.change-photo-link {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.section-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #195FA0;
+  margin-bottom: 12px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.optional {
+  font-weight: 400;
+  color: #9CA3AF;
+  font-size: 0.75rem;
+}
+
+.modern-field :deep(.v-field) {
+  border-radius: 10px !important;
+  font-size: 0.9rem;
+}
+
+.modern-field :deep(.v-field--focused .v-field__outline) {
+  --v-field-border-width: 2px;
+}
+
+.password-hints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  padding: 10px 14px;
+  background: #F8FAFC;
+  border-radius: 10px;
+  border: 1px solid #E5E7EB;
+}
+
+.hint-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.74rem;
+  color: #9CA3AF;
+  transition: color 0.2s;
+}
+
+.hint-item.active {
+  color: #16A34A;
+}
+
+.hint-item.active .v-icon {
+  color: #16A34A !important;
+}
+
+.action-btn {
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  height: 42px !important;
+}
+
+.save-btn {
+  color: white !important;
 }
 </style>
