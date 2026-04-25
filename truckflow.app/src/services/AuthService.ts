@@ -23,7 +23,7 @@ export class AuthService {
  }
 
     static async update(id: string, dto: AdminUpdateDto): Promise<AdminResponseDto> {
-        const adminAtualizado = await http.put(`/AuthAdmin/${id}`, dto);
+        const adminAtualizado = await http.patch(`/AuthAdmin/${id}`, dto);
         return adminAtualizado.data;
     }
 

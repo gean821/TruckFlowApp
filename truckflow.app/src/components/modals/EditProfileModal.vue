@@ -4,44 +4,44 @@
     max-width="520"
     @update:model-value="emit('update:modelValue', $event)"
   >
-    <v-card class="modal-card" elevation="0">
+    <v-card :style="styles.modalCard" elevation="0">
 
-      <div class="modal-header px-8 pt-8 pb-6">
-        <div class="d-flex justify-space-between align-center">
+      <div :style="styles.modalHeader">
+        <div :style="styles.headerTop">
           <div>
-            <div class="modal-title">Meu Perfil</div>
-            <div class="modal-subtitle">Edite suas informações pessoais</div>
+            <div :style="styles.modalTitle">Meu Perfil</div>
+            <div :style="styles.modalSubtitle">Edite suas informações pessoais</div>
           </div>
-          <v-btn icon="mdi-close" variant="text" density="comfortable" class="close-btn" @click="closeModal" />
+          <v-btn icon="mdi-close" variant="text" density="comfortable" :style="styles.closeBtn" @click="closeModal" />
         </div>
 
-        <div class="d-flex align-center ga-4 mt-6">
-          <div class="avatar-wrapper" @click="triggerFileInput">
-            <v-avatar size="72" class="profile-avatar">
+        <div :style="styles.avatarRow">
+          <div :style="styles.avatarWrapper" @click="triggerFileInput" @mouseenter="showAvatarOverlay = true" @mouseleave="showAvatarOverlay = false">
+            <v-avatar size="72" :style="styles.profileAvatar">
               <v-img v-if="previewPhotoUrl || photoUrl" :src="previewPhotoUrl || photoUrl" cover />
-              <span v-else class="avatar-initials">{{ initials }}</span>
+              <span v-else :style="styles.avatarInitials">{{ initials }}</span>
             </v-avatar>
-            <div class="avatar-overlay">
+            <div :style="{ ...styles.avatarOverlay, opacity: showAvatarOverlay ? 1 : 0 }">
               <v-icon size="18" color="white">mdi-camera</v-icon>
             </div>
-            <input ref="fileInput" type="file" accept="image/*" class="d-none" @change="onFileChange" />
+            <input ref="fileInput" type="file" accept="image/*" style="display: none" @change="onFileChange" />
           </div>
           <div>
-            <div class="user-name">{{ form.username || 'Usuário' }}</div>
-            <div class="user-email">{{ form.email || '' }}</div>
-            <div class="change-photo-link mt-1" @click="triggerFileInput">Alterar foto</div>
+            <div :style="styles.userName">{{ form.username || 'Usuário' }}</div>
+            <div :style="styles.userEmail">{{ form.email || '' }}</div>
+            <div :style="styles.changePhotoLink" @click="triggerFileInput">Alterar foto</div>
           </div>
         </div>
       </div>
 
-      <v-card-text class="px-8 pb-8 pt-5">
+      <v-card-text :style="styles.cardText">
         <v-form @submit.prevent="submitForm">
 
-          <div class="section-label">Informações da Conta</div>
+          <div :style="styles.sectionLabel">Informações da Conta</div>
 
-          <div class="field-group">
-            <div class="field-wrapper">
-              <label class="field-label">Usuário</label>
+          <div :style="styles.fieldGroup">
+            <div :style="styles.fieldWrapper">
+              <label :style="styles.fieldLabel">Usuário</label>
               <v-text-field
                 v-model="form.username"
                 variant="outlined"
@@ -50,12 +50,12 @@
                 placeholder="Seu nome de usuário"
                 :error-messages="errors.username"
                 hide-details="auto"
-                class="modern-field"
+                :style="styles.modernField"
               />
             </div>
 
-            <div class="field-wrapper">
-              <label class="field-label">E-mail</label>
+            <div :style="styles.fieldWrapper">
+              <label :style="styles.fieldLabel">E-mail</label>
               <v-text-field
                 v-model="form.email"
                 variant="outlined"
@@ -64,12 +64,12 @@
                 placeholder="seu@email.com"
                 :error-messages="errors.email"
                 hide-details="auto"
-                class="modern-field"
+                :style="styles.modernField"
               />
             </div>
 
-            <div class="field-wrapper">
-              <label class="field-label">Telefone / WhatsApp</label>
+            <div :style="styles.fieldWrapper">
+              <label :style="styles.fieldLabel">Telefone / WhatsApp</label>
               <v-text-field
                 v-model="form.telefone"
                 variant="outlined"
@@ -78,18 +78,18 @@
                 placeholder="(11) 99999-9999"
                 :error-messages="errors.telefone"
                 hide-details="auto"
-                class="modern-field"
+                :style="styles.modernField"
                 @input="formatPhone"
               />
             </div>
           </div>
 
-          <div class="section-label mt-5">Segurança</div>
+          <div :style="{ ...styles.sectionLabel, marginTop: '20px' }">Segurança</div>
 
-          <div class="field-group">
-            <div class="field-wrapper">
-              <label class="field-label">
-                Nova Senha <span class="optional">(opcional)</span>
+          <div :style="styles.fieldGroup">
+            <div :style="styles.fieldWrapper">
+              <label :style="styles.fieldLabel">
+                Nova Senha <span :style="styles.optional">(opcional)</span>
               </label>
               <v-text-field
                 v-model="form.password"
@@ -101,13 +101,13 @@
                 placeholder="••••••••"
                 :error-messages="errors.password"
                 hide-details="auto"
-                class="modern-field"
+                :style="styles.modernField"
                 @click:append-inner="showPassword = !showPassword"
               />
             </div>
 
-            <div class="field-wrapper">
-              <label class="field-label">Confirmar Nova Senha</label>
+            <div :style="styles.fieldWrapper">
+              <label :style="styles.fieldLabel">Confirmar Nova Senha</label>
               <v-text-field
                 v-model="form.confirmPassword"
                 variant="outlined"
@@ -117,46 +117,47 @@
                 placeholder="••••••••"
                 :error-messages="errors.confirmPassword"
                 hide-details="auto"
-                class="modern-field"
+                :style="styles.modernField"
                 :disabled="!form.password"
               />
             </div>
 
-            <div v-if="form.password" class="password-hints">
-              <div class="hint-item" :class="{ active: form.password.length >= 6 }">
+            <div v-if="form.password" :style="styles.passwordHints">
+              <div :style="{ ...styles.hintItem, ...(form.password.length >= 6 ? styles.hintItemActive : {}) }">
                 <v-icon size="13">{{ form.password.length >= 6 ? 'mdi-check-circle' : 'mdi-circle-outline' }}</v-icon>
                 Mínimo 6 caracteres
               </div>
-              <div class="hint-item" :class="{ active: /[A-Z]/.test(form.password) }">
+              <div :style="{ ...styles.hintItem, ...(/[A-Z]/.test(form.password) ? styles.hintItemActive : {}) }">
                 <v-icon size="13">{{ /[A-Z]/.test(form.password) ? 'mdi-check-circle' : 'mdi-circle-outline' }}</v-icon>
                 Letra maiúscula
               </div>
-              <div class="hint-item" :class="{ active: /\d/.test(form.password) }">
+              <div :style="{ ...styles.hintItem, ...(/\d/.test(form.password) ? styles.hintItemActive : {}) }">
                 <v-icon size="13">{{ /\d/.test(form.password) ? 'mdi-check-circle' : 'mdi-circle-outline' }}</v-icon>
                 Número
               </div>
-              <div class="hint-item" :class="{ active: /[^A-Za-z0-9]/.test(form.password) }">
+              <div :style="{ ...styles.hintItem, ...(/[^A-Za-z0-9]/.test(form.password) ? styles.hintItemActive : {}) }">
                 <v-icon size="13">{{ /[^A-Za-z0-9]/.test(form.password) ? 'mdi-check-circle' : 'mdi-circle-outline' }}</v-icon>
                 Caractere especial
               </div>
             </div>
           </div>
 
-          <v-alert v-if="successMessage" type="success" variant="tonal" density="compact" class="mt-4 rounded-lg">
+          <v-alert v-if="successMessage" type="success" variant="tonal" density="compact" :style="styles.alert">
             {{ successMessage }}
           </v-alert>
-          <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact" class="mt-4 rounded-lg">
+          <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact" :style="styles.alert">
             {{ errorMessage }}
           </v-alert>
 
-          <div class="d-flex ga-3 mt-6">
-            <v-btn variant="outlined" color="grey" class="flex-1 action-btn" @click="closeModal">
+          <div :style="styles.actionRow">
+            <v-btn variant="outlined" color="grey" :style="styles.actionBtn" @click="closeModal">
               Cancelar
             </v-btn>
-            <v-btn color="#195FA0" type="submit" :loading="saving" class="flex-1 action-btn save-btn">
+            <v-btn color="#195FA0" type="submit" :loading="saving" :style="{ ...styles.actionBtn, ...styles.saveBtn }">
               Salvar Alterações
             </v-btn>
           </div>
+
         </v-form>
       </v-card-text>
     </v-card>
@@ -189,6 +190,7 @@ const authStore = useAuthStore()
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const showPassword = ref(false)
+const showAvatarOverlay = ref(false)
 const previewPhotoUrl = ref('')
 const saving = ref(false)
 const successMessage = ref('')
@@ -209,6 +211,160 @@ const errors = reactive<Record<string, string>>({
   username: '',
   telefone: ''
 })
+
+const styles = {
+  modalCard: {
+    borderRadius: '20px',
+    overflow: 'hidden',
+  },
+  modalHeader: {
+    background: 'linear-gradient(135deg, rgb(24, 103, 192) 0%, rgb(24, 103, 192) 100%)',
+    padding: '32px 32px 24px',
+  },
+  headerTop: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: '1.25rem',
+    fontWeight: '700',
+    color: 'white',
+    letterSpacing: '-0.3px',
+  },
+  modalSubtitle: {
+    fontSize: '0.8rem',
+    color: 'rgba(255, 255, 255, 0.7)',
+    marginTop: '2px',
+  },
+  closeBtn: {
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  avatarRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    marginTop: '24px',
+  },
+  avatarWrapper: {
+    position: 'relative' as const,
+    cursor: 'pointer',
+    flexShrink: 0,
+  },
+  profileAvatar: {
+    border: '3px solid rgba(255, 255, 255, 0.35)',
+    transition: 'opacity 0.2s',
+  },
+  avatarOverlay: {
+    position: 'absolute' as const,
+    inset: 0,
+    borderRadius: '50%',
+    background: 'rgba(0, 0, 0, 0.35)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'opacity 0.2s',
+  },
+  avatarInitials: {
+    fontSize: '1.4rem',
+    fontWeight: '700',
+    color: 'white',
+  },
+  userName: {
+    fontSize: '1rem',
+    fontWeight: '700',
+    color: 'white',
+  },
+  userEmail: {
+    fontSize: '0.8rem',
+    color: 'rgba(255, 255, 255, 0.65)',
+    marginTop: '2px',
+  },
+  changePhotoLink: {
+    fontSize: '0.78rem',
+    color: 'rgba(255, 255, 255, 0.85)',
+    cursor: 'pointer',
+    textDecoration: 'underline',
+    textUnderlineOffset: '2px',
+    marginTop: '4px',
+  },
+  cardText: {
+    padding: '20px 32px 32px',
+  },
+  sectionLabel: {
+    fontSize: '0.68rem',
+    fontWeight: '700',
+    letterSpacing: '1.2px',
+    textTransform: 'uppercase' as const,
+    color: '#195FA0',
+    marginBottom: '12px',
+  },
+  fieldGroup: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '12px',
+  },
+  fieldWrapper: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '4px',
+  },
+  fieldLabel: {
+    fontSize: '0.78rem',
+    fontWeight: '600',
+    color: '#374151',
+  },
+  optional: {
+    fontWeight: '400',
+    color: '#9CA3AF',
+    fontSize: '0.75rem',
+  },
+  modernField: {
+    borderRadius: '10px',
+    fontSize: '0.9rem',
+  },
+  passwordHints: {
+    display: 'flex',
+    flexWrap: 'wrap' as const,
+    gap: '6px',
+    columnGap: '16px',
+    padding: '10px 14px',
+    background: '#F8FAFC',
+    borderRadius: '10px',
+    border: '1px solid #E5E7EB',
+  },
+  hintItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px',
+    fontSize: '0.74rem',
+    color: '#9CA3AF',
+    transition: 'color 0.2s',
+  },
+  hintItemActive: {
+    color: '#16A34A',
+  },
+  alert: {
+    marginTop: '16px',
+    borderRadius: '8px',
+  },
+  actionRow: {
+    display: 'flex',
+    gap: '12px',
+    marginTop: '24px',
+  },
+  actionBtn: {
+    flex: 1,
+    borderRadius: '10px',
+    fontWeight: '600',
+    textTransform: 'none' as const,
+    letterSpacing: '0',
+    height: '42px',
+  },
+  saveBtn: {
+    color: 'white',
+  },
+}
 
 const initials = computed(() => {
   const text = form.username?.trim() || authStore.user?.unique_name || 'U'
@@ -340,191 +496,25 @@ async function submitForm() {
 
   try {
     const dto = {
-        username: form.username.trim(),
-        email: form.email.trim(),
-        telefone: form.telefone.trim() || undefined,
-        password: form.password.trim() || undefined,
+      username: form.username.trim(),
+      email: form.email.trim(),
+      telefone: form.telefone.trim() || undefined,
+      password: form.password.trim() || undefined,
     }
 
     await AuthService.update(userId, dto)
-    
+
     authStore.updateUser({
-        unique_name: dto.username,
-        email: dto.email
+      unique_name: dto.username,
+      email: dto.email
     })
 
-      successMessage.value = 'Informações atualizadas com sucesso!'
-      setTimeout(() => closeModal(), 1500)
+    successMessage.value = 'Informações atualizadas com sucesso!'
+    setTimeout(() => closeModal(), 1500)
   } catch (err: any) {
-      errorMessage.value = err?.response?.data?.message || 'Erro ao salvar. Tente novamente.'
+    errorMessage.value = err?.response?.data?.message || 'Erro ao salvar. Tente novamente.'
   } finally {
-      saving.value = false
+    saving.value = false
   }
 }
 </script>
-
-<style scoped>
-.modal-card {
-  border-radius: 20px !important;
-  overflow: hidden;
-}
-
-.modal-header {
-  background: linear-gradient(135deg, rgb(24, 103, 192) 0%, rgb(24, 103, 192) 100%);
-}
-
-.modal-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: white;
-  letter-spacing: -0.3px;
-}
-
-.modal-subtitle {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.7);
-  margin-top: 2px;
-}
-
-.close-btn {
-  color: rgba(255, 255, 255, 0.8) !important;
-}
-
-.avatar-wrapper {
-  position: relative;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.profile-avatar {
-  border: 3px solid rgba(255, 255, 255, 0.35);
-  transition: opacity 0.2s;
-}
-
-.avatar-wrapper:hover .profile-avatar {
-  opacity: 0.8;
-}
-
-.avatar-overlay {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.avatar-wrapper:hover .avatar-overlay {
-  opacity: 1;
-}
-
-.avatar-initials {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: white;
-}
-
-.user-name {
-  font-size: 1rem;
-  font-weight: 700;
-  color: white;
-}
-
-.user-email {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.65);
-  margin-top: 2px;
-}
-
-.change-photo-link {
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.85);
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.section-label {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: #195FA0;
-  margin-bottom: 12px;
-}
-
-.field-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.field-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.field-label {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #374151;
-}
-
-.optional {
-  font-weight: 400;
-  color: #9CA3AF;
-  font-size: 0.75rem;
-}
-
-.modern-field :deep(.v-field) {
-  border-radius: 10px !important;
-  font-size: 0.9rem;
-}
-
-.modern-field :deep(.v-field--focused .v-field__outline) {
-  --v-field-border-width: 2px;
-}
-
-.password-hints {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 16px;
-  padding: 10px 14px;
-  background: #F8FAFC;
-  border-radius: 10px;
-  border: 1px solid #E5E7EB;
-}
-
-.hint-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.74rem;
-  color: #9CA3AF;
-  transition: color 0.2s;
-}
-
-.hint-item.active {
-  color: #16A34A;
-}
-
-.hint-item.active .v-icon {
-  color: #16A34A !important;
-}
-
-.action-btn {
-  border-radius: 10px !important;
-  font-weight: 600 !important;
-  text-transform: none !important;
-  letter-spacing: 0 !important;
-  height: 42px !important;
-}
-
-.save-btn {
-  color: white !important;
-}
-</style>
