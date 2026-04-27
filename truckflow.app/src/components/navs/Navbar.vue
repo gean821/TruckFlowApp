@@ -124,15 +124,12 @@
 
     </v-list>
   </v-navigation-drawer>
-  <EditProfileModal
-    v-model="openProfile"
-    :profile="profile"
-  />
+  <EditProfileModal v-model="openProfile" />
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/AuthStore';
-import { ref } from 'vue';
+import { computed, ref } from 'vue'; // adicione computed no import
 import { useRouter } from 'vue-router';
 import EditProfileModal from '@/components/modals/EditProfileModal.vue';
 
@@ -141,10 +138,10 @@ const ativo = ref(true);
 const authStore = useAuthStore();
 const openProfile = ref(false);
 
-const profile = {
+const profile = computed(() => ({
   name: authStore.user?.unique_name || 'Usuário',
   role: authStore.user?.role || 'Visitante'
-};
+}));
 
 function openEditModal() {
   openProfile.value = true;
