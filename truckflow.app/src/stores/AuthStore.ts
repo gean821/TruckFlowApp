@@ -33,6 +33,7 @@ export const useAuthStore = defineStore("auth", {
             this.user = decoded;
 
             localStorage.setItem("token", token);
+            localStorage.setItem("user", JSON.stringify(decoded));
         },
 
         async login(dto: AdminLoginDto) {
@@ -53,6 +54,7 @@ export const useAuthStore = defineStore("auth", {
             this.token = null;
 
             localStorage.removeItem("token");
+            localStorage.removeItem("user");
 
             router.push("/login");
         },
@@ -73,7 +75,12 @@ export const useAuthStore = defineStore("auth", {
                 }
 
                 this.token = token;
-                this.user = decoded;
+
+                const savedUser = localStorage.getItem("user");
+
+                this.user = savedUser
+                    ? JSON.parse(savedUser)
+                    : decoded;
 
             } catch {
                 this.logout();
@@ -82,7 +89,10 @@ export const useAuthStore = defineStore("auth", {
 
         updateUser(data: Partial<JwtPayload>) {
             if (!this.user) return;
+
             this.user = { ...this.user, ...data };
+
+            localStorage.setItem("user", JSON.stringify(this.user));
         }
     }
 });
