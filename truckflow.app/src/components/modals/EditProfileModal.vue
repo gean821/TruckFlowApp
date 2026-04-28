@@ -2,6 +2,8 @@
   <v-dialog
     :model-value="modelValue"
     max-width="520"
+    width="95vw"
+    scrollable
     @update:model-value="emit('update:modelValue', $event)"
   >
     <v-card :style="styles.modalCard" elevation="0">
@@ -91,6 +93,7 @@
               <label :style="styles.fieldLabel">
                 Nova Senha <span :style="styles.optional">(opcional)</span>
               </label>
+              <v-form autocomplete="off" @submit.prevent="submitForm"></v-form>
               <v-text-field
                 v-model="form.password"
                 variant="outlined"
@@ -98,7 +101,9 @@
                 prepend-inner-icon="mdi-lock-outline"
                 :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
                 :type="showPassword ? 'text' : 'password'"
-                placeholder="••••••••"
+                autocomplete="new-password"
+                name="new-profile-password"
+                placeholder="Digite uma nova senha se quiser alterar"
                 :error-messages="errors.password"
                 hide-details="auto"
                 :style="styles.modernField"
@@ -114,7 +119,9 @@
                 density="compact"
                 prepend-inner-icon="mdi-lock-check-outline"
                 :type="showPassword ? 'text' : 'password'"
-                placeholder="••••••••"
+                autocomplete="new-password"
+                name="confirm-new-profile-password"
+                placeholder="Confirme a nova senha"
                 :error-messages="errors.confirmPassword"
                 hide-details="auto"
                 :style="styles.modernField"
@@ -518,3 +525,30 @@ async function submitForm() {
   }
 }
 </script>
+<style scoped>
+@media (max-width: 600px) {
+  :deep(.v-dialog) {
+    margin: 12px;
+  }
+
+  :deep(.v-card) {
+    max-height: 92vh !important;
+  }
+
+  :deep(.v-card-text) {
+    padding: 16px !important;
+    max-height: calc(92vh - 170px) !important;
+    overflow-y: auto !important;
+  }
+}
+
+@media (max-width: 420px) {
+  :deep(.v-card-text) {
+    padding: 14px !important;
+  }
+
+  :deep(.v-btn) {
+    font-size: 0.78rem;
+  }
+}
+</style>
