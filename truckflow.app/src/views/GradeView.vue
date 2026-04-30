@@ -147,7 +147,7 @@ const filtroProduto = ref(route.query.produto?.toString() || null)
 const filtroDataInicio = ref(route.query.dataInicio?.toString() || null)
 const filtroDataFim = ref(route.query.dataFim?.toString() || null)
 
-const { locais } = useLocalDescarga();
+const { locais } = useLocalDescarga({ apenasAtivos: true });
 const { fornecedores } = useFornecedor();
 const { produtos } = useProduto();
 

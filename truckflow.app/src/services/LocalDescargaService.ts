@@ -1,10 +1,10 @@
-import type { CreateLocalDescargaDto, LocalDescargaResponse, MudarStatusLocalDto, UpdateLocalDescargaDto } from "@/entities/localDescarga.types";
+import type { CreateLocalDescargaDto, LocalDescargaListQueryDto, LocalDescargaResponse, MudarStatusLocalDto, UpdateLocalDescargaDto } from "@/entities/localDescarga.types";
 import type { MudarStatusUnidadeDto, UnidadeEntregaResponse } from "@/entities/unidadeEntrega.types";
 import http from "@/http/http";
 
 export const LocalDescargaService = () => {
-    const getAll = async (): Promise<LocalDescargaResponse[]> => {
-        const locais = await http.get('/LocalDescarga');
+    const getAll = async (query?: LocalDescargaListQueryDto): Promise<LocalDescargaResponse[]> => {
+        const locais = await http.get('/LocalDescarga', { params: query });
         return locais.data;
     }
 
