@@ -10,6 +10,7 @@ import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { useAuthStore } from './stores/AuthStore'
+import VueApexCharts from 'vue3-apexcharts'
 
 const vuetify = createVuetify({
   components,
@@ -24,6 +25,7 @@ app.use(createPinia())
 const authStore = useAuthStore();
 authStore.restoreSession();
 
+app.use(VueApexCharts)
 app.use(router)
 
 app.mount('#app')
