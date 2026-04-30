@@ -38,14 +38,14 @@
               <p class="text-overline text-primary mb-1">Logística</p>
               <v-select
                 v-model="form.localDescargaId"
-                :items="localStore.locais"
+                :items="locais"
                 item-title="nome"
                 item-value="id"
                 label="Local de Descarga Padrão"
                 variant="outlined"
                 density="comfortable"
                 :rules="[rules.required]"
-                :loading="localStore.loading"
+                :loading="loading"
               >
                 <template v-slot:prepend-inner>
                   <v-icon size="20" color="primary">mdi-tray-arrow-down</v-icon>
@@ -75,13 +75,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, onMounted } from 'vue';
-import { useLocalDescargaStore } from '@/stores/LocalDescargaStore';
+import { ref, reactive, computed, watch } from 'vue';
+import { useLocalDescarga } from '@/hooks/useLocalDescarga';
 
 const props = defineProps<{ open: boolean; initialData?: any }>();
 const emit = defineEmits(["close", "submit"]);
 
-const localStore = useLocalDescargaStore();
+const { locais, loading } = useLocalDescarga({ apenasAtivos: true });
 const formRef = ref<any>(null);
 const submitting = ref(false);
 
@@ -99,9 +99,6 @@ const rules = {
   min3: (v: string) => v.length >= 3 || 'Mínimo de 3 caracteres'
 };
 
-onMounted(() => {
-  if (localStore.locais.length === 0) localStore.fetchAll();
-});
 
 watch(() => props.initialData, (val) => {
   if (val) {

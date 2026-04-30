@@ -239,7 +239,7 @@ const isOpen = computed({
 const { createAgendamento, isCreating } = useAgendamento();
 const { fornecedores } = useFornecedor();
 const { produtos } = useProduto();
-const { locais } = useLocalDescarga();
+const { locais } = useLocalDescarga({ apenasAtivos: true });
 const toast = useToastStore();
 
 const formRef = ref<VForm | null>(null);

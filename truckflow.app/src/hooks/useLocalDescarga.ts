@@ -1,67 +1,91 @@
+import type {
+  CreateLocalDescargaDto,
+  MudarStatusLocalDto,
+  UpdateLocalDescargaDto
+} from "@/entities/localDescarga.types";
+import { LocalDescargaService } from "@/services/LocalDescargaService";
 import { useToastStore } from "@/stores/ToastStore";
-import { useLocalDescargaStore } from "@/stores/LocalDescargaStore";
-import { storeToRefs } from "pinia";
-import { onMounted } from "vue";
-import type { CreateLocalDescargaDto, MudarStatusLocalDto, UpdateLocalDescargaDto } from "@/entities/localDescarga.types";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import { computed } from "vue";
+import { localDescargaQueryKey, useLocalDescargaListQuery } from "@/queries/localDescarga.queries";
 
-export function useLocalDescarga() {
-  const store = useLocalDescargaStore();
+type UseLocalDescargaOptions = {
+  apenasAtivos?: boolean;
+};
+
+export function useLocalDescarga(opts: UseLocalDescargaOptions = {}) {
+  const queryClient = useQueryClient();
+  const service = LocalDescargaService();
   const toast = useToastStore();
-  const { locais, loading } = storeToRefs(store);
 
-  onMounted(async () => {
-    if (!store.locais.length) {
-      await store.fetchAll();
+  const params = opts.apenasAtivos === true ? { ativa: true } : undefined;
+  const listQuery = useLocalDescargaListQuery(params);
+
+  const locais = computed(() => listQuery.data.value ?? []);
+  const loading = computed(() => listQuery.isLoading.value);
+
+  const invalidate = () =>
+    queryClient.invalidateQueries({ queryKey: [localDescargaQueryKey] });
+
+  const createMutation = useMutation({
+    mutationFn: async (payload: CreateLocalDescargaDto) =>
+      await service.create(payload),
+    onSuccess: () => {
+      invalidate();
+      toast.notify('Unidade criada com sucesso!', 'success');
+    },
+    onError: () => {
+      toast.notify('Erro ao criar unidade', 'error');
     }
   });
 
-  const create = async (payload: CreateLocalDescargaDto) => {
-    try {
-      await store.create(payload);
-      toast.notify('Unidade criada com sucesso!', 'success');
-    } catch (e) {
-      toast.notify('Erro ao criar unidade', 'error');
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: string; payload: UpdateLocalDescargaDto }) =>
+      await service.update(id, payload),
+    onSuccess: () => {
+      invalidate();
+      toast.notify('Unidade atualizada!', 'success');
+    },
+    onError: () => {
+      toast.notify('Erro ao atualizar.', 'error');
     }
-  }
+  });
 
-  const update = async (
-    id: string,
-    payload: UpdateLocalDescargaDto) => {
-    try {
-      await store.update(id, payload);
-      toast.notify("Unidade atualizada!", 'success');
-    } catch (e) {
-      toast.notify("Erro ao atualizar.", 'error');
+  const removeMutation = useMutation({
+    mutationFn: async (id: string) => await service.remove(id),
+    onSuccess: () => {
+      invalidate();
+      toast.notify('Unidade removida.', 'info');
+    },
+    onError: () => {
+      toast.notify('Erro ao remover.', 'error');
     }
-  };
+  });
 
-  const remove = async (id: string) => {
-    try {
-      await store.remove(id);
-      toast.notify("Unidade removida.", 'info');
-    } catch (e) {
-      toast.notify("Erro ao remover.", 'error');
-    }
-  };
-
-  const mudarStatus = async (
-    id: string,
-    dto: MudarStatusLocalDto) => {
-    try {
-      await store.mudarStatus(id, dto);
+  const statusMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: string; payload: MudarStatusLocalDto }) =>
+      await service.mudarStatus(id, payload),
+    onSuccess: () => {
+      invalidate();
       toast.notify('Sucesso ao mudar Status', 'success');
-    } catch (e) {
+    },
+    onError: () => {
       toast.notify('Erro ao mudar Status', 'error');
     }
-  }
+  });
 
   return {
     locais,
     loading,
-    fetchAll: store.fetchAll,
-    create,
-    update,
-    remove,
-    mudarStatus
+    create: (payload: CreateLocalDescargaDto) => createMutation.mutateAsync(payload),
+    update: (id: string, payload: UpdateLocalDescargaDto) =>
+      updateMutation.mutateAsync({ id, payload }),
+    remove: (id: string) => removeMutation.mutateAsync(id),
+    mudarStatus: (id: string, payload: MudarStatusLocalDto) =>
+      statusMutation.mutateAsync({ id, payload }),
+    isCreating: createMutation.isPending,
+    isUpdating: updateMutation.isPending,
+    isRemoving: removeMutation.isPending,
+    isMudandoStatus: statusMutation.isPending
   };
 }

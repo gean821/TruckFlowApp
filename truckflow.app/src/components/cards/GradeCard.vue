@@ -277,17 +277,16 @@ import { ref, reactive, onMounted, computed, watch } from "vue";
 import { useFornecedorStore } from "@/stores/FornecedorStore";
 import { useProdutoStore } from "@/stores/ProdutoStore";
 import { useToastStore } from "@/stores/ToastStore";
-import { useLocalDescargaStore } from "@/stores/LocalDescargaStore";
+import { useLocalDescarga } from "@/hooks/useLocalDescarga";
 import { useGrade } from "@/hooks/useGrade";
 import { parseISO, getDay, format } from "date-fns";
 import type { GradeCreateDto } from "@/entities/grade.types";
 
 const produtoStore = useProdutoStore();
-const descargaStore = useLocalDescargaStore();
 const fornecedorStore = useFornecedorStore();
 const toast = useToastStore();
 
-const locais = computed(() => descargaStore.locais);
+const { locais } = useLocalDescarga({ apenasAtivos: true });
 
 const { createGrade, isCreating } = useGrade();
 
@@ -323,7 +322,6 @@ onMounted(async () => {
     await Promise.all([
       produtoStore.getAll(),
       fornecedorStore.fetchAll(),
-      descargaStore.fetchAll(),
     ]);
   } catch {
     toast.notify("Erro ao carregar dados iniciais.", "error");

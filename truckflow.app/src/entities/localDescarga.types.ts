@@ -33,3 +33,9 @@ export type LocalDescargaResponse = {
 export type MudarStatusLocalDto = {
     status?: boolean;
 }
+
+export type LocalDescargaListQueryDto = {
+    ativa?: boolean;
+    unidadeEntregaId?: string;
+    search?: string;
+}
