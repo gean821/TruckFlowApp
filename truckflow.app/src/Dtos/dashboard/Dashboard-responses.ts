@@ -3,6 +3,7 @@ export interface DashboardStatsDto {
   emAndamento: number;
   finalizados: number;
   atrasados: number;
+  cancelados: number;
 }
 
 export interface DashboardVolumeDto {
