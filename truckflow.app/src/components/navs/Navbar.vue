@@ -211,6 +211,13 @@
         </template>
       </v-tooltip>
 
+      <v-tooltip text="Auditoria" location="end" :disabled="!railMode">
+        <template #activator="{ props: tip }">
+          <v-list-item v-bind="tip" to="/auditoria" prepend-icon="mdi-history" title="Auditoria"
+            rounded="lg" active-class="nav-active" class="mb-1 nav-item" />
+        </template>
+      </v-tooltip>
+
     </v-list>
 
     <template #append>
@@ -260,6 +267,7 @@ const routeMap: Record<string, { label: string; parent?: string }> = {
   '/reagendamentos':     { label: 'Reagendamentos',      parent: 'Notificações' },
   '/enviar-notificacao': { label: 'Enviar Nova',         parent: 'Notificações' },
   '/relatorios':         { label: 'Relatórios' },
+  '/auditoria':          { label: 'Auditoria' },
   '/account-config':     { label: 'Minha Conta' },
 };
 
