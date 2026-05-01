@@ -223,9 +223,9 @@
             <tbody>
               <tr v-for="[campo, valor] in changesFormatados" :key="campo">
                 <td class="font-weight-medium">{{ campo }}</td>
-                <td><code class="text-caption">{{ formatValor(valor.from) }}</code></td>
+                <td><code class="text-caption">{{ formatAuditValueLabeled(campo, valor.from, eventoSelecionado.labels) }}</code></td>
                 <td v-if="eventoSelecionado.action === 'Update'">
-                  <code class="text-caption">{{ formatValor(valor.to) }}</code>
+                  <code class="text-caption">{{ formatAuditValueLabeled(campo, valor.to, eventoSelecionado.labels) }}</code>
                 </td>
               </tr>
             </tbody>
@@ -241,32 +241,7 @@ import { ref, computed, watch } from 'vue';
 import { format, parseISO } from 'date-fns';
 import type { AuditAction, AuditLogListQueryDto, AuditLogResponseDto } from '@/entities/audit.types';
 import { useAuditLogQuery } from '@/queries/audit.queries';
-
-const ENTITY_LABELS: Record<string, string> = {
-  LocalDescarga: 'Local de Descarga',
-  UnidadeEntrega: 'Unidade de Entrega',
-  Grade: 'Grade',
-  Agendamento: 'Agendamento',
-  Empresa: 'Empresa',
-  Fornecedor: 'Fornecedor',
-  Produto: 'Produto',
-  ItemPlanejamento: 'Item de Planejamento',
-  PlanejamentoRecebimento: 'Planejamento',
-  RecebimentoEvento: 'Recebimento',
-  NotaFiscal: 'Nota Fiscal',
-  NotaFiscalItem: 'Item NF',
-  Motorista: 'Motorista',
-  Veiculo: 'Veículo',
-  Carga: 'Carga',
-  Administrador: 'Administrador',
-  Notificacao: 'Notificação',
-};
-
-const ACTION_META: Record<AuditAction, { label: string; color: string; icon: string }> = {
-  Create: { label: 'Criação', color: 'success', icon: 'mdi-plus-circle-outline' },
-  Update: { label: 'Atualização', color: 'warning', icon: 'mdi-pencil-outline' },
-  Delete: { label: 'Exclusão', color: 'error', icon: 'mdi-trash-can-outline' },
-};
+import { ENTITY_LABELS, ACTION_META, formatAuditValueLabeled, shortenId, formatChanges } from '@/utils/audit';
 
 const entidadeOptions = Object.entries(ENTITY_LABELS).map(([value, title]) => ({ title, value }));
 const acaoOptions: { title: string; value: AuditAction }[] = [
@@ -326,18 +301,9 @@ function abrirDetalhes(item: AuditLogResponseDto) {
   detalhesAbertos.value = true;
 }
 
-const changesFormatados = computed(() => {
-  const evt = eventoSelecionado.value;
-  if (!evt?.changes) return [];
-
-  return Object.entries(evt.changes).map(([campo, valor]) => {
-    const v = valor as { from?: unknown; to?: unknown } | unknown;
-    if (v && typeof v === 'object' && 'from' in v && 'to' in v) {
-      return [campo, { from: (v as any).from, to: (v as any).to }] as const;
-    }
-    return [campo, { from: v, to: v }] as const;
-  });
-});
+const changesFormatados = computed(() =>
+  eventoSelecionado.value ? formatChanges(eventoSelecionado.value) : []
+);
 
 function formatData(iso: string) {
   return format(parseISO(iso), 'dd/MM/yyyy');
@@ -349,18 +315,6 @@ function formatHora(iso: string) {
 
 function formatDataHora(iso: string) {
   return format(parseISO(iso), 'dd/MM/yyyy HH:mm:ss');
-}
-
-function shortenId(id: string) {
-  if (!id) return '-';
-  return id.length > 12 ? `${id.slice(0, 8)}…` : id;
-}
-
-function formatValor(v: unknown): string {
-  if (v === null || v === undefined) return '—';
-  if (typeof v === 'object') return JSON.stringify(v);
-  if (typeof v === 'boolean') return v ? 'sim' : 'não';
-  return String(v);
 }
 </script>
 

@@ -1,55 +1,66 @@
 import type { ProdutoCreateDto, ProdutoUpdateDto } from "@/entities/produto.types";
-import { useProdutoStore } from "@/stores/ProdutoStore";
+import { produtoQueryKey, useProdutosQuery } from "@/queries/produto.queries";
+import { ProdutoService } from "@/services/ProdutoService";
 import { useToastStore } from "@/stores/ToastStore";
-import { storeToRefs } from "pinia";
-import { onMounted } from "vue";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import { computed } from "vue";
 
 export function useProduto() {
-  const store = useProdutoStore();
+  const queryClient = useQueryClient();
+  const service = ProdutoService();
   const toast = useToastStore();
-  const { produtos, loading } = storeToRefs(store);
 
-  onMounted(async () => {
-    if (!store.produtos.length) {
-      await store.getAll();
+  const listQuery = useProdutosQuery();
+  const produtos = computed(() => listQuery.data.value ?? []);
+  const loading = computed(() => listQuery.isLoading.value);
+
+  const invalidate = () =>
+    queryClient.invalidateQueries({ queryKey: [produtoQueryKey] });
+
+  const createMutation = useMutation({
+    mutationFn: async (payload: ProdutoCreateDto) =>
+      await service.addProduto(payload),
+    onSuccess: () => {
+      invalidate();
+      toast.notify("Produto criado com sucesso!", "success");
+    },
+    onError: () => {
+      toast.notify("Erro ao criar produto", "error");
     }
   });
 
-  const create = async (payload: ProdutoCreateDto) => {
-    try {
-      await store.addProduto(payload);
-      toast.notify('produto criado com sucesso!', 'success');
-    } catch (e) {
-      toast.notify('Erro ao criar unidade', 'error');
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: string; payload: ProdutoUpdateDto }) =>
+      await service.updateProduto(id, payload),
+    onSuccess: () => {
+      invalidate();
+      toast.notify("Produto atualizado!", "success");
+    },
+    onError: () => {
+      toast.notify("Erro ao atualizar.", "error");
     }
-  }
+  });
 
-  const update = async (
-    id: string,
-    payload: ProdutoUpdateDto) => {
-    try {
-      await store.update(id, payload);
-      toast.notify("produto atualizado!", 'success');
-    } catch (e) {
-      toast.notify("Erro ao atualizar.", 'error');
+  const removeMutation = useMutation({
+    mutationFn: async (id: string) => await service.remove(id),
+    onSuccess: () => {
+      invalidate();
+      toast.notify("Produto removido.", "info");
+    },
+    onError: () => {
+      toast.notify("Erro ao remover.", "error");
     }
-  };
-
-  const remove = async (id: string) => {
-    try {
-      await store.deleteProduto(id);
-      toast.notify("produto removida.", 'info');
-    } catch (e) {
-      toast.notify("Erro ao remover.", 'error');
-    }
-  };
+  });
 
   return {
     produtos,
     loading,
-    fetchAll: store.getAll,
-    create,
-    update,
-    remove,
+    create: (payload: ProdutoCreateDto) => createMutation.mutateAsync(payload),
+    update: (id: string, payload: ProdutoUpdateDto) =>
+      updateMutation.mutateAsync({ id, payload }),
+    remove: (id: string) => removeMutation.mutateAsync(id),
+    isCreating: createMutation.isPending,
+    isUpdating: updateMutation.isPending,
+    isRemoving: removeMutation.isPending
   };
 }

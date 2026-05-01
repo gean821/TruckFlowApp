@@ -26,7 +26,7 @@
           <v-col cols="12" md="4">
             <v-autocomplete
               v-model="formModelGrade.fornecedorId"
-              :items="fornecedorStore.fornecedores"
+              :items="fornecedores"
               item-title="nome"
               item-value="id"
               label="Fornecedor"
@@ -46,7 +46,7 @@
           <v-col cols="12" md="4">
             <v-select
               v-model="formModelGrade.produtoId"
-              :items="produtoStore.produtos"
+              :items="produtos"
               item-title="nome"
               item-value="id"
               label="Produto"
@@ -273,17 +273,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed, watch } from "vue";
-import { useFornecedorStore } from "@/stores/FornecedorStore";
-import { useProdutoStore } from "@/stores/ProdutoStore";
+import { ref, reactive, computed, watch } from "vue";
+import { useFornecedor } from "@/hooks/useFornecedor";
+import { useProduto } from "@/hooks/useProdutos";
 import { useToastStore } from "@/stores/ToastStore";
 import { useLocalDescarga } from "@/hooks/useLocalDescarga";
 import { useGrade } from "@/hooks/useGrade";
 import { parseISO, getDay, format } from "date-fns";
 import type { GradeCreateDto } from "@/entities/grade.types";
 
-const produtoStore = useProdutoStore();
-const fornecedorStore = useFornecedorStore();
+const { produtos } = useProduto();
+const { fornecedores } = useFornecedor();
 const toast = useToastStore();
 
 const { locais } = useLocalDescarga({ apenasAtivos: true });
@@ -315,17 +315,6 @@ const formModelGrade = reactive<GradeCreateDto>({
   horaFinal: "",
   intervaloMinutos: 30,
   diasSemana: "",
-});
-
-onMounted(async () => {
-  try {
-    await Promise.all([
-      produtoStore.getAll(),
-      fornecedorStore.fetchAll(),
-    ]);
-  } catch {
-    toast.notify("Erro ao carregar dados iniciais.", "error");
-  }
 });
 
 const rangeInvalido = computed(() => {

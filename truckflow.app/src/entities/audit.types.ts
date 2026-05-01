@@ -9,6 +9,11 @@ export type AuditLogResponseDto = {
   userName?: string | null;
   timestamp: string;
   changes?: Record<string, unknown> | null;
+  /**
+   * Mapeia campos *Id para nomes legíveis. Ex.: { EmpresaId: { "guid-1": "AURORA" } }.
+   * Quando presente, o front renderiza o nome em vez do UUID.
+   */
+  labels?: Record<string, Record<string, string>> | null;
   ipAddress?: string | null;
   userAgent?: string | null;
 };

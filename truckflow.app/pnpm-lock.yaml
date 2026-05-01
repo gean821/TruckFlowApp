@@ -17,6 +17,9 @@ importers:
       '@tanstack/vue-query':
         specifier: ^5.92.9
         version: 5.99.0(vue@3.5.32(typescript@5.8.3))
+      apexcharts:
+        specifier: ^5.10.6
+        version: 5.10.6
       axios:
         specifier: ^1.12.2
         version: 1.15.0
@@ -35,6 +38,9 @@ importers:
       vue-router:
         specifier: ^4.5.1
         version: 4.6.4(vue@3.5.32(typescript@5.8.3))
+      vue3-apexcharts:
+        specifier: ^1.11.1
+        version: 1.11.1(apexcharts@5.10.6)(vue@3.5.32(typescript@5.8.3))
       vuetify:
         specifier: ^3.10.0
         version: 3.12.5(typescript@5.8.3)(vue@3.5.32(typescript@5.8.3))
@@ -785,6 +791,9 @@ packages:
   ansis@4.2.0:
     resolution: {integrity: sha512-HqZ5rWlFjGiV0tDm3UxxgNRqsOTniqoKZu0pIAfh7TZQMGuZK+hH0drySty0si0QXj1ieop4+SkSfPZBPPkHig==}
     engines: {node: '>=14'}
+
+  apexcharts@5.10.6:
+    resolution: {integrity: sha512-FJQGbso3iRuOwUYnj0yUhkWeKeJE6aboVol+ae09lsc+lbLMWZqSRbrAWVa/qishLiaeG2icxdvmVkm+9n6kOQ==}
 
   assertion-error@2.0.1:
     resolution: {integrity: sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==}
@@ -1596,6 +1605,12 @@ packages:
     peerDependencies:
       typescript: '>=5.0.0'
 
+  vue3-apexcharts@1.11.1:
+    resolution: {integrity: sha512-MbN3vg8bMG19wc0Lm1HkeQvODgLm56DgpIxtNUO0xpf/JCzYWVGE4jzXp2JISzy2s3Kul1yOxNQUYsLvKQ5L9g==}
+    peerDependencies:
+      apexcharts: '>=5.10.0'
+      vue: '>=3.0.0'
+
   vue@3.5.32:
     resolution: {integrity: sha512-vM4z4Q9tTafVfMAK7IVzmxg34rSzTFMyIe0UUEijUCkn9+23lj0WRfA83dg7eQZIUlgOSGrkViIaCfqSAUXsMw==}
     peerDependencies:
@@ -2356,6 +2371,8 @@ snapshots:
   ansi-styles@6.2.3: {}
 
   ansis@4.2.0: {}
+
+  apexcharts@5.10.6: {}
 
   assertion-error@2.0.1: {}
 
@@ -3144,6 +3161,11 @@ snapshots:
       '@volar/typescript': 2.4.28
       '@vue/language-core': 3.2.6
       typescript: 5.8.3
+
+  vue3-apexcharts@1.11.1(apexcharts@5.10.6)(vue@3.5.32(typescript@5.8.3)):
+    dependencies:
+      apexcharts: 5.10.6
+      vue: 3.5.32(typescript@5.8.3)
 
   vue@3.5.32(typescript@5.8.3):
     dependencies:

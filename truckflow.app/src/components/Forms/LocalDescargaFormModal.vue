@@ -18,9 +18,9 @@
             </v-col>
 
             <v-col cols="12">
-              <v-select v-model="form.unidadeEntregaId" :items="unidadeStore.unidades" item-title="nome" item-value="id"
+              <v-select v-model="form.unidadeEntregaId" :items="unidades" item-title="nome" item-value="id"
                 label="Unidade de Entrega" variant="outlined" density="comfortable" :rules="[rules.required]"
-                :loading="unidadeStore.loading">
+                :loading="unidadesLoading">
                 <template v-slot:prepend-inner>
                   <v-icon size="20" color="primary">mdi-office-building</v-icon>
                 </template>
@@ -55,14 +55,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, onMounted } from 'vue';
-import { useUnidadeEntregaStore } from '@/stores/UnidadeEntregaStore';
+import { ref, reactive, computed, watch } from 'vue';
+import { useUnidadeEntrega } from '@/hooks/useUnidadeEntrega';
 import type { CreateLocalDescargaDto } from '@/entities/localDescarga.types';
 
 const props = defineProps<{ open: boolean; initialData?: any }>();
 const emit = defineEmits(["close", "submit"]);
 
-const unidadeStore = useUnidadeEntregaStore();
+const { unidades, loading: unidadesLoading } = useUnidadeEntrega();
 const formRef = ref<any>(null);
 const submitting = ref(false);
 
@@ -84,10 +84,6 @@ const rules = {
   required: (v: any) => !!v || 'Campo obrigatório',
   min3: (v: string) => v.length >= 3 || 'Mínimo de 3 caracteres'
 };
-
-onMounted(() => {
-  if (unidadeStore.unidades.length === 0) unidadeStore.fetchAll();
-});
 
 watch(() => props.initialData, (val) => {
   if (val) {

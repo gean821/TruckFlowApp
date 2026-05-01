@@ -96,28 +96,41 @@
             </div>
             
             <div class="d-flex ga-1">
+              <v-tooltip text="Histórico" location="top">
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    icon="mdi-history"
+                    variant="text"
+                    size="small"
+                    color="grey-darken-1"
+                    @click="openHistorico(produto)"
+                  />
+                </template>
+              </v-tooltip>
+
               <v-tooltip text="Editar Produto" location="top">
                 <template v-slot:activator="{ props }">
-                  <v-btn 
-                    v-bind="props" 
-                    icon="mdi-pencil-outline" 
-                    variant="text" 
-                    size="small" 
-                    color="grey-darken-1" 
-                    @click="openEditModal(produto)" 
+                  <v-btn
+                    v-bind="props"
+                    icon="mdi-pencil-outline"
+                    variant="text"
+                    size="small"
+                    color="grey-darken-1"
+                    @click="openEditModal(produto)"
                   />
                 </template>
               </v-tooltip>
 
               <v-tooltip text="Remover Produto" location="top">
                 <template v-slot:activator="{ props }">
-                  <v-btn 
-                    v-bind="props" 
-                    icon="mdi-trash-can-outline" 
-                    variant="text" 
-                    size="small" 
-                    color="error" 
-                    @click="openConfirmDelete(produto)" 
+                  <v-btn
+                    v-bind="props"
+                    icon="mdi-trash-can-outline"
+                    variant="text"
+                    size="small"
+                    color="error"
+                    @click="openConfirmDelete(produto)"
                   />
                 </template>
               </v-tooltip>
@@ -164,6 +177,13 @@
       :loading="isDeleting"
       @confirm="handleConfirmDelete"
     />
+
+    <AuditDrawer
+      v-model="auditDrawerOpen"
+      entity-name="Produto"
+      :entity-id="auditTarget?.id ?? ''"
+      :entity-label="auditTarget ? `Produto — ${auditTarget.nome}` : undefined"
+    />
   </v-container>
 </template>
 
@@ -171,6 +191,7 @@
 import { ref, computed } from "vue";
 import ProdutoFormModal from "@/components/Forms/ProdutoFormModal.vue";
 import ConfirmDeleteDialog from "@/components/modals/ConfirmDeleteDialog.vue";
+import AuditDrawer from "@/components/audit/AuditDrawer.vue";
 import { useProduto } from "@/hooks/useProdutos";
 import type { ProdutoCreateDto, ProdutoResponse } from "@/entities/produto.types";
 
@@ -182,6 +203,13 @@ const isDeleting = ref(false);
 
 const editingProduto = ref<ProdutoResponse | undefined>();
 const targetProduto = ref<ProdutoResponse | null>(null);
+const auditDrawerOpen = ref(false);
+const auditTarget = ref<ProdutoResponse | null>(null);
+
+function openHistorico(produto: ProdutoResponse) {
+  auditTarget.value = produto;
+  auditDrawerOpen.value = true;
+}
 
 const searchQuery = ref('');
 const currentPage = ref(1);
