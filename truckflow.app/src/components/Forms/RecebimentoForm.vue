@@ -27,7 +27,7 @@
           <v-col cols="12" md="6">
             <v-autocomplete
               v-model="form.fornecedorId"
-              :items="fornecedorStore.fornecedores"
+              :items="fornecedores"
               item-title="nome"
               item-value="id"
               label="Fornecedor"
@@ -350,19 +350,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, reactive, watch } from "vue";
+import { ref, computed, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { format, parseISO } from "date-fns";
-import { useFornecedorStore } from "@/stores/FornecedorStore";
-import { useProdutoStore } from "@/stores/ProdutoStore";
+import { useFornecedor } from "@/hooks/useFornecedor";
+import { useProduto } from "@/hooks/useProdutos";
 import { useToastStore } from "@/stores/ToastStore";
 import { usePlanejamento } from "@/hooks/usePlanejamento";
 import type IRecebimentoCreate from "@/Dtos/Recebimento/IRecebimentoCreate";
 import type ItemPlanejamentoCreate from "@/Dtos/Item/ItemPlanejamentoCreate";
 
 const router = useRouter();
-const produtoStore = useProdutoStore();
-const fornecedorStore = useFornecedorStore();
+const { produtos } = useProduto();
+const { fornecedores } = useFornecedor();
 const toast = useToastStore();
 const { createPlanejamento, isCreating } = usePlanejamento();
 
@@ -406,16 +406,6 @@ const itemForm = ref({
   diasSelecionados: [] as string[],
 });
 
-onMounted(async () => {
-  try {
-    await Promise.all([
-      fornecedorStore.fetchAll(),
-      produtoStore.getAll()]);
-  } catch {
-    toast.notify("Erro ao carregar dados iniciais.", "error");
-  }
-});
-
 const rangeInvalido = computed(() => {
   if (!form.dataInicio || !form.dataFim) return true;
   return parseISO(form.dataFim) < parseISO(form.dataInicio);
@@ -451,12 +441,12 @@ watch(diasSelecionaveis, (novo) => {
 
 const produtosDisponiveis = computed(() => {
   if (!form.fornecedorId) return [];
-  const fornecedor = fornecedorStore.fornecedores.find(
+  const fornecedor = fornecedores.value.find(
     (f) => f.id === form.fornecedorId,
   );
   const produtosDoForn = (fornecedor as any)?.produtos;
   if (produtosDoForn && produtosDoForn.length > 0) return produtosDoForn;
-  return produtoStore.produtos;
+  return produtos.value;
 });
 
 const produtosJaSelecionados = computed(
@@ -536,7 +526,7 @@ function parseDias(diasSemana: string) {
 }
 
 function getNomeProduto(id: string): string {
-  return produtoStore.produtos.find((p) => p.id === id)?.nome || "Produto";
+  return produtos.value.find((p) => p.id === id)?.nome || "Produto";
 }
 
 function limparItensAoTrocarFornecedor() {

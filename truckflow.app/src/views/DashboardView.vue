@@ -22,7 +22,7 @@
           color="white"
           :loading="loading"
           size="small"
-          @click="dashboardStore.fetchDashboardData()"
+          @click="refetch()"
         />
       </div>
     </div>
@@ -52,8 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed } from 'vue';
-import { useDashboardStore } from '@/stores/DashboardStore';
+import { useDashboard } from '@/hooks/useDashboard';
 
 import SummaryCards from '@/components/dashboard/SummaryCards.vue';
 import OccupancyChart from '@/components/dashboard/OccupancyChart.vue';
@@ -61,14 +60,7 @@ import StatusChart from '@/components/dashboard/StatusChart.vue';
 import UpcomingAppointments from '@/components/dashboard/UpcomingAppointments.vue';
 import QuickActions from '@/components/dashboard/QuickActions.vue';
 
-const dashboardStore = useDashboardStore();
-
-const dashboardData = computed(() => dashboardStore.dashboardData);
-const loading = computed(() => dashboardStore.loading);
-
-onMounted(() => {
-  dashboardStore.fetchDashboardData();
-});
+const { dashboardData, loading, refetch } = useDashboard();
 </script>
 
 <style scoped>

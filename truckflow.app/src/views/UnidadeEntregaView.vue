@@ -120,28 +120,40 @@
 
           <v-card-actions class="px-4 py-3">
             <v-spacer />
+            <v-tooltip text="Histórico" location="top">
+              <template v-slot:activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  variant="text"
+                  color="grey-darken-1"
+                  icon="mdi-history"
+                  @click="openHistorico(unidade)"
+                />
+              </template>
+            </v-tooltip>
+
             <v-tooltip text="Editar" location="top">
               <template v-slot:activator="{ props }">
                 <v-btn
                   v-bind="props"
-                  variant="text" 
-                  color="grey-darken-1" 
-                  icon="mdi-pencil-outline" 
-                  @click="openEditModal(unidade)" 
+                  variant="text"
+                  color="grey-darken-1"
+                  icon="mdi-pencil-outline"
+                  @click="openEditModal(unidade)"
                 />
               </template>
             </v-tooltip>
-            
+
             <v-tooltip text="Remover" location="top">
               <template v-slot:activator="{ props }">
-                <v-btn 
+                <v-btn
                   v-bind="props"
-                  variant="text" 
-                  color="error" 
-                  icon="mdi-delete-outline" 
-                  @click="openConfirmDelete(unidade)" 
+                  variant="text"
+                  color="error"
+                  icon="mdi-delete-outline"
+                  @click="openConfirmDelete(unidade)"
                 />
-              </template> 
+              </template>
             </v-tooltip>
           </v-card-actions>
         </v-card>
@@ -162,6 +174,13 @@
       :loading="isDeleting"
       @confirm="handleConfirmDelete"
     />
+
+    <AuditDrawer
+      v-model="auditDrawerOpen"
+      entity-name="UnidadeEntrega"
+      :entity-id="auditTarget?.id ?? ''"
+      :entity-label="auditTarget ? `Unidade de Entrega — ${auditTarget.nome}` : undefined"
+    />
   </v-container>
 </template>
 
@@ -169,6 +188,7 @@
 import { ref, computed } from "vue";
 import UnidadeEntregaFormModal from "@/components/Forms/UnidadeEntregaFormModal.vue";
 import ConfirmDeleteDialog from "@/components/modals/ConfirmDeleteDialog.vue";
+import AuditDrawer from "@/components/audit/AuditDrawer.vue";
 import type { UnidadeEntregaCreateDto, UnidadeEntregaResponse } from "@/entities/unidadeEntrega.types";
 import { useUnidadeEntrega } from "@/hooks/useUnidadeEntrega";
 
@@ -180,6 +200,13 @@ const isDeleting = ref(false);
 
 const editingUnidade = ref<UnidadeEntregaResponse | undefined>();
 const targetUnidade = ref<UnidadeEntregaResponse | null>(null);
+const auditDrawerOpen = ref(false);
+const auditTarget = ref<UnidadeEntregaResponse | null>(null);
+
+function openHistorico(unidade: UnidadeEntregaResponse) {
+  auditTarget.value = unidade;
+  auditDrawerOpen.value = true;
+}
 
 const activeTab = ref('all');
 const searchQuery = ref('');

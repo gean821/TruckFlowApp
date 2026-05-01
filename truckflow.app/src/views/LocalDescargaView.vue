@@ -112,28 +112,40 @@
 
           <v-card-actions class="px-4 py-3">
             <v-spacer />
+            <v-tooltip text="Histórico" location="top">
+              <template v-slot:activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  variant="text"
+                  color="grey-darken-1"
+                  icon="mdi-history"
+                  @click="openHistorico(local)"
+                />
+              </template>
+            </v-tooltip>
+
             <v-tooltip text="Editar" location="top">
               <template v-slot:activator="{ props }">
                 <v-btn
                   v-bind="props"
-                  variant="text" 
-                  color="grey-darken-1" 
-                  icon="mdi-pencil-outline" 
-                  @click="openEditModal(local)" 
+                  variant="text"
+                  color="grey-darken-1"
+                  icon="mdi-pencil-outline"
+                  @click="openEditModal(local)"
                 />
               </template>
             </v-tooltip>
-            
+
             <v-tooltip text="Remover" location="top">
               <template v-slot:activator="{ props }">
-                <v-btn 
+                <v-btn
                   v-bind="props"
-                  variant="text" 
-                  color="error" 
-                  icon="mdi-trash-can-outline" 
-                  @click="openConfirmDelete(local)" 
+                  variant="text"
+                  color="error"
+                  icon="mdi-trash-can-outline"
+                  @click="openConfirmDelete(local)"
                 />
-              </template> 
+              </template>
             </v-tooltip>
           </v-card-actions>
         </v-card>
@@ -154,6 +166,13 @@
       :loading="isDeleting"
       @confirm="handleConfirmDelete"
     />
+
+    <AuditDrawer
+      v-model="auditDrawerOpen"
+      entity-name="LocalDescarga"
+      :entity-id="auditTarget?.id ?? ''"
+      :entity-label="auditTarget ? `Local de Descarga — ${auditTarget.nome}` : undefined"
+    />
   </v-container>
 </template>
 
@@ -162,6 +181,7 @@ import { ref, computed } from "vue";
 import { useLocalDescarga } from "@/hooks/useLocalDescarga";
 import LocalDescargaFormModal from "@/components/Forms/LocalDescargaFormModal.vue";
 import ConfirmDeleteDialog from "@/components/modals/ConfirmDeleteDialog.vue";
+import AuditDrawer from "@/components/audit/AuditDrawer.vue";
 import type { LocalDescargaResponse, CreateLocalDescargaDto } from "@/entities/localDescarga.types";
 
 const { locais, loading, create, update, remove } = useLocalDescarga();
@@ -174,6 +194,13 @@ const searchQuery = ref('');
 
 const editingLocal = ref<LocalDescargaResponse | undefined>();
 const targetLocal = ref<LocalDescargaResponse | null>(null);
+const auditDrawerOpen = ref(false);
+const auditTarget = ref<LocalDescargaResponse | null>(null);
+
+function openHistorico(local: LocalDescargaResponse) {
+  auditTarget.value = local;
+  auditDrawerOpen.value = true;
+}
 
 const counts = computed(() => ({
   all: locais.value.length,

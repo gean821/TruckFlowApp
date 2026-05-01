@@ -81,9 +81,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
-import { useItemPlanejamentoStore } from "@/stores/ItemPlanejamentoStore";
-import { useRecebimentoStore } from "@/stores/RecebimentoStore";
+import { ref, watch } from "vue";
+import { useItemPlanejamento } from "@/hooks/useItemPlanejamento";
 import { formatarData } from "@/utils/date-format";
 import type { VDataTableHeader } from "../data-table/CrudTable.vue";
 import type ItemPlanejamentoResponse from "@/Dtos/Item/ItemResponseDto";
@@ -94,8 +93,7 @@ const emit = defineEmits<{
   (e: "close"): void;
 }>();
 
-const itemStore = useItemPlanejamentoStore();
-const recebimentoStore = useRecebimentoStore();
+const { remove: removeItem } = useItemPlanejamento();
 
 const open = ref(true);
 const localItems = ref<ItemPlanejamentoResponse[]>([]);
@@ -151,27 +149,10 @@ async function onDeleteItem(item: any) {
   }
 
   try {
-    await itemStore.Deleteitem(id);
-    // atualiza a UI local imediatamente
+    await removeItem(id);
     localItems.value = localItems.value.filter((i) => getItemId(i) !== id);
-
-    // sincroniza as stores (atualiza listas globais)
-    await itemStore.GetAll();
-    await recebimentoStore.GetAll();
-
-    // opcional: se quiser atualizar o recebimento atual (se ainda existir), tenta recarregar do backend
-    if (props.recebimento?.id) {
-      try {
-        const updated = await recebimentoStore.GetById(props.recebimento.id);
-        // atualiza localItems a partir do recebimento atualizado
-        localItems.value = (updated.itens ?? []).map((i: any) => ({ ...i }));
-      } catch {
-        // ignore
-      }
-    }
   } catch (err) {
     console.error("Erro ao apagar item:", err);
-    alert("Falha ao remover item. Veja o console para mais detalhes.");
   }
 }
 </script>

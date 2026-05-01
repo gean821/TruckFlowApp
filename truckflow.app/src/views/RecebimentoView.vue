@@ -162,6 +162,11 @@
                 </template>
                 <v-list density="compact" class="rounded-lg elevation-3">
                   <v-list-item
+                    prepend-icon="mdi-history"
+                    title="Histórico"
+                    @click="openHistorico(item)"
+                  />
+                  <v-list-item
                     prepend-icon="mdi-chart-box-outline"
                     title="Ver relatório"
                     @click="abrirRelatorio(item.id)"
@@ -267,6 +272,13 @@
       v-model="relatorio.show"
       :planejamento-id="relatorio.id"
     />
+
+    <AuditDrawer
+      v-model="auditDrawerOpen"
+      entity-name="PlanejamentoRecebimento"
+      :entity-id="auditTarget?.id ?? ''"
+      :entity-label="auditTarget ? `Planejamento — ${auditTarget.fornecedorNome}` : undefined"
+    />
   </v-container>
 </template>
 
@@ -283,6 +295,7 @@ import type IRecebimentoResponse from "@/Dtos/Recebimento/IRecebimentoResponse";
 import ConfirmDeleteDialog from "@/components/modals/ConfirmDeleteDialog.vue";
 import ConfirmDialog from "@/components/modals/ConfirmDialog.vue";
 import RecebimentoDashboardPanel from "@/components/Forms/RecebimentoDashboardPanel.vue";
+import AuditDrawer from "@/components/audit/AuditDrawer.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -358,6 +371,14 @@ const itemToDelete = ref<string | null>(null);
 
 const confirmEncerrar = ref<{ show: boolean; id: string | null }>({ show: false, id: null });
 const relatorio = ref<{ show: boolean; id: string | null }>({ show: false, id: null });
+
+const auditDrawerOpen = ref(false);
+const auditTarget = ref<{ id: string; fornecedorNome: string } | null>(null);
+
+function openHistorico(item: IRecebimentoResponse) {
+  auditTarget.value = { id: item.id, fornecedorNome: item.fornecedorNome };
+  auditDrawerOpen.value = true;
+}
 
 const statusOptions = [
   { title: "Planejado", value: "Planejado" },
