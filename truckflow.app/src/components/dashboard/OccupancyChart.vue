@@ -1,5 +1,5 @@
 <template>
-  <v-card elevation="0" class="rounded-xl pa-6 h-100 premium-card">
+  <v-card elevation="0" class="rounded-xl pa-6 premium-card">
     <div class="d-flex justify-space-between align-center mb-6">
       <h3 class="text-h6 font-weight-bold">Status Operacional</h3>
       <v-chip size="small" color="success" variant="flat" prepend-icon="mdi-check-circle">

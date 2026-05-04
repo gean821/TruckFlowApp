@@ -30,7 +30,7 @@
     <SummaryCards :stats="dashboardData.stats" :loading="loading" />
 
     <v-row class="mt-5">
-      <v-col cols="12" md="7" class="d-flex flex-column gap-4">
+      <v-col cols="12" md="7" class="d-flex flex-column gap-6">
         <OccupancyChart :docas="dashboardData.docas" :volume="dashboardData.volume" />
         <StatusChart :stats="dashboardData.stats" :loading="loading" />
       </v-col>
