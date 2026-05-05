@@ -356,6 +356,20 @@
 
         <div class="nav-section-label mt-4 mb-1">CONTROLE</div>
 
+        <v-tooltip v-if="isAdmin" text="Empresa" location="end" :disabled="!railMode">
+          <template #activator="{ props: tip }">
+            <v-list-item
+              v-bind="tip"
+              to="/empresa"
+              prepend-icon="mdi-domain"
+              title="Empresa"
+              rounded="lg"
+              active-class="nav-active"
+              class="mb-1 nav-item"
+            />
+          </template>
+        </v-tooltip>
+
         <v-list-item
           to="/bloqueios"
           prepend-icon="mdi-shield-lock-outline"
@@ -471,12 +485,15 @@ const routeMap: Record<string, { label: string; parent?: string }> = {
   "/relatorios": { label: "Relatórios" },
   "/auditoria": { label: "Auditoria" },
   "/usuarios": { label: "Usuários" },
+  "/empresa": { label: "Empresa", parent: "Controle" },
   "/account-config": { label: "Minha Conta" },
 };
 
 const breadcrumb = computed(
   () => routeMap[route.path] ?? { label: route.path },
 );
+
+const isAdmin = computed(() => authStore.user?.role === "Admin");
 
 const profile = computed(() => {
   const name = authStore.user?.unique_name || "Usuário";
