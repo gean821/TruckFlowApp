@@ -18,6 +18,7 @@ import SaibaMais from '@/views/SaibaMais.vue';
 import AuditoriaView from '@/views/AuditoriaView.vue';
 import ManageUserView from '@/views/ManageUserView.vue';
 import EmpresaView from '@/views/EmpresaView.vue';
+import MinhaContaView from '@/views/MinhaContaView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -189,6 +190,15 @@ const router = createRouter({
       path: '/empresa',
       name: 'empresa',
       component: EmpresaView,
+      meta: {
+        requiresAuth: true,
+        roles: ['Admin']
+      }
+    },
+    {
+      path: '/account-config',
+      name: 'account-config',
+      component: MinhaContaView,
       meta: {
         requiresAuth: true,
         roles: ['Admin']
