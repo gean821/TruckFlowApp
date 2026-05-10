@@ -356,6 +356,20 @@
 
         <div class="nav-section-label mt-4 mb-1">CONTROLE</div>
 
+        <v-tooltip v-if="isAdmin" text="Empresa" location="end" :disabled="!railMode">
+          <template #activator="{ props: tip }">
+            <v-list-item
+              v-bind="tip"
+              to="/empresa"
+              prepend-icon="mdi-domain"
+              title="Empresa"
+              rounded="lg"
+              active-class="nav-active"
+              class="mb-1 nav-item"
+            />
+          </template>
+        </v-tooltip>
+
         <v-list-item
           to="/bloqueios"
           prepend-icon="mdi-shield-lock-outline"
@@ -436,37 +450,6 @@
       </v-tooltip>
     </v-list>
 
-    <template #append>
-      <div class="pa-2 pb-3">
-        <v-divider
-          style="border-color: rgba(255, 255, 255, 0.1)"
-          class="mb-2"
-        />
-        <v-tooltip text="Sair" location="end" :disabled="!railMode">
-          <template #activator="{ props: tip }">
-            <v-list-item
-              v-bind="tip"
-              prepend-icon="mdi-logout"
-              title="Sair"
-              rounded="lg"
-              class="nav-item nav-logout"
-              @click="logout"
-            />
-          </template>
-        </v-tooltip>
-        <div
-          v-if="!railMode"
-          class="text-center mt-2"
-          style="
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.2);
-            letter-spacing: 0.06em;
-          "
-        >
-          TruckFlow v1.0.0
-        </div>
-      </div>
-    </template>
   </v-navigation-drawer>
 
   <EditProfileModal v-model="openProfile" />
@@ -502,12 +485,15 @@ const routeMap: Record<string, { label: string; parent?: string }> = {
   "/relatorios": { label: "Relatórios" },
   "/auditoria": { label: "Auditoria" },
   "/usuarios": { label: "Usuários" },
+  "/empresa": { label: "Empresa", parent: "Controle" },
   "/account-config": { label: "Minha Conta" },
 };
 
 const breadcrumb = computed(
   () => routeMap[route.path] ?? { label: route.path },
 );
+
+const isAdmin = computed(() => authStore.user?.role === "Admin");
 
 const profile = computed(() => {
   const name = authStore.user?.unique_name || "Usuário";
@@ -809,12 +795,8 @@ function logout() {
   font-weight: 600 !important;
 }
 
-.nav-logout {
-  color: rgba(255, 110, 110, 0.9) !important;
-  font-size: 1.05rem !important;
-}
 
-:deep(.v-list-item:not(.nav-active):not(.nav-active-sub):hover) {
+:deep(.v-list-item:not(.nav-active):not(.nav-active-sub):not(.dropdown-item):hover) {
   background-color: rgba(255, 255, 255, 0.09) !important;
   color: white !important;
 }

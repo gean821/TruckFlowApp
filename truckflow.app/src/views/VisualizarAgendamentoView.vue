@@ -1,15 +1,25 @@
 <template>
   <v-container fluid class="pa-6">
     <v-card elevation="0" class="border rounded-xl bg-white">
-
       <div class="pa-5 border-b bg-grey-lighten-5">
-        <div class="d-flex flex-wrap align-center justify-space-between gap-4 mb-4">
+        <div
+          class="d-flex flex-wrap align-center justify-space-between gap-4 mb-4"
+        >
           <div class="d-flex align-center">
-            <v-avatar color="#195FA0" variant="flat" class="mr-3" rounded="lg" size="40">
+            <v-avatar
+              color="#195FA0"
+              variant="flat"
+              class="mr-3"
+              rounded="lg"
+              size="40"
+            >
               <v-icon color="white" size="20">mdi-calendar-clock</v-icon>
             </v-avatar>
             <div>
-              <h2 class="text-subtitle-1 font-weight-bold text-grey-darken-3" style="line-height: 1.2">
+              <h2
+                class="text-subtitle-1 font-weight-bold text-grey-darken-3"
+                style="line-height: 1.2"
+              >
                 Gestão de Agendamentos
               </h2>
               <div class="text-caption text-grey">
@@ -64,7 +74,7 @@
             prepend-inner-icon="mdi-magnify"
             hide-details
             bg-color="white"
-            style="min-width: 260px; flex: 1 1 260px;"
+            style="min-width: 260px; flex: 1 1 260px"
             clearable
           />
 
@@ -76,7 +86,7 @@
             variant="outlined"
             hide-details
             bg-color="white"
-            style="max-width: 160px;"
+            style="max-width: 160px"
             :disabled="periodoPreset !== 'custom'"
           />
 
@@ -88,7 +98,7 @@
             variant="outlined"
             hide-details
             bg-color="white"
-            style="max-width: 160px;"
+            style="max-width: 160px"
             :disabled="periodoPreset !== 'custom'"
           />
 
@@ -102,7 +112,7 @@
             variant="outlined"
             hide-details
             bg-color="white"
-            style="max-width: 200px;"
+            style="max-width: 200px"
             clearable
             placeholder="Todos"
           />
@@ -117,7 +127,7 @@
             variant="outlined"
             hide-details
             bg-color="white"
-            style="max-width: 200px;"
+            style="max-width: 200px"
             clearable
             placeholder="Todas"
           />
@@ -132,7 +142,7 @@
             variant="outlined"
             hide-details
             bg-color="white"
-            style="max-width: 200px;"
+            style="max-width: 200px"
             clearable
             placeholder="Todos"
           />
@@ -145,7 +155,7 @@
             variant="outlined"
             hide-details
             bg-color="white"
-            style="max-width: 170px;"
+            style="max-width: 170px"
             clearable
             placeholder="Todos"
           />
@@ -158,7 +168,7 @@
             variant="outlined"
             hide-details
             bg-color="white"
-            style="max-width: 190px;"
+            style="max-width: 190px"
             clearable
             placeholder="Todos"
           />
@@ -185,7 +195,9 @@
 
         <template v-slot:no-data>
           <div class="pa-8 text-center text-grey">
-            <v-icon size="40" class="mb-2 opacity-50">mdi-calendar-remove-outline</v-icon>
+            <v-icon size="40" class="mb-2 opacity-50"
+              >mdi-calendar-remove-outline</v-icon
+            >
             <p>Nenhum agendamento encontrado para os filtros selecionados.</p>
           </div>
         </template>
@@ -193,9 +205,14 @@
         <template #item.dataInicio="{ item }">
           <div class="d-flex flex-column py-2">
             <div class="d-flex align-center">
-              <v-icon icon="mdi-clock-outline" size="small" class="mr-1 text-primary" />
+              <v-icon
+                icon="mdi-clock-outline"
+                size="small"
+                class="mr-1 text-primary"
+              />
               <span class="font-weight-bold text-body-2">
-                {{ formatTime(item.dataInicio) }} - {{ formatTime(item.dataFim) }}
+                {{ formatTime(item.dataInicio) }} -
+                {{ formatTime(item.dataFim) }}
               </span>
             </div>
             <span class="text-caption text-grey ml-5">
@@ -205,21 +222,36 @@
         </template>
 
         <template #item.produto="{ value }">
-          <v-chip size="small" color="blue-grey" variant="tonal" class="font-weight-bold">
+          <v-chip
+            size="small"
+            color="blue-grey"
+            variant="tonal"
+            class="font-weight-bold"
+          >
             {{ value || "Carga Geral" }}
           </v-chip>
         </template>
 
         <template #item.fornecedorNome="{ value }">
-          <span class="text-body-2 font-weight-medium text-grey-darken-3">{{ value ?? '-' }}</span>
+          <span class="text-body-2 font-weight-medium text-grey-darken-3">{{
+            value ?? "-"
+          }}</span>
         </template>
 
         <template #item.motoristaNome="{ item }">
           <div v-if="item.motoristaNome" class="d-flex flex-column">
-            <span class="text-body-2 font-weight-medium">{{ item.motoristaNome }}</span>
+            <span class="text-body-2 font-weight-medium">{{
+              item.motoristaNome
+            }}</span>
             <div class="d-flex align-center mt-1">
-              <v-icon icon="mdi-truck-outline" size="x-small" class="mr-1 text-grey" />
-              <span class="text-caption text-grey-darken-1">{{ item.placaVeiculo }}</span>
+              <v-icon
+                icon="mdi-truck-outline"
+                size="x-small"
+                class="mr-1 text-grey"
+              />
+              <span class="text-caption text-grey-darken-1">{{
+                item.placaVeiculo
+              }}</span>
             </div>
           </div>
           <div v-else class="text-caption text-grey-lighten-1 font-italic">
@@ -229,7 +261,11 @@
 
         <template #item.tipoVeiculo="{ value }">
           <div class="d-flex align-center">
-            <v-icon icon="mdi-truck-cargo-container" size="small" class="mr-2 text-grey-darken-1" />
+            <v-icon
+              icon="mdi-truck-cargo-container"
+              size="small"
+              class="mr-2 text-grey-darken-1"
+            />
             <span class="text-body-2 text-grey-darken-3 text-capitalize">
               {{ formatTipoVeiculo(value) }}
             </span>
@@ -237,7 +273,9 @@
         </template>
 
         <template #item.pesoCarga="{ value }">
-          <span :class="value > 0 ? 'text-grey-darken-3' : 'text-grey-lighten-1'">
+          <span
+            :class="value > 0 ? 'text-grey-darken-3' : 'text-grey-lighten-1'"
+          >
             {{ value > 0 ? value.toLocaleString("pt-BR") : "-" }}
             <small v-if="value > 0">kg</small>
           </span>
@@ -259,7 +297,10 @@
             <v-tooltip
               text="Registrar Chegada (Check-in)"
               location="top"
-              v-if="isStatus(item.status, 'Agendado') || isStatus(item.status, 'Confirmado')"
+              v-if="
+                isStatus(item.status, 'Agendado') ||
+                isStatus(item.status, 'Confirmado')
+              "
             >
               <template v-slot:activator="{ props }">
                 <v-btn
@@ -298,7 +339,12 @@
               "
             >
               <template v-slot:activator="{ props }">
-                <v-btn icon="mdi-dots-vertical" variant="text" size="small" v-bind="props" />
+                <v-btn
+                  icon="mdi-dots-vertical"
+                  variant="text"
+                  size="small"
+                  v-bind="props"
+                />
               </template>
 
               <v-list density="compact">
@@ -311,7 +357,9 @@
                   prepend-icon="mdi-cancel"
                   base-color="red"
                 >
-                  <v-list-item-title class="text-red">Cancelar Agendamento</v-list-item-title>
+                  <v-list-item-title class="text-red"
+                    >Cancelar Agendamento</v-list-item-title
+                  >
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -366,7 +414,7 @@ const search = ref(route.query.search?.toString() || "");
 const searchDebounced = ref(search.value);
 
 const periodoPreset = ref<PeriodoPreset>(
-  (route.query.periodo?.toString() as PeriodoPreset) || "semana"
+  (route.query.periodo?.toString() as PeriodoPreset) || "semana",
 );
 const filtroDataInicio = ref(route.query.dataInicio?.toString() || "");
 const filtroDataFim = ref(route.query.dataFim?.toString() || "");
@@ -376,7 +424,7 @@ const filtroUnidade = ref(route.query.unidade?.toString() || null);
 const filtroProduto = ref(route.query.produto?.toString() || null);
 const filtroStatus = ref(route.query.status?.toString() || null);
 const filtroTipoVeiculo = ref<number | null>(
-  route.query.tipoVeiculo ? Number(route.query.tipoVeiculo) : null
+  route.query.tipoVeiculo ? Number(route.query.tipoVeiculo) : null,
 );
 
 const page = ref(Number(route.query.page) || 1);
@@ -437,7 +485,7 @@ watch(
       filtroDataFim.value = fim;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
@@ -454,7 +502,7 @@ watch(
   ],
   () => {
     page.value = 1;
-  }
+  },
 );
 
 const params = computed<IAgendamentoFilterDto>(() => ({
@@ -495,28 +543,39 @@ watch(
     router.replace({
       query: {
         search: searchDebounced.value || undefined,
-        periodo: periodoPreset.value !== "semana" ? periodoPreset.value : undefined,
+        periodo:
+          periodoPreset.value !== "semana" ? periodoPreset.value : undefined,
         dataInicio:
-          periodoPreset.value === "custom" ? filtroDataInicio.value || undefined : undefined,
+          periodoPreset.value === "custom"
+            ? filtroDataInicio.value || undefined
+            : undefined,
         dataFim:
-          periodoPreset.value === "custom" ? filtroDataFim.value || undefined : undefined,
+          periodoPreset.value === "custom"
+            ? filtroDataFim.value || undefined
+            : undefined,
         fornecedor: filtroFornecedor.value || undefined,
         unidade: filtroUnidade.value || undefined,
         produto: filtroProduto.value || undefined,
         status: filtroStatus.value || undefined,
         tipoVeiculo:
-          filtroTipoVeiculo.value !== null && filtroTipoVeiculo.value !== undefined
+          filtroTipoVeiculo.value !== null &&
+          filtroTipoVeiculo.value !== undefined
             ? String(filtroTipoVeiculo.value)
             : undefined,
         page: page.value !== 1 ? page.value : undefined,
         pageSize: pageSize.value !== 20 ? pageSize.value : undefined,
       },
     });
-  }
+  },
 );
 
 const headers = [
-  { title: "HORÁRIO / DATA", key: "dataInicio", width: "200px", align: "start" },
+  {
+    title: "HORÁRIO / DATA",
+    key: "dataInicio",
+    width: "200px",
+    align: "start",
+  },
   { title: "PRODUTO", key: "produto", width: "150px" },
   { title: "FORNECEDOR", key: "fornecedorNome" },
   { title: "MOTORISTA / PLACA", key: "motoristaNome", width: "220px" },
@@ -524,7 +583,13 @@ const headers = [
   { title: "TIPO VEÍCULO", key: "tipoVeiculo", width: "180px" },
   { title: "PESO", key: "pesoCarga", align: "end", width: "120px" },
   { title: "STATUS", key: "status", align: "center", width: "140px" },
-  { title: "AÇÕES", key: "actions", sortable: false, align: "center", width: "100px" },
+  {
+    title: "AÇÕES",
+    key: "actions",
+    sortable: false,
+    align: "center",
+    width: "100px",
+  },
 ] as const;
 
 const statusOptions = [
@@ -541,7 +606,7 @@ const tipoVeiculoOptions = computed(() =>
   Object.entries(TipoVeiculoLabels).map(([value, title]) => ({
     title,
     value: Number(value),
-  }))
+  })),
 );
 
 function askConfirmation(config: {

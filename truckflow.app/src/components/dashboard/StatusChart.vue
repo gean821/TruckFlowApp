@@ -1,5 +1,5 @@
 <template>
-  <v-card elevation="0" class="rounded-xl pa-6 h-100 premium-card">
+  <v-card elevation="0" class="rounded-xl pa-6 premium-card" style="flex: 1;">
     <div class="d-flex justify-space-between align-center mb-5">
       <h3 class="text-h6 font-weight-bold">Agendamentos de Hoje</h3>
       <v-chip size="small" variant="tonal" color="primary">
