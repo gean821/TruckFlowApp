@@ -17,8 +17,9 @@ export const useGrade = () => {
       queryClient.invalidateQueries({ queryKey: [queryKey] });
       toast.notify("Grade criada com sucesso!", "success");
     },
-    onError: () => {
-      toast.notify("Erro ao criar grade.", "error");
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message ?? "Erro ao criar grade.";
+      toast.notify(msg, "error");
     }
   });
 
@@ -29,8 +30,9 @@ export const useGrade = () => {
       queryClient.invalidateQueries({ queryKey: [queryKey] })
       toast.notify("Grade atualizada!", "success");
     },
-    onError: () => {
-      toast.notify("Erro ao atualizar grade.", "error");
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message ?? "Erro ao atualizar grade.";
+      toast.notify(msg, "error");
     }
   });
 

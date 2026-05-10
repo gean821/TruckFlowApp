@@ -4,6 +4,7 @@ export interface DashboardStatsDto {
   finalizados: number;
   atrasados: number;
   cancelados: number;
+  expirados: number;
 }
 
 export interface DashboardVolumeDto {

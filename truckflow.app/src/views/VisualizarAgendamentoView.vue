@@ -211,7 +211,7 @@
         </template>
 
         <template #item.fornecedorNome="{ value }">
-          <span class="text-body-2 font-weight-medium text-grey-darken-3">{{ value }}</span>
+          <span class="text-body-2 font-weight-medium text-grey-darken-3">{{ value ?? '-' }}</span>
         </template>
 
         <template #item.motoristaNome="{ item }">
@@ -534,6 +534,7 @@ const statusOptions = [
   { title: "Em Andamento", value: "EmAndamento" },
   { title: "Finalizado", value: "Finalizado" },
   { title: "Cancelado", value: "Cancelado" },
+  { title: "Expirado", value: "Expirado" },
 ];
 
 const tipoVeiculoOptions = computed(() =>
@@ -665,6 +666,8 @@ function getStatusColor(status: string) {
       return "grey-darken-2";
     case "cancelado":
       return "red-lighten-1";
+    case "expirado":
+      return "orange-darken-3";
     default:
       return "grey";
   }

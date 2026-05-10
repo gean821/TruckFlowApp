@@ -42,7 +42,13 @@ import type { DashboardStatsDto } from '@/Dtos/dashboard/Dashboard-responses';
 const props = defineProps<{ stats: DashboardStatsDto; loading: boolean }>();
 
 const agendados = computed(() => {
-  const rest = props.stats.totalAgendamentos - props.stats.emAndamento - props.stats.finalizados - props.stats.atrasados - (props.stats.cancelados ?? 0);
+  const rest =
+    props.stats.totalAgendamentos
+    - props.stats.emAndamento
+    - props.stats.finalizados
+    - props.stats.atrasados
+    - (props.stats.cancelados ?? 0)
+    - (props.stats.expirados ?? 0);
   return Math.max(0, rest);
 });
 
@@ -50,8 +56,8 @@ const hasData = computed(() => props.stats.totalAgendamentos > 0);
 
 const chartOptions = computed(() => ({
   chart: { type: 'donut', toolbar: { show: false }, animations: { enabled: true, speed: 600 } },
-  labels: ['Aguardando', 'Em Andamento', 'Finalizados', 'Atrasados', 'Cancelados'],
-  colors: ['#7E57C2', '#195FA0', '#4CAF50', '#EF5350', '#9E9E9E'],
+  labels: ['Aguardando', 'Em Andamento', 'Finalizados', 'Atrasados', 'Cancelados', 'Expirados'],
+  colors: ['#7E57C2', '#195FA0', '#4CAF50', '#EF5350', '#9E9E9E', '#FB8C00'],
   legend: {
     position: 'bottom',
     fontFamily: 'Roboto, sans-serif',
@@ -96,6 +102,7 @@ const series = computed(() => [
   props.stats.finalizados,
   props.stats.atrasados,
   props.stats.cancelados ?? 0,
+  props.stats.expirados ?? 0,
 ]);
 
 const statusItems = computed(() => [
@@ -104,6 +111,7 @@ const statusItems = computed(() => [
   { label: 'Finalizados',  value: props.stats.finalizados,  color: '#4CAF50', bg: 'green-lighten-5' },
   { label: 'Atrasados',    value: props.stats.atrasados,    color: '#EF5350', bg: 'red-lighten-5' },
   { label: 'Cancelados',   value: props.stats.cancelados ?? 0, color: '#9E9E9E', bg: 'grey-lighten-4' },
+  { label: 'Expirados',    value: props.stats.expirados ?? 0, color: '#FB8C00', bg: 'orange-lighten-5' },
 ]);
 </script>
 

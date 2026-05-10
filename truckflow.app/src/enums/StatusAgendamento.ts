@@ -4,5 +4,6 @@ export enum StatusAgendamento {
     Agendado = 2,     // motorista reservou
     EmAndamento = 3, // check-in realizado (na doca)
     Finalizado = 4,  // check-out realizado
-    Cancelado = 5
+    Cancelado = 5,
+    Expirado = 6
 }

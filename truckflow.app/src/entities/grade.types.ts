@@ -15,7 +15,7 @@ export interface IGrade extends EntidadeBase {
 }
 
 export type GradeCreateDto = {
-    fornecedorId: string;
+    fornecedorId?: string | undefined;
     produtoId: string;
     dataInicio: string;
     dataFim: string;

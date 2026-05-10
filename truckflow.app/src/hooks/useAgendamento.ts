@@ -20,8 +20,9 @@ export const useAgendamento = () => {
       toast.notify("Agendamento criado com sucesso!", "success");
     },
 
-    onError: () => {
-      toast.notify("Erro ao criar agendamento.", "error");
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message ?? "Erro ao criar agendamento.";
+      toast.notify(msg, "error");
     }
   });
 
@@ -34,8 +35,9 @@ export const useAgendamento = () => {
       toast.notify("Agendamento atualizado!", "success");
     },
 
-    onError: () => {
-      toast.notify("Erro ao atualizar agendamento.", "error");
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message ?? "Erro ao atualizar agendamento.";
+      toast.notify(msg, "error");
     }
   });
 

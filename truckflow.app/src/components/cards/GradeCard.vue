@@ -29,13 +29,16 @@
               :items="fornecedores"
               item-title="nome"
               item-value="id"
-              label="Fornecedor"
-              placeholder="Selecione..."
+              label="Fornecedor (opcional)"
+              placeholder="Qualquer fornecedor"
               variant="outlined"
               density="comfortable"
               color="primary"
               hide-details="auto"
+              clearable
               class="mb-3"
+              hint="Deixe em branco para aceitar qualquer fornecedor"
+              persistent-hint
             >
               <template v-slot:prepend-inner>
                 <v-icon size="small" color="grey">mdi-domain</v-icon>
@@ -306,7 +309,7 @@ const diasOpcoes = [
 const hoje = format(new Date(), "yyyy-MM-dd");
 
 const formModelGrade = reactive<GradeCreateDto>({
-  fornecedorId: "",
+  fornecedorId: undefined,
   produtoId: "",
   localDescargaId: "",
   dataInicio: "",
@@ -422,12 +425,8 @@ async function cadastrar() {
     return;
   }
 
-  if (
-    !formModelGrade.fornecedorId ||
-    !formModelGrade.produtoId ||
-    !formModelGrade.localDescargaId
-  ) {
-    toast.notify("Preencha todos os campos obrigatórios.", "warning");
+  if (!formModelGrade.produtoId || !formModelGrade.localDescargaId) {
+    toast.notify("Produto e Local de Descarga são obrigatórios.", "warning");
     return;
   }
 

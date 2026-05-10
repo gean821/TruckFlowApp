@@ -33,12 +33,13 @@
                 :items="fornecedores"
                 item-title="nome"
                 item-value="id"
-                label="Fornecedor *"
+                label="Fornecedor (opcional)"
+                placeholder="Qualquer fornecedor"
                 variant="outlined"
                 density="comfortable"
                 hide-details="auto"
+                clearable
                 class="mb-2"
-                :rules="[rules.required]"
               />
             </v-col>
             <v-col cols="12" md="4">
@@ -219,7 +220,7 @@ interface AgendamentoAvulsoEmits {
 }
 
 interface AgendamentoFormState {
-  fornecedorId: string | null;
+  fornecedorId: string | null | undefined;
   produtoId: string | null;
   localDescargaId: string | null;
   placaVeiculo: string;
@@ -257,7 +258,7 @@ const opcoesTipoVeiculo = computed(() => {
 });
 
 const initialState: AgendamentoFormState = {
-  fornecedorId: "",
+  fornecedorId: undefined,
   produtoId: "",
   localDescargaId: "",
   placaVeiculo: "",
@@ -306,25 +307,27 @@ const submit = async () => {
   }
 
   try {
-    if (!form.fornecedorId || !form.localDescargaId) {
-      toast.notify("Fornecedor e Doca são obrigatórios.", "warning");
+    if (!form.localDescargaId) {
+      toast.notify("Doca é obrigatória.", "warning");
       return;
     }
 
+    const inicioDt = new Date(`${dataAvulsa.value}T${horaAvulsaInicio.value}:00`);
+    const fimDt = new Date(`${dataAvulsa.value}T${horaAvulsaFim.value}:00`);
+    if (fimDt <= inicioDt) {
+      fimDt.setDate(fimDt.getDate() + 1);
+    }
+
     const payload: CreateAgendamentoAdminDto = {
-      fornecedorId: form.fornecedorId,
+      fornecedorId: form.fornecedorId ?? undefined,
       localDescargaId: form.localDescargaId,
       produtoId: form.produtoId ?? "",
       placaVeiculo: form.placaVeiculo || undefined,
       tipoVeiculo: form.tipoVeiculo ?? undefined,
       volumeCarga: form.volumeCarga,
       tipoCarga: form.tipoCarga,
-      dataInicio: new Date(
-        `${dataAvulsa.value}T${horaAvulsaInicio.value}:00`,
-      ).toISOString(),
-      dataFim: new Date(
-        `${dataAvulsa.value}T${horaAvulsaFim.value}:00`,
-      ).toISOString(),
+      dataInicio: inicioDt.toISOString(),
+      dataFim: fimDt.toISOString(),
       motoristaId: undefined,
       notaFiscalId: undefined,
     };

@@ -2,7 +2,7 @@ import type { TipoCarga } from "@/enums/TipoCarga";
 import type { TipoVeiculo } from "@/enums/TipoVeiculo";
 
 export default interface CreateAgendamentoAdminDto {
-    fornecedorId: string;
+    fornecedorId?: string;
     produtoId: string;
     localDescargaId: string;
     dataInicio: string;

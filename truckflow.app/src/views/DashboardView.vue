@@ -42,7 +42,6 @@
 
     <div class="mt-6">
       <div class="d-flex align-center gap-3 mb-4">
-        <div class="section-accent-bar"></div>
         <h3 class="text-h6 font-weight-bold text-grey-darken-3">Acesso Rápido</h3>
       </div>
       <QuickActions />
@@ -100,10 +99,4 @@ const { dashboardData, loading, refetch } = useDashboard();
   border-radius: 50%;
 }
 
-.section-accent-bar {
-  width: 4px;
-  height: 20px;
-  background: linear-gradient(180deg, #195FA0, #0D3F6E);
-  border-radius: 4px;
-}
 </style>
