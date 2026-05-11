@@ -3,7 +3,7 @@ import { useDashboardSummaryQuery } from "@/queries/dashboard.queries";
 import { computed } from "vue";
 
 const emptyDashboard: DashboardResponseDto = {
-  stats: { totalAgendamentos: 0, emAndamento: 0, finalizados: 0, atrasados: 0, cancelados: 0 },
+  stats: { totalAgendamentos: 0, emAndamento: 0, finalizados: 0, atrasados: 0, cancelados: 0, expirados: 0 },
   volume: { totalKg: 0, progressoDiario: 0 },
   docas: { ocupacaoPorcentagem: 0, livres: 0, ocupadas: 0, total: 0 },
   recentActivity: []

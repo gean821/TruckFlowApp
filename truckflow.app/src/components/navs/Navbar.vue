@@ -173,6 +173,7 @@
       <v-tooltip text="Dashboard" location="end" :disabled="!railMode">
         <template #activator="{ props: tip }">
           <v-list-item
+            v-if="canViewSchedule"
             v-bind="tip"
             to="/dashboard"
             prepend-icon="mdi-view-dashboard-outline"
@@ -187,6 +188,7 @@
       <v-tooltip text="Agendamentos" location="end" :disabled="!railMode">
         <template #activator="{ props: tip }">
           <v-list-item
+            v-if="canViewSchedule"
             v-bind="tip"
             to="/visualizar"
             prepend-icon="mdi-calendar-multiselect"
@@ -205,6 +207,7 @@
       >
         <template #activator="{ props: tip }">
           <v-list-item
+            v-if="canManageGrade"
             v-bind="tip"
             to="/recebimentos"
             prepend-icon="mdi-file-document-edit-outline"
@@ -216,7 +219,12 @@
         </template>
       </v-tooltip>
 
-      <div v-if="!railMode" class="nav-section-label mt-4 mb-1">OPERAÇÃO</div>
+      <div
+        v-if="!railMode && (canManageGrade || canManageMasterData)"
+        class="nav-section-label mt-4 mb-1"
+      >
+        OPERAÇÃO
+      </div>
       <v-divider
         v-else
         class="my-2"
@@ -227,6 +235,7 @@
         <v-tooltip text="Programação" location="end">
           <template #activator="{ props: tip }">
             <v-list-item
+              v-if="canManageGrade"
               v-bind="tip"
               prepend-icon="mdi-clock-outline"
               title="Programação"
@@ -240,6 +249,7 @@
         <v-tooltip text="Cadastros" location="end">
           <template #activator="{ props: tip }">
             <v-list-item
+              v-if="canManageMasterData"
               v-bind="tip"
               prepend-icon="mdi-database-outline"
               title="Cadastros"
@@ -288,7 +298,7 @@
       </template>
 
       <template v-else>
-        <v-list-group value="Programacao">
+        <v-list-group value="Programacao" v-if="canManageGrade">
           <template #activator="{ props }">
             <v-list-item
               v-bind="props"
@@ -314,7 +324,7 @@
           />
         </v-list-group>
 
-        <v-list-group value="Gerenciar">
+        <v-list-group value="Gerenciar" v-if="canManageMasterData">
           <template #activator="{ props }">
             <v-list-item
               v-bind="props"
@@ -354,9 +364,19 @@
           />
         </v-list-group>
 
-        <div class="nav-section-label mt-4 mb-1">CONTROLE</div>
+        <div
+          v-if="canManageMasterData || canManageUsers || canViewAuditLogs"
+          class="nav-section-label mt-4 mb-1"
+        >
+          CONTROLE
+        </div>
 
-        <v-tooltip v-if="isAdmin" text="Empresa" location="end" :disabled="!railMode">
+        <v-tooltip
+          v-if="canManageMasterData"
+          text="Empresa"
+          location="end"
+          :disabled="!railMode"
+        >
           <template #activator="{ props: tip }">
             <v-list-item
               v-bind="tip"
@@ -371,6 +391,7 @@
         </v-tooltip>
 
         <v-list-item
+          v-if="canManageMasterData"
           to="/bloqueios"
           prepend-icon="mdi-shield-lock-outline"
           title="Bloqueios"
@@ -379,7 +400,7 @@
           class="mb-1 nav-item"
         />
 
-        <v-list-group value="Notificacoes">
+        <v-list-group value="Notificacoes" v-if="canManageMasterData">
           <template #activator="{ props }">
             <v-list-item v-bind="props" rounded="lg" class="nav-item">
               <template #prepend>
@@ -410,6 +431,7 @@
       <v-tooltip text="Relatórios" location="end" :disabled="!railMode">
         <template #activator="{ props: tip }">
           <v-list-item
+            v-if="canManageMasterData"
             v-bind="tip"
             to="/relatorios"
             prepend-icon="mdi-chart-box-outline"
@@ -424,6 +446,7 @@
       <v-tooltip text="Auditoria" location="end" :disabled="!railMode">
         <template #activator="{ props: tip }">
           <v-list-item
+            v-if="canViewAuditLogs"
             v-bind="tip"
             to="/auditoria"
             prepend-icon="mdi-history"
@@ -438,6 +461,7 @@
       <v-tooltip text="Usuários" location="end" :disabled="!railMode">
         <template #activator="{ props: tip }">
           <v-list-item
+            v-if="canManageUsers"
             v-bind="tip"
             to="/usuarios"
             prepend-icon="mdi-account"
@@ -449,7 +473,6 @@
         </template>
       </v-tooltip>
     </v-list>
-
   </v-navigation-drawer>
 
   <EditProfileModal v-model="openProfile" />
@@ -460,10 +483,19 @@ import { useAuthStore } from "@/stores/AuthStore";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import EditProfileModal from "@/components/modals/EditProfileModal.vue";
+import { usePermissions } from "@/hooks/usePermissions";
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+const {
+  canManageGrade,
+  canCheckIn,
+  canViewSchedule,
+  canManageUsers,
+  canManageMasterData,
+  canViewAuditLogs,
+} = usePermissions();
 const openProfile = ref(false);
 const sidebarVisible = ref(true);
 const railMode = ref(false);
@@ -492,8 +524,6 @@ const routeMap: Record<string, { label: string; parent?: string }> = {
 const breadcrumb = computed(
   () => routeMap[route.path] ?? { label: route.path },
 );
-
-const isAdmin = computed(() => authStore.user?.role === "Admin");
 
 const profile = computed(() => {
   const name = authStore.user?.unique_name || "Usuário";
@@ -795,8 +825,9 @@ function logout() {
   font-weight: 600 !important;
 }
 
-
-:deep(.v-list-item:not(.nav-active):not(.nav-active-sub):not(.dropdown-item):hover) {
+:deep(
+  .v-list-item:not(.nav-active):not(.nav-active-sub):not(.dropdown-item):hover
+) {
   background-color: rgba(255, 255, 255, 0.09) !important;
   color: white !important;
 }

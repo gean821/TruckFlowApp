@@ -19,11 +19,12 @@ import AuditoriaView from '@/views/AuditoriaView.vue';
 import ManageUserView from '@/views/ManageUserView.vue';
 import EmpresaView from '@/views/EmpresaView.vue';
 import MinhaContaView from '@/views/MinhaContaView.vue';
+import { RoleGroups, hasRole } from '@/shared/auth/roles';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-     {
+    {
       path: '/',
       redirect: '/home'
     },
@@ -57,7 +58,7 @@ const router = createRouter({
       component: DashboardView,
       meta: {
         requiresAuth: true,
-        roles: ['Admin']
+        roles: RoleGroups.CanViewSchedule
       }
     },
     {
@@ -66,7 +67,7 @@ const router = createRouter({
       component: VisualizarAgendamentoView,
       meta: {
         requiresAuth: true,
-        roles: ['Admin']
+        roles: RoleGroups.CanViewSchedule
       }
     },
     {
@@ -75,7 +76,7 @@ const router = createRouter({
       component: GradeCard,
       meta: {
         requiresAuth: true,
-        roles: ['Admin']
+        roles: RoleGroups.CanManageGrade
       }
     },
     {
@@ -84,7 +85,7 @@ const router = createRouter({
       component: ProgramacaoView,
       meta: {
         requiresAuth: true,
-        roles: ['Admin']
+        roles: RoleGroups.CanManageGrade
       }
     },
     // {
@@ -102,7 +103,7 @@ const router = createRouter({
       component: ProdutosView,
       meta: {
         requiresAuth: true,
-        roles: ['Admin']
+        roles: RoleGroups.CanManageMasterData
       }
     },
     {
@@ -111,7 +112,7 @@ const router = createRouter({
       component: LocalDescargaView,
       meta: {
         requiresAuth: true,
-        roles: ['Admin']
+        roles: RoleGroups.CanManageMasterData
       }
     },
     {
@@ -120,7 +121,7 @@ const router = createRouter({
       component: Fornecedor,
       meta: {
         requiresAuth: true,
-        roles: ['Admin']
+        roles: RoleGroups.CanManageMasterData
       }
     },
     {
@@ -129,7 +130,7 @@ const router = createRouter({
       component: UnidadeEntregaView,
       meta: {
         requiresAuth: true,
-        roles: ['Admin']
+        roles: RoleGroups.CanManageMasterData
       }
     },
     {
@@ -138,7 +139,7 @@ const router = createRouter({
       component: RecebimentoView,
       meta: {
         requiresAuth: true,
-        roles: ['Admin']
+        roles: RoleGroups.CanManageGrade
       }
     },
     {
@@ -147,7 +148,7 @@ const router = createRouter({
       component: RecebimentoForm,
       meta: {
         requiresAuth: true,
-        roles: ['Admin']
+        roles: RoleGroups.CanManageGrade
       }
     },
     {
@@ -156,7 +157,7 @@ const router = createRouter({
       component: RecebimentoView,
       meta: {
         requiresAuth: true,
-        roles: ['Admin']
+        roles: RoleGroups.CanManageGrade
       }
     },
     {
@@ -165,7 +166,7 @@ const router = createRouter({
       component: Relatorio,
       meta: {
         requiresAuth: true,
-        roles: ['Admin']
+        roles: RoleGroups.CanManageMasterData
       }
     },
     {
@@ -174,7 +175,7 @@ const router = createRouter({
       component: AuditoriaView,
       meta: {
         requiresAuth: true,
-        roles: ['Admin']
+        roles: RoleGroups.CanViewAuditLogs
       }
     },
     {
@@ -183,7 +184,7 @@ const router = createRouter({
       component: ManageUserView,
       meta: {
         requiresAuth: true,
-        roles: ['Admin']
+        roles: RoleGroups.CanManageUsers
       }
     },
     {
@@ -192,7 +193,7 @@ const router = createRouter({
       component: EmpresaView,
       meta: {
         requiresAuth: true,
-        roles: ['Admin']
+        roles: RoleGroups.CanManageMasterData
       }
     },
     {
@@ -201,7 +202,6 @@ const router = createRouter({
       component: MinhaContaView,
       meta: {
         requiresAuth: true,
-        roles: ['Admin']
       }
     },
   ],
@@ -221,8 +221,8 @@ router.beforeEach((to, from, next) => {
 
   const routeRoles = to.meta.roles as string[] | undefined;
 
-  if (routeRoles && !routeRoles.includes(auth.user?.role!)) {
-    return next("/login"); // ou /403
+  if (routeRoles && !hasRole(auth.user?.role, routeRoles)) {
+    return next("/login");
   }
 
   next();
