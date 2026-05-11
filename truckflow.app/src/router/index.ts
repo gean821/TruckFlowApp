@@ -18,6 +18,7 @@ import SaibaMais from '@/views/SaibaMais.vue';
 import AuditoriaView from '@/views/AuditoriaView.vue';
 import ManageUserView from '@/views/ManageUserView.vue';
 import EmpresaView from '@/views/EmpresaView.vue';
+import MinhaContaView from '@/views/MinhaContaView.vue';
 import { RoleGroups, hasRole } from '@/shared/auth/roles';
 
 const router = createRouter({
@@ -193,6 +194,14 @@ const router = createRouter({
       meta: {
         requiresAuth: true,
         roles: RoleGroups.CanManageMasterData
+      }
+    },
+    {
+      path: '/account-config',
+      name: 'account-config',
+      component: MinhaContaView,
+      meta: {
+        requiresAuth: true,
       }
     },
   ],
