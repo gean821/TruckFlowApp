@@ -299,10 +299,9 @@
               text="Registrar Chegada (Check-in)"
               location="top"
               v-if="
-                canCheckIn && (
-                  isStatus(item.status, 'Agendado') ||
-                  isStatus(item.status, 'Confirmado')
-                )
+                canCheckIn &&
+                (isStatus(item.status, 'Agendado') ||
+                  isStatus(item.status, 'Confirmado'))
               "
             >
               <template v-slot:activator="{ props }">
@@ -336,11 +335,10 @@
 
             <v-menu
               v-if="
-                canManageGrade && (
-                  !isStatus(item.status, 'Finalizado') &&
-                  !isStatus(item.status, 'Concluido') &&
-                  !isStatus(item.status, 'Cancelado')
-                )
+                canManageGrade &&
+                !isStatus(item.status, 'Finalizado') &&
+                !isStatus(item.status, 'Concluido') &&
+                !isStatus(item.status, 'Cancelado')
               "
             >
               <template v-slot:activator="{ props }">
