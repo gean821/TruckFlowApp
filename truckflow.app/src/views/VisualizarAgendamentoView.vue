@@ -52,6 +52,7 @@
             />
 
             <v-btn
+              v-if="canManageGrade"
               color="primary"
               prepend-icon="mdi-plus"
               height="40"
@@ -298,8 +299,10 @@
               text="Registrar Chegada (Check-in)"
               location="top"
               v-if="
-                isStatus(item.status, 'Agendado') ||
-                isStatus(item.status, 'Confirmado')
+                canCheckIn && (
+                  isStatus(item.status, 'Agendado') ||
+                  isStatus(item.status, 'Confirmado')
+                )
               "
             >
               <template v-slot:activator="{ props }">
@@ -317,7 +320,7 @@
             <v-tooltip
               text="Finalizar Operação (Check-out)"
               location="top"
-              v-if="isStatus(item.status, 'EmAndamento')"
+              v-if="canCheckIn && isStatus(item.status, 'EmAndamento')"
             >
               <template v-slot:activator="{ props }">
                 <v-btn
@@ -333,9 +336,11 @@
 
             <v-menu
               v-if="
-                !isStatus(item.status, 'Finalizado') &&
-                !isStatus(item.status, 'Concluido') &&
-                !isStatus(item.status, 'Cancelado')
+                canManageGrade && (
+                  !isStatus(item.status, 'Finalizado') &&
+                  !isStatus(item.status, 'Concluido') &&
+                  !isStatus(item.status, 'Cancelado')
+                )
               "
             >
               <template v-slot:activator="{ props }">
@@ -399,11 +404,13 @@ import { useUnidadeEntrega } from "@/hooks/useUnidadeEntrega";
 import { useProduto } from "@/hooks/useProdutos";
 
 import { TipoVeiculoLabels } from "@/utils/tipoVeiculoLabels";
+import { usePermissions } from "@/hooks/usePermissions";
 
 type PeriodoPreset = "hoje" | "semana" | "proxima" | "custom";
 
 const route = useRoute();
 const router = useRouter();
+const { canManageGrade, canCheckIn } = usePermissions();
 
 const { fornecedores } = useFornecedor();
 const { unidades } = useUnidadeEntrega();

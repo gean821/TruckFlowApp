@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col
-      v-for="action in actions"
+      v-for="action in visibleActions"
       :key="action.title"
       cols="12"
       sm="6"
@@ -52,17 +52,31 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { useRouter } from "vue-router";
+import { usePermissions } from "@/hooks/usePermissions";
+import { RoleGroups, type Role } from "@/shared/auth/roles";
 
 const router = useRouter();
+const { can } = usePermissions();
 
-const actions = [
+type QuickAction = {
+  title: string;
+  description: string;
+  icon: string;
+  route: string;
+  color: string;
+  roles: readonly Role[];
+};
+
+const actions: QuickAction[] = [
   {
     title: "Agendamentos",
     description: "Visualize os agendamentos",
     icon: "mdi-calendar",
-    route: "/nova-grade",
+    route: "/visualizar",
     color: "#195FA0",
+    roles: RoleGroups.CanViewSchedule,
   },
   {
     title: "Nova Grade",
@@ -70,6 +84,7 @@ const actions = [
     icon: "mdi-calendar-plus",
     route: "/nova-grade",
     color: "#195FA0",
+    roles: RoleGroups.CanManageGrade,
   },
   {
     title: "Gerenciar Usuários",
@@ -77,6 +92,7 @@ const actions = [
     icon: "mdi-account-group",
     route: "/usuarios",
     color: "#E65100",
+    roles: RoleGroups.CanManageUsers,
   },
   {
     title: "Cadastrar Produto",
@@ -84,13 +100,15 @@ const actions = [
     icon: "mdi-package-variant-closed",
     route: "/produtos",
     color: "#2E7D32",
+    roles: RoleGroups.CanManageMasterData,
   },
   {
     title: "Fornecedores",
     description: "Visualize os Fornecedores do sistema",
     icon: "mdi-truck-delivery-outline",
-    route: "/produtos",
+    route: "/fornecedores",
     color: "#2E7D32",
+    roles: RoleGroups.CanManageMasterData,
   },
   {
     title: "Relatórios",
@@ -98,6 +116,7 @@ const actions = [
     icon: "mdi-file-chart",
     route: "/relatorios",
     color: "#455A64",
+    roles: RoleGroups.CanManageMasterData,
   },
   {
     title: "Auditoria",
@@ -105,8 +124,11 @@ const actions = [
     icon: "mdi-history",
     route: "/auditoria",
     color: "#455A64",
+    roles: RoleGroups.CanViewAuditLogs,
   },
 ];
+
+const visibleActions = computed(() => actions.filter((a) => can(a.roles)));
 </script>
 
 <style scoped>
