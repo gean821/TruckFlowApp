@@ -3,7 +3,10 @@ import axios from "axios";
 const http = axios.create(
   {
     baseURL: (import.meta.env.VITE_API_URL),
-    headers: { 'X-Custom-Header': 'foobar' }
+    headers: {
+      'X-Custom-Header': 'foobar',
+      'Content-Type': 'application/json'
+    }
   });
 
 http.interceptors.request.use(

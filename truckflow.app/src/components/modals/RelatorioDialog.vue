@@ -5,7 +5,12 @@
         <v-icon class="mr-2">mdi-chart-box-outline</v-icon>
         <span class="text-h6 font-weight-bold">Relatório do Planejamento</span>
         <v-spacer />
-        <v-btn icon="mdi-close" variant="text" color="white" @click="open = false" />
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          color="white"
+          @click="open = false"
+        />
       </v-card-title>
 
       <v-card-text class="pa-5">
@@ -25,10 +30,15 @@
                   {{ relatorio.fornecedorNome }}
                 </div>
                 <div class="text-caption text-grey">
-                  {{ formatDate(relatorio.dataInicio) }} → {{ formatDate(relatorio.dataFim) }}
+                  {{ formatDate(relatorio.dataInicio) }} →
+                  {{ formatDate(relatorio.dataFim) }}
                 </div>
               </div>
-              <v-chip size="small" variant="flat" :color="statusColor(relatorio.status)">
+              <v-chip
+                size="small"
+                variant="flat"
+                :color="statusColor(relatorio.status)"
+              >
                 {{ formatStatus(relatorio.status) }}
               </v-chip>
             </div>
@@ -37,7 +47,9 @@
           <v-row dense class="mb-4">
             <v-col cols="12" sm="4">
               <v-card variant="tonal" color="primary" class="pa-3">
-                <div class="text-caption text-grey-darken-1">Total Planejado</div>
+                <div class="text-caption text-grey-darken-1">
+                  Total Planejado
+                </div>
                 <div class="text-h6 font-weight-bold">
                   {{ toneladas(relatorio.totalPlanejado) }}
                 </div>
@@ -45,7 +57,9 @@
             </v-col>
             <v-col cols="12" sm="4">
               <v-card variant="tonal" color="success" class="pa-3">
-                <div class="text-caption text-grey-darken-1">Total Recebido</div>
+                <div class="text-caption text-grey-darken-1">
+                  Total Recebido
+                </div>
                 <div class="text-h6 font-weight-bold">
                   {{ toneladas(relatorio.totalRecebido) }}
                 </div>
@@ -65,7 +79,9 @@
             <div class="text-caption font-weight-bold text-grey-darken-2">
               Percentual atingido
             </div>
-            <div class="text-caption font-weight-bold">{{ relatorio.percentualAtingido }}%</div>
+            <div class="text-caption font-weight-bold">
+              {{ relatorio.percentualAtingido }}%
+            </div>
           </div>
           <v-progress-linear
             :model-value="relatorio.percentualAtingido"
@@ -93,8 +109,12 @@
             <tbody>
               <tr v-for="item in relatorio.itens" :key="item.id">
                 <td class="font-weight-medium">{{ item.produto }}</td>
-                <td class="text-right">{{ toneladas(item.quantidadeTotalPlanejada) }}</td>
-                <td class="text-right">{{ toneladas(item.quantidadeTotalRecebida) }}</td>
+                <td class="text-right">
+                  {{ toneladas(item.quantidadeTotalPlanejada) }}
+                </td>
+                <td class="text-right">
+                  {{ toneladas(item.quantidadeTotalRecebida) }}
+                </td>
                 <td class="text-right">{{ toneladas(item.faltaReceber) }}</td>
                 <td class="text-right">{{ item.percentualAtingido }}%</td>
                 <td class="text-caption">{{ formatDias(item.diasSemana) }}</td>
@@ -106,7 +126,10 @@
             HISTÓRICO DE RECEBIMENTOS ({{ relatorio.eventos.length }})
           </div>
 
-          <div v-if="relatorio.eventos.length === 0" class="text-caption text-grey pa-2">
+          <div
+            v-if="relatorio.eventos.length === 0"
+            class="text-caption text-grey pa-2"
+          >
             Nenhum recebimento registrado.
           </div>
 
@@ -153,12 +176,15 @@ const emit = defineEmits<{ (e: "update:modelValue", v: boolean): void }>();
 
 const open = computed({
   get: () => props.modelValue,
-  set: (v) => emit("update:modelValue", v)
+  set: (v) => emit("update:modelValue", v),
 });
 
 const idRef = toRef(props, "planejamentoId");
 const enabled = computed(() => props.modelValue && !!props.planejamentoId);
-const { data: relatorio, isLoading } = usePlanejamentoRelatorioQuery(idRef, enabled);
+const { data: relatorio, isLoading } = usePlanejamentoRelatorioQuery(
+  idRef,
+  enabled,
+);
 
 const diasLabel: Record<string, string> = {
   "0": "Dom",
@@ -167,41 +193,61 @@ const diasLabel: Record<string, string> = {
   "3": "Qua",
   "4": "Qui",
   "5": "Sex",
-  "6": "Sáb"
+  "6": "Sáb",
 };
 
 function toneladas(v: number | null | undefined) {
-  if (v === null || v === undefined) return "0 T";
+  if (v === null || v === undefined) {
+    return "0 T";
+  }
+
   return `${Number(v).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} T`;
 }
 
 function formatDate(d: string) {
-  if (!d) return "-";
+  if (!d) {
+    return "-";
+  }
+
   return format(parseISO(d), "dd/MM/yyyy");
 }
 
 function formatDateTime(d: string) {
-  if (!d) return "-";
+  if (!d) {
+    return "-";
+  }
+
   return format(parseISO(d), "dd/MM/yyyy HH:mm");
 }
 
 function formatStatus(s: string) {
-  if (!s) return "-";
+  if (!s) {
+    return "-";
+  }
+
   return s.replace(/([A-Z])/g, " $1").trim();
 }
 
 function statusColor(s: string) {
   switch (s?.toLowerCase()) {
-    case "planejado": return "primary";
-    case "emandamento": return "warning";
-    case "concluido": return "success";
-    case "encerrado": return "grey";
-    default: return "grey";
+    case "planejado":
+      return "primary";
+    case "emandamento":
+      return "warning";
+    case "concluido":
+      return "success";
+    case "encerrado":
+      return "grey";
+    default:
+      return "grey";
   }
 }
 
 function formatDias(dias: string) {
-  if (!dias) return "—";
+  if (!dias) {
+    return "—";
+  }
+  
   return dias
     .split(",")
     .map((d) => d.trim())

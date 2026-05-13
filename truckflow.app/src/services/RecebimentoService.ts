@@ -7,6 +7,11 @@ import type IPlanejamentoDashboard from "@/Dtos/Recebimento/IPlanejamentoDashboa
 import type IPlanejamentoRelatorio from "@/Dtos/Recebimento/IPlanejamentoRelatorio";
 import type { PaginatedResponse } from "@/entities/paginatedResponse";
 import type { RegistrarEntradaDto } from "@/Dtos/Recebimento/RegistrarEntrada.dto";
+import type {
+  IRecebimentoOrfao,
+  IVincularOrfaoDto
+} from "@/Dtos/Recebimento/IRecebimentoOrfao";
+import type IRecebimentoOrfaoQuery from "@/Dtos/Recebimento/IRecebimentoOrfaoQuery";
 
 export const RecebimentoService = () => {
 
@@ -84,6 +89,23 @@ export const RecebimentoService = () => {
     });
   };
 
+  const getOrfaos = async (
+    query: IRecebimentoOrfaoQuery
+  ): Promise<PaginatedResponse<IRecebimentoOrfao>> => {
+    const { data } = await http.get<PaginatedResponse<IRecebimentoOrfao>>(
+      "/recebimentos/orfaos",
+      { params: query }
+    );
+    return data;
+  };
+
+  const vincularOrfao = async (
+    eventoId: string,
+    payload: IVincularOrfaoDto
+  ): Promise<void> => {
+    await http.post(`/recebimentos/orfaos/${eventoId}/vincular`, payload);
+  };
+
   return {
     getPaged,
     getAll,
@@ -94,7 +116,9 @@ export const RecebimentoService = () => {
     update,
     remove,
     encerrar,
-    registrarEntrada
+    registrarEntrada,
+    getOrfaos,
+    vincularOrfao
   };
 };
 

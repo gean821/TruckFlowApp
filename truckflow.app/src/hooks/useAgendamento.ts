@@ -85,6 +85,21 @@ export const useAgendamento = () => {
     }
   });
 
+  const finalizarMutation = useMutation({
+    mutationFn: async ({ id, quantidadeRecebida }: { id: string; quantidadeRecebida: number }) =>
+      await service.finalizar(id, quantidadeRecebida),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [queryKey] });
+      toast.notify("Operação finalizada e recebimento confirmado!", "success");
+    },
+
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message ?? "Erro ao finalizar operação.";
+      toast.notify(msg, "error");
+    }
+  });
+
   return {
 
     createAgendamento: createMutation.mutateAsync,
@@ -94,9 +109,11 @@ export const useAgendamento = () => {
     checkIn: checkInMutation.mutateAsync,
     checkOut: checkOutMutation.mutateAsync,
     cancelar: cancelarMutation.mutateAsync,
+    finalizar: finalizarMutation.mutateAsync,
 
     isCreating: createMutation.isPending,
     isUpdating: updateMutation.isPending,
     isDeleting: deleteMutation.isPending,
+    isFinalizando: finalizarMutation.isPending,
   };
 };

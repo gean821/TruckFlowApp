@@ -21,6 +21,12 @@ coverage
 /cypress/videos/
 /cypress/screenshots/
 
+# Playwright — só commitamos config + tests/e2e (specs e helpers)
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/blob-report/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

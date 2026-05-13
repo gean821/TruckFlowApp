@@ -3,6 +3,7 @@ import LocalDescargaView from '@/views/LocalDescargaView.vue';
 import Fornecedor from '@/views/FornecedorView.vue';
 import ProdutosView from '@/views/ProdutosView.vue';
 import RecebimentoView from '@/views/RecebimentoView.vue';
+import RecebimentosOrfaosView from '@/views/RecebimentosOrfaosView.vue';
 import RecebimentoForm from '@/components/Forms/RecebimentoForm.vue';
 import VisualizarAgendamentoView from '@/views/VisualizarAgendamentoView.vue';
 import Relatorio from '@/views/Relatorio.vue';
@@ -155,6 +156,15 @@ const router = createRouter({
       path: '/visualizar-recebimentos',
       name: 'visualizar-recebimentos',
       component: RecebimentoView,
+      meta: {
+        requiresAuth: true,
+        roles: RoleGroups.CanManageGrade
+      }
+    },
+    {
+      path: '/recebimentos-orfaos',
+      name: 'recebimentos-orfaos',
+      component: RecebimentosOrfaosView,
       meta: {
         requiresAuth: true,
         roles: RoleGroups.CanManageGrade

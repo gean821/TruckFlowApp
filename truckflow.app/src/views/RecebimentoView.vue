@@ -1,11 +1,13 @@
 <template>
   <v-container fluid class="pa-6 bg-grey-lighten-4 h-100">
-
     <div class="mb-6 d-flex justify-space-between align-end flex-wrap gap-4">
       <div>
-        <h1 class="text-h4 font-weight-bold text-grey-darken-3">Gestão de Planejamentos</h1>
+        <h1 class="text-h4 font-weight-bold text-grey-darken-3">
+          Gestão de Planejamentos
+        </h1>
         <p class="text-body-1 text-grey">
-          Contratos semanais, metas diárias e status de recebimento em tempo real.
+          Contratos semanais, metas diárias e status de recebimento em tempo
+          real.
         </p>
       </div>
       <v-btn
@@ -111,7 +113,9 @@
       v-else-if="(data?.items ?? []).length === 0"
       class="text-center mt-12 text-grey"
     >
-      <v-icon size="64" class="mb-2 opacity-50">mdi-clipboard-text-off-outline</v-icon>
+      <v-icon size="64" class="mb-2 opacity-50"
+        >mdi-clipboard-text-off-outline</v-icon
+      >
       <h3 class="text-h6">Nenhum planejamento encontrado</h3>
     </div>
 
@@ -124,8 +128,10 @@
         lg="4"
         xl="3"
       >
-        <v-card class="rounded-xl border hover-card d-flex flex-column h-100" elevation="1">
-
+        <v-card
+          class="rounded-xl border hover-card d-flex flex-column h-100"
+          elevation="1"
+        >
           <div class="pa-4 pb-2">
             <div class="d-flex justify-space-between align-start mb-2">
               <div class="d-flex align-center">
@@ -145,7 +151,8 @@
                     {{ item.fornecedorNome }}
                   </div>
                   <div class="text-caption text-grey">
-                    {{ formatDate(item.dataInicio) }} → {{ formatDate(item.dataFim) }}
+                    {{ formatDate(item.dataInicio) }} →
+                    {{ formatDate(item.dataFim) }}
                   </div>
                 </div>
               </div>
@@ -189,7 +196,11 @@
             </div>
 
             <div class="d-flex align-center gap-2 mb-2">
-              <v-chip size="x-small" :color="statusColor(item.status)" variant="flat">
+              <v-chip
+                size="x-small"
+                :color="statusColor(item.status)"
+                variant="flat"
+              >
                 {{ formatStatus(item.status) }}
               </v-chip>
               <v-chip size="x-small" color="grey-lighten-2" variant="flat">
@@ -229,11 +240,15 @@
               color="grey-darken-1"
               class="text-caption"
               :prepend-icon="
-                expandedCards.includes(item.id) ? 'mdi-chevron-up' : 'mdi-chevron-down'
+                expandedCards.includes(item.id)
+                  ? 'mdi-chevron-up'
+                  : 'mdi-chevron-down'
               "
               @click="toggleExpand(item.id)"
             >
-              {{ expandedCards.includes(item.id) ? "Recolher" : "Ver Dashboard" }}
+              {{
+                expandedCards.includes(item.id) ? "Recolher" : "Ver Dashboard"
+              }}
             </v-btn>
           </div>
         </v-card>
@@ -269,15 +284,17 @@
     />
 
     <RelatorioDialog
-      v-model="relatorio.show"
-      :planejamento-id="relatorio.id"
+       v-model="relatorio.show"
+       :planejamento-id="relatorio.id" 
     />
 
     <AuditDrawer
       v-model="auditDrawerOpen"
       entity-name="PlanejamentoRecebimento"
       :entity-id="auditTarget?.id ?? ''"
-      :entity-label="auditTarget ? `Planejamento — ${auditTarget.fornecedorNome}` : undefined"
+      :entity-label="
+        auditTarget ? `Planejamento — ${auditTarget.fornecedorNome}` : undefined
+      "
     />
   </v-container>
 </template>
@@ -295,6 +312,7 @@ import type IRecebimentoResponse from "@/Dtos/Recebimento/IRecebimentoResponse";
 import ConfirmDeleteDialog from "@/components/modals/ConfirmDeleteDialog.vue";
 import ConfirmDialog from "@/components/modals/ConfirmDialog.vue";
 import RecebimentoDashboardPanel from "@/components/Forms/RecebimentoDashboardPanel.vue";
+import RelatorioDialog from "@/components/modals/RelatorioDialog.vue";
 import AuditDrawer from "@/components/audit/AuditDrawer.vue";
 
 const router = useRouter();
@@ -302,7 +320,8 @@ const route = useRoute();
 
 const { fornecedores } = useFornecedor();
 const { produtos } = useProduto();
-const { deletePlanejamento, encerrarPlanejamento, isDeleting, isEncerrando } = usePlanejamento();
+const { deletePlanejamento, encerrarPlanejamento, isDeleting, isEncerrando } =
+  usePlanejamento();
 
 const page = ref(Number(route.query.page) || 1);
 const pageSize = ref(12);
@@ -323,8 +342,17 @@ watch(search, (v) => {
 });
 
 watch(
-  [searchDebounced, filtroFornecedor, filtroProduto, filtroStatus, filtroDataInicio, filtroDataFim],
-  () => { page.value = 1; }
+  [
+    searchDebounced,
+    filtroFornecedor,
+    filtroProduto,
+    filtroStatus,
+    filtroDataInicio,
+    filtroDataFim,
+  ],
+  () => {
+    page.value = 1;
+  },
 );
 
 const params = computed<IPlanejamentoListQuery>(() => ({
@@ -335,7 +363,7 @@ const params = computed<IPlanejamentoListQuery>(() => ({
   produtoId: filtroProduto.value || undefined,
   status: (filtroStatus.value as any) || undefined,
   dataInicio: filtroDataInicio.value || undefined,
-  dataFim: filtroDataFim.value || undefined
+  dataFim: filtroDataFim.value || undefined,
 }));
 
 const { data, isLoading } = usePlanejamentoQuery(params);
@@ -348,7 +376,7 @@ watch(
     filtroStatus,
     filtroDataInicio,
     filtroDataFim,
-    page
+    page,
   ],
   () => {
     router.replace({
@@ -359,18 +387,24 @@ watch(
         status: filtroStatus.value || undefined,
         dataInicio: filtroDataInicio.value || undefined,
         dataFim: filtroDataFim.value || undefined,
-        page: page.value !== 1 ? String(page.value) : undefined
-      }
+        page: page.value !== 1 ? String(page.value) : undefined,
+      },
     });
-  }
+  },
 );
 
 const expandedCards = ref<string[]>([]);
 const showDelete = ref(false);
 const itemToDelete = ref<string | null>(null);
 
-const confirmEncerrar = ref<{ show: boolean; id: string | null }>({ show: false, id: null });
-const relatorio = ref<{ show: boolean; id: string | null }>({ show: false, id: null });
+const confirmEncerrar = ref<{ show: boolean; id: string | null }>({
+  show: false,
+  id: null,
+});
+const relatorio = ref<{ show: boolean; id: string | null }>({
+  show: false,
+  id: null,
+});
 
 const auditDrawerOpen = ref(false);
 const auditTarget = ref<{ id: string; fornecedorNome: string } | null>(null);
@@ -384,7 +418,7 @@ const statusOptions = [
   { title: "Planejado", value: "Planejado" },
   { title: "Em Andamento", value: "EmAndamento" },
   { title: "Concluído", value: "Concluido" },
-  { title: "Encerrado", value: "Encerrado" }
+  { title: "Encerrado", value: "Encerrado" },
 ];
 
 function toggleExpand(id: string) {
@@ -440,18 +474,29 @@ function formatStatus(status: string) {
 
 function statusColor(status: string) {
   switch (status?.toLowerCase()) {
-    case "planejado": return "blue-lighten-4";
-    case "emandamento": return "amber-lighten-3";
-    case "concluido": return "green-lighten-3";
-    case "encerrado": return "grey-lighten-2";
-    default: return "grey-lighten-3";
+    case "planejado":
+      return "blue-lighten-4";
+    case "emandamento":
+      return "amber-lighten-3";
+    case "concluido":
+      return "green-lighten-3";
+    case "encerrado":
+      return "grey-lighten-2";
+    default:
+      return "grey-lighten-3";
   }
 }
 
 function calcularProgresso(item: IRecebimentoResponse): number {
   if (!item.itens || item.itens.length === 0) return 0;
-  const total = item.itens.reduce((acc, c) => acc + c.quantidadeTotalPlanejada, 0);
-  const received = item.itens.reduce((acc, c) => acc + c.quantidadeTotalRecebida, 0);
+  const total = item.itens.reduce(
+    (acc, c) => acc + c.quantidadeTotalPlanejada,
+    0,
+  );
+  const received = item.itens.reduce(
+    (acc, c) => acc + c.quantidadeTotalRecebida,
+    0,
+  );
   if (total === 0) return 0;
   return Math.min(Math.round((received / total) * 100), 100);
 }
@@ -459,7 +504,9 @@ function calcularProgresso(item: IRecebimentoResponse): number {
 
 <style scoped>
 .hover-card {
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 .hover-card:hover {
   transform: translateY(-2px);

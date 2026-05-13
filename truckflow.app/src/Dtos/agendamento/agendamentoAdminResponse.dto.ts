@@ -6,6 +6,7 @@ export default interface AgendamentoAdminResponse {
     motoristaNome?: string;
     produto: string;
     unidadeEntrega: string;
+    localDescarga?: string;
     status: string;
     dataInicio: string;
     dataFim: string,

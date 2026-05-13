@@ -5,6 +5,7 @@ export default interface ItemPlanejamentoResponse {
     quantidadeTotalPlanejada: number;
     cadenciaDiariaPlanejada: number;
     quantidadeTotalRecebida: number;
+    quantidadeReservada: number;
     faltaReceber: number;
     diasSemana: string;
     toleranciaExtra: number;

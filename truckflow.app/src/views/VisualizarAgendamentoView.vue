@@ -260,6 +260,18 @@
           </div>
         </template>
 
+        <template #item.localDescarga="{ value }">
+          <div class="d-flex align-center">
+            <v-icon
+              size="small"
+              class="mr-2 text-grey-darken-1"
+            />
+            <span class="text-body-2 text-grey-darken-3 text-capitalize">
+              {{ value || "-"}}
+            </span>
+          </div>
+        </template>
+
         <template #item.tipoVeiculo="{ value }">
           <div class="d-flex align-center">
             <v-icon
@@ -383,6 +395,63 @@
       :loading="loadingAction === 'dialog'"
       @confirm="executeConfirmAction"
     />
+
+    <v-dialog v-model="finalizarDialog.show" max-width="480" persistent>
+      <v-card rounded="lg">
+        <v-card-title class="text-h6 font-weight-bold d-flex align-center">
+          <v-icon color="green-darken-1" class="mr-2">mdi-check-all</v-icon>
+          Finalizar Operação
+        </v-card-title>
+
+        <v-card-text>
+          <p class="text-body-2 text-grey-darken-1 mb-4">
+            Confirme a quantidade <strong>realmente recebida</strong>.
+            Pré-preenchido com o peso da NF; ajuste se houve divergência na balança.
+          </p>
+
+          <div class="bg-grey-lighten-4 pa-3 rounded mb-4 text-caption text-grey-darken-1">
+            <div><strong>Placa:</strong> {{ finalizarDialog.placa || "—" }}</div>
+            <div><strong>Produto:</strong> {{ finalizarDialog.produto || "—" }}</div>
+            <div>
+              <strong>Reservado (NF):</strong>
+              {{ Number(finalizarDialog.pesoReservado).toLocaleString("pt-BR", { maximumFractionDigits: 3 }) }} kg
+            </div>
+          </div>
+
+          <v-text-field
+            v-model.number="finalizarDialog.quantidade"
+            type="number"
+            label="Quantidade real recebida (kg)"
+            variant="outlined"
+            density="compact"
+            :min="0"
+            :step="0.001"
+            autofocus
+            :error-messages="finalizarDialog.quantidade > 0 ? '' : 'Informe uma quantidade maior que zero.'"
+          />
+        </v-card-text>
+
+        <v-card-actions class="pa-4">
+          <v-spacer />
+          <v-btn
+            variant="text"
+            :disabled="isFinalizando"
+            @click="finalizarDialog.show = false"
+          >
+            Cancelar
+          </v-btn>
+          <v-btn
+            color="green-darken-1"
+            variant="flat"
+            :loading="isFinalizando"
+            :disabled="!(finalizarDialog.quantidade > 0)"
+            @click="confirmarFinalizacao"
+          >
+            Confirmar Recebimento
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -390,8 +459,6 @@
 import { computed, ref, watch } from "vue";
 import { format, parseISO } from "date-fns";
 import { useRoute, useRouter } from "vue-router";
-
-import AgendamentoAvulsoModal from "@/components/modals/AgendamentoAvulsoModal.vue";
 import ConfirmDialog from "@/components/modals/ConfirmDialog.vue";
 
 import type IAgendamentoFilterDto from "@/Dtos/agendamento/agendamentoFilterDto";
@@ -403,6 +470,7 @@ import { useProduto } from "@/hooks/useProdutos";
 
 import { TipoVeiculoLabels } from "@/utils/tipoVeiculoLabels";
 import { usePermissions } from "@/hooks/usePermissions";
+import AgendamentoAvulsoModal from "@/components/modals/AgendamentoAvulsoModal.vue";
 
 type PeriodoPreset = "hoje" | "semana" | "proxima" | "custom";
 
@@ -413,7 +481,7 @@ const { canManageGrade, canCheckIn } = usePermissions();
 const { fornecedores } = useFornecedor();
 const { unidades } = useUnidadeEntrega();
 const { produtos } = useProduto();
-const { checkIn, checkOut, cancelar } = useAgendamento();
+const { checkIn, finalizar, cancelar, isFinalizando } = useAgendamento();
 
 const search = ref(route.query.search?.toString() || "");
 const searchDebounced = ref(search.value);
@@ -446,6 +514,15 @@ const confirmDialog = ref({
   icon: "mdi-help-circle-outline",
   confirmText: "Confirmar",
   action: null as (() => Promise<void>) | null,
+});
+
+const finalizarDialog = ref({
+  show: false,
+  agendamentoId: "" as string,
+  placa: "" as string,
+  produto: "" as string,
+  pesoReservado: 0 as number,
+  quantidade: 0 as number,
 });
 
 let searchTimeout: ReturnType<typeof setTimeout>;
@@ -585,6 +662,7 @@ const headers = [
   { title: "FORNECEDOR", key: "fornecedorNome" },
   { title: "MOTORISTA / PLACA", key: "motoristaNome", width: "220px" },
   { title: "UNIDADE DE ENTREGA", key: "unidadeEntrega", width: "200px" },
+  { title: "DOCA", key: "localDescarga", width: "200px" },
   { title: "TIPO VEÍCULO", key: "tipoVeiculo", width: "180px" },
   { title: "PESO", key: "pesoCarga", align: "end", width: "120px" },
   { title: "STATUS", key: "status", align: "center", width: "140px" },
@@ -647,18 +725,29 @@ async function handleCheckIn(item: any) {
   });
 }
 
-async function handleCheckout(item: any) {
-  askConfirmation({
-    title: "Finalizar Operação",
-    message: "Confirmar liberação do veículo e conclusão da descarga?",
-    color: "green-darken-1",
-    icon: "mdi-check-all",
-    confirmText: "Finalizar",
-    action: async () => {
-      await checkOut(item.id);
-      await refetch();
-    },
-  });
+function handleCheckout(item: any) {
+  const peso = Number(item.pesoCarga) > 0 ? Number(item.pesoCarga) : 0;
+  finalizarDialog.value = {
+    show: true,
+    agendamentoId: item.id,
+    placa: item.placaVeiculo ?? "",
+    produto: item.produto ?? "",
+    pesoReservado: peso,
+    quantidade: peso,
+  };
+}
+
+async function confirmarFinalizacao() {
+  const { agendamentoId, quantidade } = finalizarDialog.value;
+  if (!agendamentoId || !(quantidade > 0)) return;
+
+  try {
+    await finalizar({ id: agendamentoId, quantidadeRecebida: quantidade });
+    finalizarDialog.value.show = false;
+    await refetch();
+  } catch {
+    // toast já notificado pelo hook
+  }
 }
 
 async function handleCancelar(item: any) {

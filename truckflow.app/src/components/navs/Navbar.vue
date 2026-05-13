@@ -219,6 +219,25 @@
         </template>
       </v-tooltip>
 
+      <v-tooltip
+        text="Recebimentos Órfãos"
+        location="end"
+        :disabled="!railMode"
+      >
+        <template #activator="{ props: tip }">
+          <v-list-item
+            v-if="canManageGrade"
+            v-bind="tip"
+            to="/recebimentos-orfaos"
+            prepend-icon="mdi-link-variant-off"
+            title="Recebimentos Órfãos"
+            rounded="lg"
+            active-class="nav-active"
+            class="mb-1 nav-item"
+          />
+        </template>
+      </v-tooltip>
+
       <div
         v-if="!railMode && (canManageGrade || canManageMasterData)"
         class="nav-section-label mt-4 mb-1"
@@ -505,6 +524,7 @@ const routeMap: Record<string, { label: string; parent?: string }> = {
   "/dashboard": { label: "Dashboard" },
   "/visualizar": { label: "Agendamentos" },
   "/recebimentos": { label: "Planej. Recebimento" },
+  "/recebimentos-orfaos": { label: "Recebimentos Órfãos" },
   "/nova-grade": { label: "Nova Grade", parent: "Programação" },
   "/visualizar-grades": { label: "Visualizar Grades", parent: "Programação" },
   "/produtos": { label: "Produtos", parent: "Cadastros" },

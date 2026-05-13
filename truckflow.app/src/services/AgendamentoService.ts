@@ -56,6 +56,10 @@ export const AgendamentoService = () => {
     await http.patch(`/AgendamentoAdmin/${id}/cancelar`);
   };
 
+  const finalizar = async (id: string, quantidadeRecebida: number): Promise<void> => {
+    await http.post(`/AgendamentoAdmin/${id}/finalizar`, quantidadeRecebida);
+  };
+
   return {
     getById,
     getByFilters,
@@ -64,6 +68,7 @@ export const AgendamentoService = () => {
     remove,
     checkIn,
     checkOut,
-    cancelar
+    cancelar,
+    finalizar
   };
 };

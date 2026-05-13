@@ -9,12 +9,15 @@
     </div>
 
     <div v-else>
-      <div class="d-flex gap-2 mb-3">
+      <div class="d-flex gap-2 mb-3 flex-wrap">
         <v-chip size="x-small" color="blue-lighten-5" variant="flat" class="font-weight-bold">
           Hoje: {{ toneladas(dashboard.totalDiarioRecebido) }} / {{ toneladas(dashboard.totalDiario) }}
         </v-chip>
+        <v-chip size="x-small" color="amber-lighten-5" variant="flat" class="font-weight-bold">
+          Reservado: {{ toneladas(dashboard.totalReservado) }}
+        </v-chip>
         <v-chip size="x-small" color="green-lighten-5" variant="flat" class="font-weight-bold">
-          Vigência: {{ toneladas(dashboard.totalRecebido) }} / {{ toneladas(dashboard.totalPlanejado) }}
+          Recebido: {{ toneladas(dashboard.totalRecebido) }} / {{ toneladas(dashboard.totalPlanejado) }}
         </v-chip>
       </div>
 
@@ -80,12 +83,20 @@
           class="mb-2"
         />
 
-        <div class="d-flex justify-space-between text-caption text-grey-darken-1">
+        <div class="d-flex justify-space-between text-caption text-grey-darken-1 flex-wrap">
           <span>Planejado: <strong>{{ toneladas(item.quantidadeTotalPlanejada) }}</strong></span>
+          <span>Reservado: <strong>{{ toneladas(item.quantidadeReservada) }}</strong></span>
           <span>Recebido: <strong>{{ toneladas(item.quantidadeTotalRecebida) }}</strong></span>
-          <span>Falta: <strong>{{ toneladas(item.faltaReceber) }}</strong></span>
+          <span>Saldo: <strong>{{ toneladas(item.faltaReceber) }}</strong></span>
         </div>
 
+        <v-progress-linear
+          :model-value="percentualReservado(item)"
+          color="amber-darken-2"
+          height="4"
+          rounded
+          class="mt-1"
+        />
         <v-progress-linear
           :model-value="percentualTotal(item)"
           color="success"
@@ -140,6 +151,14 @@ function percentualTotal(item: IPlanejamentoDashboardItem) {
   return Math.min(
     100,
     Math.round((item.quantidadeTotalRecebida / item.quantidadeTotalPlanejada) * 100)
+  );
+}
+
+function percentualReservado(item: IPlanejamentoDashboardItem) {
+  if (item.quantidadeTotalPlanejada <= 0) return 0;
+  return Math.min(
+    100,
+    Math.round((item.quantidadeReservada / item.quantidadeTotalPlanejada) * 100)
   );
 }
 

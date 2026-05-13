@@ -6,6 +6,7 @@ export interface IPlanejamentoDashboardItem {
     toleranciaExtra: number;
     quantidadeTotalPlanejada: number;
     quantidadeTotalRecebida: number;
+    quantidadeReservada: number;
     faltaReceber: number;
     recebidoNoDia: number;
     faltaNoDia: number;
@@ -29,6 +30,7 @@ export default interface IPlanejamentoDashboard {
 
     totalPlanejado: number;
     totalRecebido: number;
+    totalReservado: number;
     totalRestante: number;
 
     itens: IPlanejamentoDashboardItem[];
