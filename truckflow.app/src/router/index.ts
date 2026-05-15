@@ -1,29 +1,31 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LocalDescargaView from '@/views/LocalDescargaView.vue';
-import Fornecedor from '@/views/FornecedorView.vue';
-import ProdutosView from '@/views/ProdutosView.vue';
-import RecebimentoView from '@/views/RecebimentoView.vue';
-import RecebimentosOrfaosView from '@/views/RecebimentosOrfaosView.vue';
-import RecebimentoForm from '@/components/Forms/RecebimentoForm.vue';
-import VisualizarAgendamentoView from '@/views/VisualizarAgendamentoView.vue';
-import Relatorio from '@/views/Relatorio.vue';
-import GradeCard from '@/components/cards/GradeCard.vue';
-import ProgramacaoView from '@/views/ProgramacaoView.vue';
+import { useAuthStore } from '@/stores/AuthStore';
+import { RoleGroups, hasRole } from '@/shared/auth/roles';
 import HomePage from '@/views/HomePage.vue';
 import LoginView from '@/views/LoginView.vue';
-import ContatoView from '@/views/ContatoView.vue';
-import DashboardView from '@/views/DashboardView.vue';
-import { useAuthStore } from '@/stores/AuthStore';
-import UnidadeEntregaView from '@/views/UnidadeEntregaView.vue';
-import SaibaMais from '@/views/SaibaMais.vue';
-import AuditoriaView from '@/views/AuditoriaView.vue';
-import ManageUserView from '@/views/ManageUserView.vue';
-import EmpresaView from '@/views/EmpresaView.vue';
-import MinhaContaView from '@/views/MinhaContaView.vue';
-import { RoleGroups, hasRole } from '@/shared/auth/roles';
+
+const SaibaMais = () => import('@/views/SaibaMais.vue');
+const ContatoView = () => import('@/views/ContatoView.vue');
+const DashboardView = () => import('@/views/DashboardView.vue');
+const VisualizarAgendamentoView = () => import('@/views/VisualizarAgendamentoView.vue');
+const GradeCard = () => import('@/components/cards/GradeCard.vue');
+const ProgramacaoView = () => import('@/views/ProgramacaoView.vue');
+const ProdutosView = () => import('@/views/ProdutosView.vue');
+const LocalDescargaView = () => import('@/views/LocalDescargaView.vue');
+const FornecedorView = () => import('@/views/FornecedorView.vue');
+const UnidadeEntregaView = () => import('@/views/UnidadeEntregaView.vue');
+const RecebimentoView = () => import('@/views/RecebimentoView.vue');
+const RecebimentoForm = () => import('@/components/Forms/RecebimentoForm.vue');
+const RecebimentosOrfaosView = () => import('@/views/RecebimentosOrfaosView.vue');
+const RelatorioView = () => import('@/views/Relatorio.vue');
+const AuditoriaView = () => import('@/views/AuditoriaView.vue');
+const ManageUserView = () => import('@/views/ManageUserView.vue');
+const EmpresaView = () => import('@/views/EmpresaView.vue');
+const MinhaContaView = () => import('@/views/MinhaContaView.vue');
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+
   routes: [
     {
       path: '/',
@@ -89,15 +91,6 @@ const router = createRouter({
         roles: RoleGroups.CanManageGrade
       }
     },
-    // {
-    //   path: '/bloqueios',
-    //   name: 'bloqueios',
-    //   component: BloqueioView,
-    //   meta: {
-    //     requiresAuth: true,
-    //     roles: ['Admin']
-    //   }
-    // },
     {
       path: '/produtos',
       name: 'produtos',
@@ -119,7 +112,7 @@ const router = createRouter({
     {
       path: '/fornecedores',
       name: 'fornecedores',
-      component: Fornecedor,
+      component: FornecedorView,
       meta: {
         requiresAuth: true,
         roles: RoleGroups.CanManageMasterData
@@ -136,7 +129,7 @@ const router = createRouter({
     },
     {
       path: '/recebimentos',
-      name: '/recebimentos',
+      name: 'recebimentos',
       component: RecebimentoView,
       meta: {
         requiresAuth: true,
@@ -145,7 +138,7 @@ const router = createRouter({
     },
     {
       path: '/novo-recebimento',
-      name: '/novo-recebimento',
+      name: 'novo-recebimento',
       component: RecebimentoForm,
       meta: {
         requiresAuth: true,
@@ -173,7 +166,7 @@ const router = createRouter({
     {
       path: '/relatorios',
       name: 'relatorios',
-      component: Relatorio,
+      component: RelatorioView,
       meta: {
         requiresAuth: true,
         roles: RoleGroups.CanManageMasterData
@@ -224,15 +217,14 @@ router.beforeEach((to, from, next) => {
     return next();
   }
 
-
   if (!auth.isAuthenticated) {
-    return next("/login");
+    return next('/login');
   }
 
   const routeRoles = to.meta.roles as string[] | undefined;
 
   if (routeRoles && !hasRole(auth.user?.role, routeRoles)) {
-    return next("/login");
+    return next('/login');
   }
 
   next();
