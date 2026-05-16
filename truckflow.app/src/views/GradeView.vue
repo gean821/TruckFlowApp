@@ -255,6 +255,7 @@
                   density="compact"
                   bg-color="white"
                   hide-details
+                  :min="hoje"
                   rounded="lg"
                 />
               </v-col>
@@ -267,7 +268,7 @@
                   density="compact"
                   bg-color="white"
                   hide-details
-                  :min="editGroupForm.dataInicio"
+                  :min="editGroupForm.dataInicio || hoje"
                   rounded="lg"
                 />
               </v-col>
@@ -329,10 +330,14 @@
                     <div
                       v-for="d in diasOpcoes"
                       :key="d.val"
-                      :title="d.nome"
+                      :title="!diasComOcorrencia.has(d.val) && editGroupDias.includes(String(d.val))
+                        ? `${d.nome} — nenhuma ocorrência no período`
+                        : d.nome"
                       style="width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; cursor: pointer; border: 1.5px solid; transition: all 0.15s; user-select: none;"
                       :style="editGroupDias.includes(String(d.val))
-                        ? (d.val === 0 || d.val === 6 ? 'background: #e65100; color: white; border-color: #e65100;' : 'background: #195FA0; color: white; border-color: #195FA0;')
+                        ? (!diasComOcorrencia.has(d.val)
+                            ? 'background: #fef3c7; color: #d97706; border-color: #fcd34d; border-style: dashed;'
+                            : (d.val === 0 || d.val === 6 ? 'background: #e65100; color: white; border-color: #e65100;' : 'background: #195FA0; color: white; border-color: #195FA0;'))
                         : 'background: #f8fafc; color: #94a3b8; border-color: #e2e8f0;'"
                       @click="toggleDia(editGroupDias, String(d.val))"
                     >
@@ -378,6 +383,9 @@ import { format, parseISO, differenceInDays } from 'date-fns';
 import type { GradeListQueryDto, GradeResponseDto, GradeUpdateDto } from '@/entities/grade.types';
 import { useGradeQuery } from '@/queries/grade.queries';
 import { useGrade } from '@/hooks/useGrade';
+import { GradeService } from '@/services/GradeService';
+import { useQueryClient } from '@tanstack/vue-query';
+import { useToastStore } from '@/stores/ToastStore';
 import { useRoute, useRouter } from 'vue-router';
 import { useLocalDescarga } from '@/hooks/useLocalDescarga';
 import { useFornecedor } from '@/hooks/useFornecedor';
@@ -457,7 +465,10 @@ const { data, isLoading } = useGradeQuery(params);
 
 const totalPages = computed(() => Math.ceil((data.value?.totalCount ?? 0) / pageSize.value));
 
-const { updateGrade, deleteGrade } = useGrade();
+const { deleteGrade } = useGrade();
+const gradeService = GradeService();
+const queryClient = useQueryClient();
+const toast = useToastStore();
 
 const diasSiglas = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 const diasNomes = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
@@ -477,6 +488,22 @@ const expandedGroupKey = ref<string | null>(null);
 const isSavingGroup = ref(false);
 const editGroupForm = ref<Partial<GradeUpdateDto>>({});
 const editGroupDias = ref<string[]>([]);
+
+const hoje = computed(() => new Date().toISOString().substring(0, 10));
+
+const diasComOcorrencia = computed(() => {
+  const inicio = editGroupForm.value.dataInicio;
+  const fim = editGroupForm.value.dataFim;
+  if (!inicio || !fim) return new Set<number>();
+  const set = new Set<number>();
+  const current = new Date(inicio + 'T12:00:00');
+  const end = new Date(fim + 'T12:00:00');
+  while (current <= end) {
+    set.add(current.getDay());
+    current.setDate(current.getDate() + 1);
+  }
+  return set;
+});
 
 function startEditGroup(group: GradeGroup) {
   expandedGroupKey.value = group.key;
@@ -509,9 +536,16 @@ async function saveGroup(group: GradeGroup) {
     Object.entries(payload).filter(([, v]) => v !== undefined && v !== null && v !== ''),
   ) as GradeUpdateDto;
   try {
-    await Promise.all(group.grades.map((g) => updateGrade({ id: g.id, payload: clean })));
+    for (const g of group.grades) {
+      await gradeService.updateGrade(g.id, clean);
+    }
+    await queryClient.invalidateQueries({ queryKey: ['grades'] });
+    await queryClient.invalidateQueries({ queryKey: ['agendamentos'] });
+    toast.notify('Vigência atualizada com sucesso!', 'success');
     expandedGroupKey.value = null;
-  } catch {
+  } catch (err: any) {
+    const msg = err?.response?.data?.message ?? 'Erro ao atualizar grade.';
+    toast.notify(msg, 'error');
   } finally {
     isSavingGroup.value = false;
   }
