@@ -272,34 +272,6 @@
 
           <div style="position:relative;z-index:2;">
             <div class="mb-10">
-              <span
-                class="fade-up delay-1"
-                style="
-                  display:inline-flex;
-                  align-items:center;
-                  gap:8px;
-                  background:#eef4fb;
-                  color:#0c2b52;
-                  padding:10px 16px;
-                  border-radius:999px;
-                  font-weight:800;
-                  font-size:12px;
-                  letter-spacing:1.2px;
-                "
-              >
-                <span
-                  class="pulse-dot"
-                  style="
-                    width:8px;
-                    height:8px;
-                    border-radius:50%;
-                    background:#164780;
-                    display:inline-block;
-                  "
-                ></span>
-                PAINEL DE ACESSO
-              </span>
-
               <h2
                 class="fade-up delay-2"
                 style="
@@ -402,6 +374,27 @@
                 "
               >
                 Acessar Sistema
+              </v-btn>
+
+              <v-btn
+                block
+                href="/"
+                size="large"
+                rounded="xl"
+                elevation="0"
+                variant="outlined"
+                class="text-capitalize mt-4 back-btn"
+                prepend-icon="mdi-arrow-left"
+                style="
+                  height:52px;
+                  font-size:14px;
+                  font-weight:700;
+                  color:#4a6080;
+                  border: 1.5px solid rgba(12,43,82,0.14);
+                  letter-spacing:.01em;
+                "
+              >
+                Voltar para o início
               </v-btn>
             </v-form>
 
@@ -544,6 +537,16 @@ async function handleLogin() {
   transform: translateY(-2px);
   box-shadow: 0 28px 52px rgba(12,43,82,0.28) !important;
   filter: brightness(1.03);
+}
+
+.back-btn {
+  transition: transform 0.22s ease, background-color 0.22s ease, border-color 0.22s ease;
+}
+
+.back-btn:hover {
+  transform: translateY(-1px);
+  background-color: rgba(238,244,251,0.8) !important;
+  border-color: rgba(12,43,82,0.28) !important;
 }
 
 :deep(.premium-field .v-field) {
