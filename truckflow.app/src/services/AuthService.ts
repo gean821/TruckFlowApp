@@ -12,8 +12,7 @@ export class AuthService {
     }
 
     static async login(dto: AdminLoginDto): Promise<LoginAdminResponseDto> {
-        const { data } = await http.post('/AuthAdmin/login', dto);
-        localStorage.setItem("token", data.token);
+        const { data } = await http.post<LoginAdminResponseDto>('/AuthAdmin/login', dto);
         return data;
     }
 

@@ -1,20 +1,24 @@
 import { defineStore } from "pinia";
 import { AuthService } from "@/services/AuthService";
 import type AdminLoginDto from "@/Dtos/adm/adminLoginDto";
+import type RefreshResponseDto from "@/Dtos/auth/RefreshResponseDto";
 import router from "@/router";
 import { jwtDecode } from "jwt-decode";
 import type JwtPayload from "@/entities/JwtPayload";
+import http from "@/http/http";
 
 interface AuthState {
     user: JwtPayload | null;
     token: string | null;
+    tokenExpiresAt: string | null;
     loading: boolean;
 }
 
 export const useAuthStore = defineStore("auth", {
     state: (): AuthState => ({
         user: null,
-        token: localStorage.getItem("token"),
+        token: null,
+        tokenExpiresAt: null,
         loading: false,
     }),
 
@@ -22,77 +26,60 @@ export const useAuthStore = defineStore("auth", {
         isAuthenticated: (state) => !!state.token,
         userRole: (state) => state.user?.role,
         userId: (state) => state.user?.UserId,
-        empresaId: (state) => state.user?.empresaId
+        empresaId: (state) => state.user?.EmpresaId
     },
 
     actions: {
-        setSession(token: string) {
+        setSession(token: string, tokenExpiresAt?: string) {
             const decoded = jwtDecode<JwtPayload>(token);
 
             this.token = token;
             this.user = decoded;
+            this.tokenExpiresAt = tokenExpiresAt ?? null;
+        },
 
-            localStorage.setItem("token", token);
-            localStorage.setItem("user", JSON.stringify(decoded));
+        clearSession() {
+            this.user = null;
+            this.token = null;
+            this.tokenExpiresAt = null;
+        },
+
+        async restoreSession() {
+            try {
+                const { data } = await http.post<RefreshResponseDto>("/Auth/refresh");
+                this.setSession(data.token, data.tokenExpiresAt);
+            } catch {
+                this.clearSession();
+            }
         },
 
         async login(dto: AdminLoginDto) {
             this.loading = true;
 
             try {
-                const { token } = await AuthService.login(dto);
+                const response = await AuthService.login(dto);
 
-                this.setSession(token);
+                this.setSession(response.token, response.tokenExpiresAt);
                 router.push('/');
             } finally {
                 this.loading = false;
             }
         },
 
-        logout() {
-            this.user = null;
-            this.token = null;
-
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-
+        async logout() {
+            try {
+                await http.post("/Auth/logout");
+            } catch { }
+            this.clearSession();
             router.push("/login");
         },
 
-        restoreSession() {
-            const token = localStorage.getItem("token");
-
-            if (!token) {
+        updateUser(data: Partial<JwtPayload>) {
+            if (!this.user) {
                 return;
             }
 
-            try {
-                const decoded = jwtDecode<JwtPayload>(token);
-
-                if (decoded.exp * 1000 < Date.now()) {
-                    this.logout();
-                    return;
-                }
-
-                this.token = token;
-
-                const savedUser = localStorage.getItem("user");
-
-                this.user = savedUser
-                    ? JSON.parse(savedUser)
-                    : decoded;
-
-            } catch {
-                this.logout();
-            }
-        },
-
-        updateUser(data: Partial<JwtPayload>) {
-            if (!this.user) return;
-
             this.user = { ...this.user, ...data };
-
-            localStorage.setItem("user", JSON.stringify(this.user));
         }
     }
 });

@@ -9,23 +9,26 @@ import '@mdi/font/css/materialdesignicons.css'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
-import { useAuthStore } from './stores/AuthStore'
 import VueApexCharts from 'vue3-apexcharts'
+import { useAuthStore } from './stores/AuthStore'
 
 const vuetify = createVuetify({
   components,
   directives,
 })
 
-const app = createApp(App)
-app.use(vuetify);
-app.use(VueQueryPlugin)
-app.use(createPinia())
+async function bootstrap() {
+  const app = createApp(App)
+  app.use(vuetify)
+  app.use(VueQueryPlugin)
+  app.use(createPinia())
 
-const authStore = useAuthStore();
-authStore.restoreSession();
+  const authStore = useAuthStore()
+  await authStore.restoreSession()
 
-app.use(VueApexCharts)
-app.use(router)
+  app.use(VueApexCharts)
+  app.use(router)
+  app.mount('#app')
+}
 
-app.mount('#app')
+bootstrap()

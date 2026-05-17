@@ -7,7 +7,9 @@ export const EmpresaService = () => {
     return data;
   };
 
-  const update = async (empresaId: string, payload: EmpresaUpdateDto): Promise<EmpresaResponseDto> => {
+  const update = async (
+    empresaId: string,
+    payload: EmpresaUpdateDto): Promise<EmpresaResponseDto> => {
     const { data } = await http.patch<EmpresaResponseDto>(`/empresa/${empresaId}`, payload);
     return data;
   };

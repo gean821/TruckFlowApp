@@ -12,7 +12,4 @@
 import AppToast from './components/common/AppToast.vue';
 import Navbar from './components/navs/Navbar.vue';
 import router from './router';
-import { useAuthStore } from './stores/AuthStore';
-
-useAuthStore().restoreSession();
 </script>
