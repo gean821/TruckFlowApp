@@ -22,6 +22,7 @@ const AuditoriaView = () => import('@/views/AuditoriaView.vue');
 const ManageUserView = () => import('@/views/ManageUserView.vue');
 const EmpresaView = () => import('@/views/EmpresaView.vue');
 const MinhaContaView = () => import('@/views/MinhaContaView.vue');
+const ConferenciaView = () => import('@/views/ConferenciaView.vue');
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -71,6 +72,15 @@ const router = createRouter({
       meta: {
         requiresAuth: true,
         roles: RoleGroups.CanViewSchedule
+      }
+    },
+    {
+      path: '/conferencia/:agendamentoId',
+      name: 'conferencia',
+      component: ConferenciaView,
+      meta: {
+        requiresAuth: true,
+        roles: RoleGroups.CanCheckIn
       }
     },
     {
