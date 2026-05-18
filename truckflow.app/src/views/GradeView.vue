@@ -1,44 +1,28 @@
 <template>
-  <v-card elevation="0" class="border rounded-xl mt-6 bg-white">
-    <div class="pa-5 border-b bg-grey-lighten-5">
-      <div class="d-flex flex-wrap align-center justify-space-between gap-4">
-        <div class="d-flex align-center">
-          <v-avatar
-            color="#195FA0"
-            variant="flat"
-            class="mr-3"
-            rounded="lg"
-            size="40"
-          >
-            <v-icon color="white" size="20">mdi-calendar-multiselect</v-icon>
-          </v-avatar>
+  <div>
+    <v-card elevation="0" style="border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 14px;">
+      <div style="padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+          <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #1a237e 0%, #195FA0 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <v-icon color="white" size="22">mdi-calendar-multiselect</v-icon>
+          </div>
           <div>
-            <h2
-              class="text-subtitle-1 font-weight-bold text-grey-darken-3"
-              style="line-height: 1.2"
-            >
-              Grades Ativas
-            </h2>
-            <div class="text-caption text-grey">Regras de recebimento</div>
+            <div style="font-size: 1rem; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">Grades Ativas</div>
+            <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 2px;">Regras de recebimento em vigor</div>
           </div>
         </div>
-
-        <div
-          class="d-flex gap-3 flex-wrap flex-grow-1 justify-end"
-          style="max-width: 1100px"
-        >
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; flex: 1; justify-content: flex-end; align-items: center;">
           <v-text-field
             v-model="search"
             density="compact"
             variant="outlined"
-            label="Buscar..."
+            placeholder="Buscar..."
             prepend-inner-icon="mdi-magnify"
             hide-details
             bg-color="white"
-            style="min-width: 200px"
-            flex-grow-1
+            rounded="lg"
+            style="min-width: 170px; max-width: 200px;"
           />
-
           <v-text-field
             v-model="filtroDataInicio"
             type="date"
@@ -47,10 +31,10 @@
             variant="outlined"
             hide-details
             bg-color="white"
-            style="max-width: 160px"
+            rounded="lg"
+            style="max-width: 148px;"
             clearable
           />
-
           <v-text-field
             v-model="filtroDataFim"
             type="date"
@@ -59,10 +43,10 @@
             variant="outlined"
             hide-details
             bg-color="white"
-            style="max-width: 160px"
+            rounded="lg"
+            style="max-width: 148px;"
             clearable
           />
-
           <v-select
             v-model="filtroLocal"
             :items="locaisDisponiveis"
@@ -71,11 +55,11 @@
             variant="outlined"
             hide-details
             bg-color="white"
-            style="max-width: 150px"
+            rounded="lg"
+            style="max-width: 148px;"
             clearable
             placeholder="Todas"
           />
-
           <v-select
             v-model="filtroFornecedor"
             :items="fornecedores"
@@ -86,11 +70,11 @@
             variant="outlined"
             hide-details
             bg-color="white"
-            style="max-width: 180px"
+            rounded="lg"
+            style="max-width: 170px;"
             clearable
             placeholder="Todos"
           />
-
           <v-select
             v-model="filtroProduto"
             :items="produtos"
@@ -101,214 +85,356 @@
             variant="outlined"
             hide-details
             bg-color="white"
-            style="max-width: 180px"
+            rounded="lg"
+            style="max-width: 170px;"
             clearable
             placeholder="Todos"
           />
         </div>
       </div>
+      <div v-if="!isLoading && groups.length > 0" style="padding: 7px 22px; background: #f8faff; border-top: 1px solid #eef2f7; display: flex; align-items: center; gap: 6px;">
+        <div style="width: 5px; height: 5px; background: #195FA0; border-radius: 50%;"></div>
+        <span style="font-size: 0.72rem; color: #64748b; font-weight: 500;">
+          {{ groups.length }} vigência{{ groups.length !== 1 ? 's' : '' }} encontrada{{ groups.length !== 1 ? 's' : '' }}
+        </span>
+      </div>
+    </v-card>
+
+    <div v-if="isLoading" style="background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 24px;">
+      <v-skeleton-loader type="list-item-two-line@5" />
     </div>
 
-    <v-data-table
-      :headers="headers"
-      :items="data?.items ?? []"
-      :loading="isLoading"
-      :page="page"
-      :items-per-page="pageSize"
-      :items-length="data?.totalCount ?? 0"
-      @update:page="page = $event"
-      hover
-      class="grade-table custom-typography"
+    <div
+      v-else-if="groups.length === 0"
+      style="background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 72px 20px; text-align: center;"
     >
-      <template v-slot:loading>
-        <v-skeleton-loader type="table-row@5"></v-skeleton-loader>
-      </template>
+      <div style="width: 64px; height: 64px; background: #f1f5f9; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+        <v-icon size="30" color="#cbd5e1">mdi-text-box-search-outline</v-icon>
+      </div>
+      <div style="font-size: 0.98rem; font-weight: 700; color: #94a3b8; margin-bottom: 6px;">Nenhuma grade encontrada</div>
+      <div style="font-size: 0.78rem; color: #cbd5e1;">Tente ajustar os filtros de pesquisa</div>
+    </div>
 
-      <template v-slot:no-data>
-        <div class="pa-8 text-center text-grey">
-          <v-icon size="40" class="mb-2 opacity-50"
-            >mdi-text-box-search-outline</v-icon
-          >
-          <p>Nenhuma grade encontrada.</p>
-        </div>
-      </template>
+    <div v-else style="display: flex; flex-direction: column; gap: 10px;">
+      <div v-for="group in groups" :key="group.key">
+        <v-card
+          elevation="0"
+          style="border-radius: 14px; overflow: hidden; transition: box-shadow 0.2s, border-color 0.2s;"
+          :style="expandedGroupKey === group.key
+            ? 'border: 1.5px solid #195FA0; box-shadow: 0 0 0 3px rgba(25,95,160,0.08);'
+            : 'border: 1px solid #e2e8f0;'"
+        >
+          <div style="display: flex; align-items: stretch;">
+            <div
+              style="width: 4px; flex-shrink: 0; background: linear-gradient(180deg, #195FA0 0%, #1565C0 100%);"
+            ></div>
 
-      <template #item.fornecedor="{ item }">
-        <div class="py-3">
-          <div
-            class="font-weight-medium text-grey-darken-3"
-            style="font-size: 0.9rem"
-          >
-            {{ item.fornecedor }}
-          </div>
-          <div class="d-flex align-center mt-1">
-            <v-icon size="12" color="grey" class="mr-1"
-              >mdi-package-variant-closed</v-icon
-            >
-            <span
-              class="text-caption text-grey-darken-1 font-weight-medium text-uppercase"
-            >
-              {{ item.produto }}
-            </span>
-          </div>
-        </div>
-      </template>
-
-      <template #item.localDescarga="{ item }">
-        <div class="d-flex align-center text-grey-darken-2">
-          <v-icon size="small" class="mr-2 text-grey-lighten-1"
-            >mdi-map-marker</v-icon
-          >
-          <span class="text-body-2 font-weight-medium">{{
-            item.localDescarga
-          }}</span>
-        </div>
-      </template>
-
-      <template #item.periodo="{ item }">
-        <div class="d-flex align-center gap-2 text-caption">
-          <span class="font-weight-bold text-grey-darken-2">{{
-            formatData(item.dataInicio)
-          }}</span>
-          <v-icon size="10" color="grey-lighten-1">mdi-arrow-right</v-icon>
-          <span class="font-weight-bold text-grey-darken-2">{{
-            formatData(item.dataFim)
-          }}</span>
-        </div>
-      </template>
-
-      <template #item.diasSemana="{ item }">
-        <div class="d-flex gap-1 flex-wrap" style="max-width: 180px">
-          <v-tooltip
-            v-for="dia in parseDias(item.diasSemana)"
-            :key="dia.val"
-            location="top"
-            content-class="bg-grey-darken-4 text-caption"
-          >
-            <template #activator="{ props }">
-              <div
-                v-bind="props"
-                class="day-badge"
-                :class="{ 'is-weekend': dia.val === 0 || dia.val === 6 }"
-              >
-                {{ dia.sigla }}
+            <div style="flex: 1; padding: 18px 20px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap;">
+              <div style="flex: 1.8; min-width: 160px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap;">
+                  <div style="font-size: 0.95rem; font-weight: 800; color: #0f172a; letter-spacing: -0.2px;">
+                    {{ group.produto }}
+                  </div>
+                  <span
+                    v-if="isExpired(group.dataFim)"
+                    style="background: #f97316; color: white; font-size: 0.6rem; font-weight: 800; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.8px; flex-shrink: 0;"
+                  >
+                    Expirado
+                  </span>
+                </div>
+                <div style="font-size: 0.74rem; color: #64748b; display: flex; align-items: center; gap: 4px; margin-bottom: 3px;">
+                  <v-icon size="11" color="#94a3b8">mdi-domain</v-icon>
+                  {{ group.fornecedor || 'Qualquer fornecedor' }}
+                </div>
+                <div style="font-size: 0.74rem; color: #64748b; display: flex; align-items: center; gap: 4px;">
+                  <v-icon size="11" color="#94a3b8">mdi-map-marker-outline</v-icon>
+                  {{ group.localDescarga }}
+                </div>
               </div>
-            </template>
-            <span>{{ dia.nomeCompleto }}</span>
-          </v-tooltip>
-        </div>
-      </template>
 
-      <template #item.horario="{ item }">
-        <div class="d-flex flex-column align-center">
-          <div class="text-body-2 font-weight-bold text-primary">
-            {{ formatHora(item.horaInicial) }} -
-            {{ formatHora(item.horaFinal) }}
-          </div>
-          <div class="text-caption text-grey mt-0">
-            {{ item.intervaloMinutos }} min / vaga
-          </div>
-        </div>
-      </template>
+              <div style="flex-shrink: 0;">
+                <div style="background: linear-gradient(135deg, #1a237e 0%, #195FA0 100%); border-radius: 12px; padding: 10px 16px; text-align: center; min-width: 120px;">
+                  <div style="font-size: 1.05rem; font-weight: 800; color: white; letter-spacing: 0.5px; line-height: 1.1;">
+                    {{ formatHora(group.horaInicial) }} – {{ formatHora(group.horaFinal) }}
+                  </div>
+                  <div style="font-size: 0.62rem; color: rgba(255,255,255,0.6); margin-top: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">
+                    {{ group.intervaloMinutos }} min / vaga
+                  </div>
+                </div>
+              </div>
 
-      <template #item.actions="{ item }">
-        <div class="d-flex justify-end gap-1">
-          <v-tooltip text="Histórico" location="top">
-            <template #activator="{ props: tip }">
-              <v-btn
-                v-bind="tip"
-                icon
-                size="small"
-                variant="text"
-                color="grey-darken-1"
-                @click="openHistorico(item)"
-              >
-                <v-icon size="18">mdi-history</v-icon>
+              <div style="flex: 1; min-width: 130px;">
+                <div style="font-size: 0.62rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 7px;">Dias de operação</div>
+                <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                  <div
+                    v-for="val in group.allDias"
+                    :key="val"
+                    :title="diasNomes[val]"
+                    style="width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700;"
+                    :style="val === 0 || val === 6 ? 'background: #fff3e0; color: #e65100;' : 'background: #eff6ff; color: #1d4ed8;'"
+                  >
+                    {{ diasSiglas[val] }}
+                  </div>
+                </div>
+              </div>
+
+              <div style="flex: 1; min-width: 130px;">
+                <div style="font-size: 0.62rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 6px;">Período</div>
+                <div style="font-size: 0.82rem; font-weight: 600; color: #0f172a;">
+                  {{ formatData(group.dataInicio) }}
+                  <span style="color: #cbd5e1; font-weight: 400; margin: 0 2px;">→</span>
+                  {{ formatData(group.dataFim) }}
+                </div>
+                <div style="margin-top: 6px;">
+                  <span style="background: #eff6ff; color: #1d4ed8; font-size: 0.67rem; font-weight: 700; padding: 2px 10px; border-radius: 20px;">
+                    {{ groupSlots.get(group.key) ?? 0 }} agendamento{{ (groupSlots.get(group.key) ?? 0) !== 1 ? 's' : '' }}
+                  </span>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 6px; align-items: center; flex-shrink: 0; margin-left: auto;">
+                <v-tooltip text="Editar vigência" location="top">
+                  <template #activator="{ props: tip }">
+                    <v-btn
+                      v-bind="tip"
+                      icon
+                      size="small"
+                      variant="tonal"
+                      :color="expandedGroupKey === group.key ? 'primary' : 'grey-darken-1'"
+                      style="border-radius: 8px;"
+                      @click="expandedGroupKey === group.key ? cancelEditGroup() : startEditGroup(group)"
+                    >
+                      <v-icon size="17">{{ expandedGroupKey === group.key ? 'mdi-pencil-off-outline' : 'mdi-pencil-outline' }}</v-icon>
+                    </v-btn>
+                  </template>
+                </v-tooltip>
+                <v-tooltip text="Excluir vigência" location="top">
+                  <template #activator="{ props: tip }">
+                    <v-btn
+                      v-bind="tip"
+                      icon
+                      size="small"
+                      variant="tonal"
+                      color="error"
+                      style="border-radius: 8px;"
+                      @click="cancelarVigencia(group)"
+                    >
+                      <v-icon size="17">mdi-trash-can-outline</v-icon>
+                    </v-btn>
+                  </template>
+                </v-tooltip>
+                <v-btn
+                  color="primary"
+                  variant="flat"
+                  size="small"
+                  rounded="lg"
+                  prepend-icon="mdi-calendar-clock"
+                  @click="openModal(group)"
+                >
+                  Agendamentos
+                </v-btn>
+              </div>
+            </div>
+          </div>
+
+          <div
+            v-if="expandedGroupKey === group.key"
+            style="border-top: 1px solid #dbeafe; background: #f0f6ff; padding: 20px 24px;"
+          >
+            <div style="font-size: 0.67rem; font-weight: 700; color: #195FA0; text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 14px; display: flex; align-items: center; gap: 6px;">
+              <v-icon size="13" color="#195FA0">mdi-pencil</v-icon>
+              Editando vigência — {{ group.grades.length }} grade{{ group.grades.length !== 1 ? 's' : '' }} serão atualizadas
+            </div>
+            <v-row dense>
+              <v-col cols="6" md="2">
+                <v-text-field
+                  v-model="editGroupForm.dataInicio"
+                  type="date"
+                  label="Início"
+                  variant="outlined"
+                  density="compact"
+                  bg-color="white"
+                  hide-details
+                  :min="hoje"
+                  rounded="lg"
+                />
+              </v-col>
+              <v-col cols="6" md="2">
+                <v-text-field
+                  v-model="editGroupForm.dataFim"
+                  type="date"
+                  label="Fim"
+                  variant="outlined"
+                  density="compact"
+                  bg-color="white"
+                  hide-details
+                  :min="editGroupForm.dataInicio || hoje"
+                  rounded="lg"
+                />
+              </v-col>
+              <v-col cols="12" sm="6" md="3">
+                <v-select
+                  v-model="editGroupForm.localDescargaId"
+                  :items="locais"
+                  item-title="nome"
+                  item-value="id"
+                  label="Local de Descarga"
+                  variant="outlined"
+                  density="compact"
+                  bg-color="white"
+                  hide-details
+                  clearable
+                  rounded="lg"
+                />
+              </v-col>
+              <v-col cols="6" md="2">
+                <v-text-field
+                  v-model="editGroupForm.horaInicial"
+                  type="time"
+                  label="Abertura"
+                  variant="outlined"
+                  density="compact"
+                  bg-color="white"
+                  hide-details
+                  rounded="lg"
+                />
+              </v-col>
+              <v-col cols="6" md="2">
+                <v-text-field
+                  v-model="editGroupForm.horaFinal"
+                  type="time"
+                  label="Fechamento"
+                  variant="outlined"
+                  density="compact"
+                  bg-color="white"
+                  hide-details
+                  rounded="lg"
+                />
+              </v-col>
+              <v-col cols="6" md="1">
+                <v-select
+                  v-model="editGroupForm.intervaloMinutos"
+                  :items="intervalos"
+                  label="Intervalo"
+                  variant="outlined"
+                  density="compact"
+                  bg-color="white"
+                  hide-details
+                  rounded="lg"
+                />
+              </v-col>
+              <v-col cols="12">
+                <div style="background: white; border: 1px solid #dbeafe; border-radius: 10px; padding: 10px 14px; margin-top: 4px;">
+                  <div style="font-size: 0.65rem; color: #94a3b8; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;">Dias de Operação</div>
+                  <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                    <div
+                      v-for="d in diasOpcoes"
+                      :key="d.val"
+                      :title="!diasComOcorrencia.has(d.val) && editGroupDias.includes(String(d.val))
+                        ? `${d.nome} — nenhuma ocorrência no período`
+                        : d.nome"
+                      style="width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; cursor: pointer; border: 1.5px solid; transition: all 0.15s; user-select: none;"
+                      :style="editGroupDias.includes(String(d.val))
+                        ? (!diasComOcorrencia.has(d.val)
+                            ? 'background: #fef3c7; color: #d97706; border-color: #fcd34d; border-style: dashed;'
+                            : (d.val === 0 || d.val === 6 ? 'background: #e65100; color: white; border-color: #e65100;' : 'background: #195FA0; color: white; border-color: #195FA0;'))
+                        : 'background: #f8fafc; color: #94a3b8; border-color: #e2e8f0;'"
+                      @click="toggleDia(editGroupDias, String(d.val))"
+                    >
+                      {{ d.sigla }}
+                    </div>
+                  </div>
+                </div>
+              </v-col>
+            </v-row>
+            <div style="display: flex; gap: 8px; margin-top: 16px; justify-content: flex-end;">
+              <v-btn size="small" variant="text" color="grey-darken-1" rounded="lg" @click="cancelEditGroup">Cancelar</v-btn>
+              <v-btn size="small" variant="flat" color="primary" rounded="lg" :loading="isSavingGroup" @click="saveGroup(group)">
+                <v-icon start size="14">mdi-check</v-icon>
+                Salvar alterações
               </v-btn>
-            </template>
-          </v-tooltip>
-          <v-btn
-            icon
-            size="small"
-            variant="text"
-            color="grey-darken-1"
-            @click="$emit('edit', item)"
-          >
-            <v-icon size="18">mdi-pencil-outline</v-icon>
-          </v-btn>
-          <v-btn
-            icon
-            size="small"
-            variant="text"
-            color="error"
-            class="opacity-80"
-            @click="$emit('delete', item.id)"
-          >
-            <v-icon size="18">mdi-trash-can-outline</v-icon>
-          </v-btn>
-        </div>
-      </template>
-    </v-data-table>
-  </v-card>
+            </div>
+          </div>
+        </v-card>
+      </div>
+    </div>
 
-  <AuditDrawer
-    v-model="auditDrawerOpen"
-    entity-name="Grade"
-    :entity-id="auditTarget?.id ?? ''"
-    :entity-label="auditLabel"
+    <div v-if="totalPages > 1" style="margin-top: 14px; display: flex; justify-content: center;">
+      <v-pagination v-model="page" :length="totalPages" density="compact" size="small" rounded="lg" />
+    </div>
+  </div>
+
+  <GradeGrupoModal
+    v-model="showModal"
+    :grades="selectedGrades"
+  />
+
+  <ConfirmDeleteDialog
+    v-model="showDeleteGroupDialog"
+    :loading="isDeletingGroup"
+    message="Tem certeza que deseja excluir esta vigência? Todos os agendamentos futuros não realizados serão cancelados automaticamente."
+    @confirm="confirmDeleteGroup"
   />
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
-import { format, parseISO } from "date-fns";
-import type { GradeListQueryDto } from "@/entities/grade.types";
-import { useGradeQuery } from "@/queries/grade.queries";
-import { useRoute } from "vue-router";
-import { useRouter } from "vue-router";
-import { useLocalDescarga } from "@/hooks/useLocalDescarga";
-import { useFornecedor } from "@/hooks/useFornecedor";
-import { useProduto } from "@/hooks/useProdutos";
-import AuditDrawer from "@/components/audit/AuditDrawer.vue";
+import { ref, computed, watch } from 'vue';
+import { format, parseISO, differenceInDays } from 'date-fns';
+import type { GradeListQueryDto, GradeResponseDto, GradeUpdateDto } from '@/entities/grade.types';
+import { useGradeQuery } from '@/queries/grade.queries';
+import { useGrade } from '@/hooks/useGrade';
+import { GradeService } from '@/services/GradeService';
+import { useQueryClient } from '@tanstack/vue-query';
+import { useToastStore } from '@/stores/ToastStore';
+import { useRoute, useRouter } from 'vue-router';
+import { useLocalDescarga } from '@/hooks/useLocalDescarga';
+import { useFornecedor } from '@/hooks/useFornecedor';
+import { useProduto } from '@/hooks/useProdutos';
+import GradeGrupoModal from '@/components/modals/GradeGrupoModal.vue';
+import ConfirmDeleteDialog from '@/components/modals/ConfirmDeleteDialog.vue';
+
+type GradeGroup = {
+  key: string;
+  grades: GradeResponseDto[];
+  fornecedor: string;
+  produto: string;
+  localDescarga: string;
+  localDescargaId: string;
+  horaInicial: string;
+  horaFinal: string;
+  intervaloMinutos: number;
+  allDias: number[];
+  dataInicio: string;
+  dataFim: string;
+};
 
 const route = useRoute();
 const router = useRouter();
+
 const page = ref(Number(route.query.page) || 1);
-const searchDebounced = ref("");
-
-const search = ref(route.query.search?.toString() || "");
-
+const search = ref(route.query.search?.toString() || '');
+const searchDebounced = ref('');
 const filtroLocal = ref(route.query.local?.toString() || null);
 const filtroFornecedor = ref(route.query.fornecedor?.toString() || null);
 const filtroProduto = ref(route.query.produto?.toString() || null);
 const filtroDataInicio = ref(route.query.dataInicio?.toString() || null);
 const filtroDataFim = ref(route.query.dataFim?.toString() || null);
+const pageSize = ref(10);
 
 const { locais } = useLocalDescarga({ apenasAtivos: true });
 const { fornecedores } = useFornecedor();
 const { produtos } = useProduto();
 
-let timeout: ReturnType<typeof setTimeout>;
-
+let debounceTimer: ReturnType<typeof setTimeout>;
 watch(search, (val) => {
-  clearTimeout(timeout);
-  timeout = setTimeout(() => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
     searchDebounced.value = val;
   }, 400);
 });
 
-const pageSize = ref(10);
-
 watch(
-  [
-    searchDebounced,
-    filtroLocal,
-    filtroFornecedor,
-    filtroProduto,
-    filtroDataInicio,
-    filtroDataFim,
-    page,
-  ],
+  [searchDebounced, filtroLocal, filtroFornecedor, filtroProduto, filtroDataInicio, filtroDataFim, page],
   () => {
     router.replace({
       query: {
@@ -337,147 +463,239 @@ const params = computed<GradeListQueryDto>(() => ({
 
 const { data, isLoading } = useGradeQuery(params);
 
-const emit = defineEmits(["edit", "delete"]);
+const totalPages = computed(() => Math.ceil((data.value?.totalCount ?? 0) / pageSize.value));
 
-const auditDrawerOpen = ref(false);
-const auditTarget = ref<{
-  id: string;
-  fornecedor?: string;
-  produto?: string;
-} | null>(null);
+const { deleteGrade } = useGrade();
+const gradeService = GradeService();
+const queryClient = useQueryClient();
+const toast = useToastStore();
 
-const auditLabel = computed(() => {
-  if (!auditTarget.value) {
-    return undefined;
+const diasSiglas = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+const diasNomes = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+
+const intervalos = [10, 15, 20, 30, 45, 60, 90, 120];
+const diasOpcoes = [
+  { val: 1, sigla: 'S', nome: 'Segunda-feira' },
+  { val: 2, sigla: 'T', nome: 'Terça-feira' },
+  { val: 3, sigla: 'Q', nome: 'Quarta-feira' },
+  { val: 4, sigla: 'Q', nome: 'Quinta-feira' },
+  { val: 5, sigla: 'S', nome: 'Sexta-feira' },
+  { val: 6, sigla: 'S', nome: 'Sábado' },
+  { val: 0, sigla: 'D', nome: 'Domingo' },
+];
+
+const expandedGroupKey = ref<string | null>(null);
+const isSavingGroup = ref(false);
+const editGroupForm = ref<Partial<GradeUpdateDto>>({});
+const editGroupDias = ref<string[]>([]);
+
+const hoje = computed(() => new Date().toISOString().substring(0, 10));
+
+const diasComOcorrencia = computed(() => {
+  const inicio = editGroupForm.value.dataInicio;
+  const fim = editGroupForm.value.dataFim;
+  if (!inicio || !fim) return new Set<number>();
+  const set = new Set<number>();
+  const current = new Date(inicio + 'T12:00:00');
+  const end = new Date(fim + 'T12:00:00');
+  while (current <= end) {
+    set.add(current.getDay());
+    current.setDate(current.getDate() + 1);
   }
-
-  const partes = [
-    auditTarget.value.fornecedor,
-    auditTarget.value.produto,
-  ].filter(Boolean);
-  
-  return partes.length ? `Grade — ${partes.join(" / ")}` : "Grade";
+  return set;
 });
 
-function openHistorico(item: any) {
-  auditTarget.value = {
-    id: item.id,
-    fornecedor: item.fornecedor,
-    produto: item.produto,
+function startEditGroup(group: GradeGroup) {
+  expandedGroupKey.value = group.key;
+  editGroupForm.value = {
+    dataInicio: group.dataInicio?.substring(0, 10) ?? '',
+    dataFim: group.dataFim?.substring(0, 10) ?? '',
+    localDescargaId: group.localDescargaId,
+    horaInicial: group.horaInicial,
+    horaFinal: group.horaFinal,
+    intervaloMinutos: group.intervaloMinutos,
   };
-  auditDrawerOpen.value = true;
+  editGroupDias.value = group.allDias.map(String);
 }
 
-const locaisDisponiveis = computed(() => {
-  return (locais.value ?? []).map((l) => ({
-    title: l.nome,
-    value: l.id,
+function cancelEditGroup() {
+  expandedGroupKey.value = null;
+  editGroupForm.value = {};
+  editGroupDias.value = [];
+}
+
+async function saveGroup(group: GradeGroup) {
+  isSavingGroup.value = true;
+  const payload: GradeUpdateDto = { ...editGroupForm.value };
+  if (payload.horaInicial?.length === 5) payload.horaInicial += ':00';
+  if (payload.horaFinal?.length === 5) payload.horaFinal += ':00';
+  if (editGroupDias.value.length > 0) {
+    payload.diasSemana = editGroupDias.value.join(',');
+  }
+  const clean = Object.fromEntries(
+    Object.entries(payload).filter(([, v]) => v !== undefined && v !== null && v !== ''),
+  ) as GradeUpdateDto;
+  try {
+    for (const g of group.grades) {
+      await gradeService.updateGrade(g.id, clean);
+    }
+    await queryClient.invalidateQueries({ queryKey: ['grades'] });
+    await queryClient.invalidateQueries({ queryKey: ['agendamentos'] });
+    toast.notify('Vigência atualizada com sucesso!', 'success');
+    expandedGroupKey.value = null;
+  } catch (err: any) {
+    const msg = err?.response?.data?.message ?? 'Erro ao atualizar grade.';
+    toast.notify(msg, 'error');
+  } finally {
+    isSavingGroup.value = false;
+  }
+}
+
+function toggleDia(list: string[], val: string) {
+  const idx = list.indexOf(val);
+  if (idx >= 0) list.splice(idx, 1);
+  else list.push(val);
+}
+
+const groups = computed<GradeGroup[]>(() => {
+  const items = data.value?.items ?? [];
+  const map = new Map<string, GradeGroup & { diasSet: Set<number> }>();
+
+  for (const grade of items) {
+    const key = `${grade.fornecedorId ?? '__'}|${grade.produto}|${grade.localDescargaId}|${grade.horaInicial}|${grade.horaFinal}|${grade.intervaloMinutos}`;
+
+    if (!map.has(key)) {
+      map.set(key, {
+        key,
+        grades: [],
+        fornecedor: grade.fornecedor,
+        produto: grade.produto,
+        localDescarga: grade.localDescarga,
+        localDescargaId: grade.localDescargaId,
+        horaInicial: grade.horaInicial,
+        horaFinal: grade.horaFinal,
+        intervaloMinutos: grade.intervaloMinutos,
+        allDias: [],
+        diasSet: new Set(),
+        dataInicio: grade.dataInicio,
+        dataFim: grade.dataFim,
+      });
+    }
+
+    const group = map.get(key)!;
+    group.grades.push(grade);
+
+    if (grade.dataInicio < group.dataInicio) group.dataInicio = grade.dataInicio;
+    if (grade.dataFim > group.dataFim) group.dataFim = grade.dataFim;
+
+    grade.diasSemana
+      ?.split(',')
+      .map(Number)
+      .filter((n) => !isNaN(n))
+      .forEach((d) => group.diasSet.add(d));
+  }
+
+  return Array.from(map.values()).map(({ diasSet, ...g }) => ({
+    ...g,
+    allDias: Array.from(diasSet).sort((a, b) => a - b),
   }));
 });
 
-const headers = [
-  {
-    title: "FORNECEDOR & PRODUTO",
-    key: "fornecedor",
-    align: "start",
-    width: "30%",
-  },
-  { title: "LOCAL", key: "localDescarga" },
-  { title: "VIGÊNCIA", key: "periodo", sortable: false, width: "15%" },
-  { title: "DIAS", key: "diasSemana", sortable: false, width: "15%" },
-  {
-    title: "HORÁRIO",
-    key: "horario",
-    align: "center",
-    sortable: false,
-    width: "15%",
-  },
-  { title: "", key: "actions", align: "end", sortable: false },
-] as const;
+const showModal = ref(false);
+const selectedGroupKey = ref<string | null>(null);
 
-function formatData(dateStr: string) {
-  if (!dateStr) return "-";
-  return format(parseISO(dateStr), "dd/MM/yyyy");
+const selectedGrades = computed(
+  () => groups.value.find((g) => g.key === selectedGroupKey.value)?.grades ?? [],
+);
+
+watch(selectedGrades, (grades) => {
+  if (grades.length === 0 && showModal.value) {
+    showModal.value = false;
+    selectedGroupKey.value = null;
+  }
+});
+
+function openModal(group: GradeGroup) {
+  selectedGroupKey.value = group.key;
+  showModal.value = true;
 }
 
-function formatHora(timeStr: string) {
-  if (!timeStr) {
-    return "-";
-  }
+const isDeletingGroup = ref(false);
+const groupToDelete = ref<GradeGroup | null>(null);
+const showDeleteGroupDialog = ref(false);
 
+function cancelarVigencia(group: GradeGroup) {
+  groupToDelete.value = group;
+  showDeleteGroupDialog.value = true;
+}
+
+async function confirmDeleteGroup() {
+  if (!groupToDelete.value) return;
+  isDeletingGroup.value = true;
+  try {
+    await Promise.all(groupToDelete.value.grades.map((g: GradeResponseDto) => deleteGrade(g.id)));
+    showDeleteGroupDialog.value = false;
+    groupToDelete.value = null;
+  } catch {
+  } finally {
+    isDeletingGroup.value = false;
+  }
+}
+
+// --- Helpers ---
+const locaisDisponiveis = computed(() =>
+  (locais.value ?? []).map((l) => ({ title: l.nome, value: l.id })),
+);
+
+function formatData(dateStr?: string | null) {
+  if (!dateStr) return '—';
+  try {
+    return format(parseISO(dateStr), 'dd/MM/yyyy');
+  } catch {
+    return '—';
+  }
+}
+
+function formatHora(timeStr?: string | null) {
+  if (!timeStr) return '—';
   return timeStr.substring(0, 5);
 }
 
-function parseDias(diasStr: string) {
-  if (!diasStr) {
-    return [];
+function isExpired(dataFim?: string | null) {
+  if (!dataFim) return false;
+  return dataFim.substring(0, 10) < new Date().toISOString().substring(0, 10);
+}
+
+function countWeekdayOccurrences(start: Date, end: Date, weekday: number): number {
+  const days = differenceInDays(end, start) + 1;
+  if (days <= 0) return 0;
+  const offset = (weekday - start.getDay() + 7) % 7;
+  if (offset >= days) return 0;
+  return Math.floor((days - offset - 1) / 7) + 1;
+}
+
+function calcularTotalSlots(group: GradeGroup): number {
+  let total = 0;
+  for (const grade of group.grades) {
+    const [hI = 0, mI = 0] = grade.horaInicial.split(':').map(Number);
+    const [hF = 0, mF = 0] = grade.horaFinal.split(':').map(Number);
+    const slotsPorDia = Math.max(0, Math.floor((hF * 60 + mF - hI * 60 - mI) / grade.intervaloMinutos));
+    const dias = grade.diasSemana?.split(',').map(Number).filter((n) => !isNaN(n)) ?? [];
+    const inicio = parseISO(grade.dataInicio);
+    const fim = parseISO(grade.dataFim);
+    for (const d of dias) {
+      total += slotsPorDia * countWeekdayOccurrences(inicio, fim, d);
+    }
   }
-
-  const mapDias = ["D", "S", "T", "Q", "Q", "S", "S"];
-  const mapNomes = [
-    "Domingo",
-    "Segunda",
-    "Terça",
-    "Quarta",
-    "Quinta",
-    "Sexta",
-    "Sábado",
-  ];
-
-  return diasStr
-    .split(",")
-    .map((d) => parseInt(d))
-    .sort((a, b) => a - b)
-    .map((d) => ({
-      val: d,
-      sigla: mapDias[d],
-      nomeCompleto: mapNomes[d],
-    }));
+  return total;
 }
+
+const groupSlots = computed(() => {
+  const map = new Map<string, number>();
+  for (const group of groups.value) {
+    map.set(group.key, calcularTotalSlots(group));
+  }
+  return map;
+});
+
 </script>
-
-<style scoped>
-:deep(.v-data-table__th) {
-  font-size: 0.7rem !important;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: #888 !important;
-  font-weight: 600 !important;
-  background-color: white !important;
-  border-bottom: 1px solid #eee !important;
-}
-
-:deep(.v-data-table__td) {
-  font-size: 0.875rem !important;
-  color: #333;
-  height: 64px !important;
-}
-
-.day-badge {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: 700;
-  cursor: help;
-  background-color: #e3f2fd;
-  color: #1565c0;
-  transition: all 0.2s;
-}
-
-.day-badge.is-weekend {
-  background-color: #fff3e0;
-  color: #e65100;
-}
-
-.gap-3 {
-  gap: 12px;
-}
-
-.gap-4 {
-  gap: 16px;
-}
-</style>

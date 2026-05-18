@@ -7,13 +7,14 @@ const service = AgendamentoService();
 
 export function useAgendamentoQuery(
   params: MaybeRef<AgendamentoAdminResponseDtoFilterDto>,
-  options?: { refetchInterval?: number }
+  options?: { refetchInterval?: number; enabled?: MaybeRef<boolean> }
 ) {
   return useQuery({
     queryKey: ["agendamentos", params],
     queryFn: async () => await service.getByFilters(unref(params)),
     placeholderData: keepPreviousData,
-    refetchInterval: options?.refetchInterval
+    refetchInterval: options?.refetchInterval,
+    enabled: options?.enabled ?? true,
   });
 }
 

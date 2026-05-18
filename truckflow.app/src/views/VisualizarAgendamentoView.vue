@@ -1,64 +1,64 @@
 <template>
-  <v-container fluid class="pa-6">
-    <v-card elevation="0" class="border rounded-xl bg-white">
-      <div class="pa-5 border-b bg-grey-lighten-5">
-        <div
-          class="d-flex flex-wrap align-center justify-space-between gap-4 mb-4"
-        >
-          <div class="d-flex align-center">
-            <v-avatar
-              color="#195FA0"
-              variant="flat"
-              class="mr-3"
-              rounded="lg"
-              size="40"
-            >
-              <v-icon color="white" size="20">mdi-calendar-clock</v-icon>
-            </v-avatar>
+  <v-container fluid style="padding: 24px;">
+    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.10);">
+
+      <div style="background: linear-gradient(135deg, #0e2f5a 0%, #195FA0 100%); padding: 24px 28px; position: relative; overflow: hidden;">
+        <div style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); opacity: 0.05; pointer-events: none;">
+          <v-icon size="200" color="white">mdi-calendar-clock</v-icon>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; position: relative; z-index: 1;">
+          <div style="display: flex; align-items: flex-start; gap: 14px;">
+            <div style="background: rgba(255,255,255,0.12); border-radius: 12px; padding: 10px 11px; flex-shrink: 0;">
+              <v-icon color="white" size="24">mdi-calendar-clock</v-icon>
+            </div>
             <div>
-              <h2
-                class="text-subtitle-1 font-weight-bold text-grey-darken-3"
-                style="line-height: 1.2"
-              >
-                Gestão de Agendamentos
-              </h2>
-              <div class="text-caption text-grey">
-                Acompanhe a grade de horários e status de recebimento
+              <div style="font-size: 0.62rem; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">
+                <v-icon size="9" color="rgba(255,255,255,0.5)">mdi-square</v-icon>
+                GESTÃO DE AGENDAMENTOS
               </div>
+              <div style="font-size: 1.4rem; font-weight: 800; color: white; line-height: 1.15; letter-spacing: -0.3px;">Agendamentos</div>
+              <div style="font-size: 0.77rem; color: rgba(255,255,255,0.6); margin-top: 4px;">Acompanhe a grade de horários e status de recebimento</div>
             </div>
           </div>
 
-          <div class="d-flex align-center gap-2">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; position: relative; z-index: 1;">
             <v-btn-toggle
               v-model="periodoPreset"
               density="compact"
-              color="primary"
+              color="white"
               variant="outlined"
               mandatory
               divided
+              style="border-radius: 8px;"
             >
-              <v-btn value="hoje" size="small">Hoje</v-btn>
-              <v-btn value="semana" size="small">Semana</v-btn>
-              <v-btn value="proxima" size="small">Próx. 7</v-btn>
-              <v-btn value="custom" size="small">Custom</v-btn>
+              <v-btn value="hoje" size="small" style="color: rgba(255,255,255,0.88); font-size: 0.72rem; letter-spacing: 0;">Hoje</v-btn>
+              <v-btn value="semana" size="small" style="color: rgba(255,255,255,0.88); font-size: 0.72rem; letter-spacing: 0;">Semana</v-btn>
+              <v-btn value="proxima" size="small" style="color: rgba(255,255,255,0.88); font-size: 0.72rem; letter-spacing: 0;">Próx. 7</v-btn>
+              <v-btn value="custom" size="small" style="color: rgba(255,255,255,0.88); font-size: 0.72rem; letter-spacing: 0;">Custom</v-btn>
             </v-btn-toggle>
 
+            <v-btn icon variant="text" :loading="isFetching" style="color: white;" @click="refetch()">
+              <v-icon>mdi-refresh</v-icon>
+            </v-btn>
+
             <v-btn
-              icon="mdi-refresh"
-              variant="text"
-              color="grey-darken-1"
-              :loading="isFetching"
-              @click="refetch()"
-            />
+              prepend-icon="mdi-file-delimited-outline"
+              variant="outlined"
+              size="small"
+              style="height: 36px; border-radius: 8px; text-transform: none; font-weight: 600; letter-spacing: 0; color: white; border-color: rgba(255,255,255,0.35);"
+              :loading="csvLoading"
+              :disabled="csvCooldown > 0"
+              @click="exportCsv"
+            >
+              {{ csvCooldown > 0 ? `CSV (${csvCooldown}s)` : 'Exportar CSV' }}
+            </v-btn>
 
             <v-btn
               v-if="canManageGrade"
-              color="primary"
               prepend-icon="mdi-plus"
-              height="40"
-              class="text-capitalize px-5"
               elevation="0"
-              rounded="lg"
+              style="height: 36px; border-radius: 8px; text-transform: none; font-weight: 700; letter-spacing: 0; padding: 0 20px; background: rgba(255,255,255,0.15); color: white;"
               @click="criarAgendamento"
             >
               Agendamento Avulso
@@ -66,43 +66,40 @@
           </div>
         </div>
 
-        <div class="d-flex flex-wrap gap-3">
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; position: relative; z-index: 1;">
           <v-text-field
             v-model="search"
             density="compact"
-            variant="outlined"
+            variant="solo"
             label="Buscar (placa, motorista, produto, fornecedor...)"
             prepend-inner-icon="mdi-magnify"
             hide-details
-            bg-color="white"
-            style="min-width: 260px; flex: 1 1 260px"
+            style="min-width: 260px; flex: 1 1 260px;"
             clearable
+            flat
           />
-
           <v-text-field
             v-model="filtroDataInicio"
             type="date"
             label="Início"
             density="compact"
-            variant="outlined"
+            variant="solo"
             hide-details
-            bg-color="white"
-            style="max-width: 160px"
+            flat
+            style="max-width: 160px;"
             :disabled="periodoPreset !== 'custom'"
           />
-
           <v-text-field
             v-model="filtroDataFim"
             type="date"
             label="Fim"
             density="compact"
-            variant="outlined"
+            variant="solo"
             hide-details
-            bg-color="white"
-            style="max-width: 160px"
+            flat
+            style="max-width: 160px;"
             :disabled="periodoPreset !== 'custom'"
           />
-
           <v-autocomplete
             v-model="filtroFornecedor"
             :items="fornecedores"
@@ -110,14 +107,13 @@
             item-value="id"
             label="Fornecedor"
             density="compact"
-            variant="outlined"
+            variant="solo"
             hide-details
-            bg-color="white"
-            style="max-width: 200px"
+            flat
+            style="max-width: 200px;"
             clearable
             placeholder="Todos"
           />
-
           <v-autocomplete
             v-model="filtroUnidade"
             :items="unidades"
@@ -125,14 +121,13 @@
             item-value="id"
             label="Unidade Entrega"
             density="compact"
-            variant="outlined"
+            variant="solo"
             hide-details
-            bg-color="white"
-            style="max-width: 200px"
+            flat
+            style="max-width: 200px;"
             clearable
             placeholder="Todas"
           />
-
           <v-autocomplete
             v-model="filtroProduto"
             :items="produtos"
@@ -140,248 +135,220 @@
             item-value="id"
             label="Produto"
             density="compact"
-            variant="outlined"
+            variant="solo"
             hide-details
-            bg-color="white"
-            style="max-width: 200px"
+            flat
+            style="max-width: 180px;"
             clearable
             placeholder="Todos"
           />
-
           <v-select
             v-model="filtroStatus"
             :items="statusOptions"
             label="Status"
             density="compact"
-            variant="outlined"
+            variant="solo"
             hide-details
-            bg-color="white"
-            style="max-width: 170px"
+            flat
+            style="max-width: 170px;"
             clearable
             placeholder="Todos"
           />
-
           <v-select
             v-model="filtroTipoVeiculo"
             :items="tipoVeiculoOptions"
             label="Tipo Veículo"
             density="compact"
-            variant="outlined"
+            variant="solo"
             hide-details
-            bg-color="white"
-            style="max-width: 190px"
+            flat
+            style="max-width: 190px;"
             clearable
             placeholder="Todos"
           />
         </div>
       </div>
 
-      <v-data-table
-        :headers="headers"
-        :items="data?.items ?? []"
-        :loading="isLoading"
-        :page="page"
-        :items-per-page="pageSize"
-        :items-length="data?.totalCount ?? 0"
-        item-value="id"
-        hover
-        density="comfortable"
-        class="agendamento-table custom-typography"
-        @update:page="page = $event"
-        @update:items-per-page="pageSize = $event"
-      >
-        <template v-slot:loading>
-          <v-skeleton-loader type="table-row@6" />
-        </template>
+      <div style="background: #f4f6f9; min-height: 200px; padding: 20px;">
 
-        <template v-slot:no-data>
-          <div class="pa-8 text-center text-grey">
-            <v-icon size="40" class="mb-2 opacity-50"
-              >mdi-calendar-remove-outline</v-icon
+        <div v-if="isLoading" style="background: white; border-radius: 14px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+          <v-skeleton-loader type="list-item-two-line@8" />
+        </div>
+
+        <div
+          v-else-if="!data?.items?.length"
+          style="background: white; border-radius: 14px; padding: 64px 24px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06);"
+        >
+          <v-icon size="52" style="opacity: 0.18; display: block; margin: 0 auto 14px; color: #195FA0;">mdi-calendar-remove-outline</v-icon>
+          <div style="font-size: 0.9rem; color: #aaa; font-weight: 500;">Nenhum agendamento encontrado para os filtros selecionados.</div>
+        </div>
+
+        <div v-else>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+            <span
+              v-for="(count, status) in statusCounts"
+              :key="status"
+              style="display: inline-flex; align-items: center; gap: 5px; border-radius: 20px; padding: 5px 14px; font-size: 0.72rem; font-weight: 700; white-space: nowrap;"
+              :style="getStatusInlineStyle(String(status))"
             >
-            <p>Nenhum agendamento encontrado para os filtros selecionados.</p>
-          </div>
-        </template>
-
-        <template #item.dataInicio="{ item }">
-          <div class="d-flex flex-column py-2">
-            <div class="d-flex align-center">
-              <v-icon
-                icon="mdi-clock-outline"
-                size="small"
-                class="mr-1 text-primary"
-              />
-              <span class="font-weight-bold text-body-2">
-                {{ formatTime(item.dataInicio) }} -
-                {{ formatTime(item.dataFim) }}
-              </span>
-            </div>
-            <span class="text-caption text-grey ml-5">
-              {{ formatDate(item.dataInicio) }}
+              <v-icon size="12">{{ getStatusIcon(String(status)) }}</v-icon>
+              {{ formatStatus(String(status)) }} · {{ count }}
             </span>
           </div>
-        </template>
 
-        <template #item.produto="{ value }">
-          <v-chip
-            size="small"
-            color="blue-grey"
-            variant="tonal"
-            class="font-weight-bold"
+          <div
+            v-for="item in data.items"
+            :key="item.id"
+            :style="`background: white; border-radius: 16px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border: 1px solid rgba(0,0,0,0.06); border-left: 4px solid ${getStatusAccentColor(item.status)};`"
           >
-            {{ value || "Carga Geral" }}
-          </v-chip>
-        </template>
+            <div style="padding: 18px 20px 14px; display: flex; align-items: flex-start; gap: 14px;">
 
-        <template #item.fornecedorNome="{ value }">
-          <span class="text-body-2 font-weight-medium text-grey-darken-3">{{
-            value ?? "-"
-          }}</span>
-        </template>
+              <div
+                :style="`background: ${getStatusAvatarColor(item.status)}; border-radius: 50%; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;`"
+              >
+                <v-icon color="white" size="22">{{ getStatusIcon(item.status) }}</v-icon>
+              </div>
 
-        <template #item.motoristaNome="{ item }">
-          <div v-if="item.motoristaNome" class="d-flex flex-column">
-            <span class="text-body-2 font-weight-medium">{{
-              item.motoristaNome
-            }}</span>
-            <div class="d-flex align-center mt-1">
-              <v-icon
-                icon="mdi-truck-outline"
-                size="x-small"
-                class="mr-1 text-grey"
-              />
-              <span class="text-caption text-grey-darken-1">{{
-                item.placaVeiculo
-              }}</span>
-            </div>
-          </div>
-          <div v-else class="text-caption text-grey-lighten-1 font-italic">
-            -- Aguardando --
-          </div>
-        </template>
+              <div style="flex: 1; min-width: 0;">
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
+                  <div style="min-width: 0;">
+                    <div style="font-size: 0.95rem; font-weight: 700; color: #1a1a2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                      {{ item.fornecedorNome || '—' }}
+                    </div>
+                    <div style="font-size: 0.77rem; color: #aaa; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                      @ {{ item.motoristaNome || 'Aguardando motorista' }}
+                    </div>
+                  </div>
+                  <span style="font-size: 0.71rem; color: #bbb; white-space: nowrap; flex-shrink: 0; margin-top: 2px;">
+                    {{ formatDate(item.dataInicio) }}
+                  </span>
+                </div>
 
-        <template #item.localDescarga="{ value }">
-          <div class="d-flex align-center">
-            <v-icon
-              size="small"
-              class="mr-2 text-grey-darken-1"
-            />
-            <span class="text-body-2 text-grey-darken-3 text-capitalize">
-              {{ value || "-"}}
-            </span>
-          </div>
-        </template>
-
-        <template #item.tipoVeiculo="{ value }">
-          <div class="d-flex align-center">
-            <v-icon
-              icon="mdi-truck-cargo-container"
-              size="small"
-              class="mr-2 text-grey-darken-1"
-            />
-            <span class="text-body-2 text-grey-darken-3 text-capitalize">
-              {{ formatTipoVeiculo(value) }}
-            </span>
-          </div>
-        </template>
-
-        <template #item.pesoCarga="{ value }">
-          <span
-            :class="value > 0 ? 'text-grey-darken-3' : 'text-grey-lighten-1'"
-          >
-            {{ value > 0 ? value.toLocaleString("pt-BR") : "-" }}
-            <small v-if="value > 0">kg</small>
-          </span>
-        </template>
-
-        <template #item.status="{ value }">
-          <v-chip
-            size="small"
-            :color="getStatusColor(value)"
-            variant="flat"
-            class="font-weight-bold text-uppercase"
-          >
-            {{ formatStatus(value) }}
-          </v-chip>
-        </template>
-
-        <template #item.actions="{ item }">
-          <div class="d-flex justify-center align-center ga-2">
-            <v-tooltip
-              text="Registrar Chegada (Check-in)"
-              location="top"
-              v-if="
-                canCheckIn &&
-                (isStatus(item.status, 'Agendado') ||
-                  isStatus(item.status, 'Confirmado'))
-              "
-            >
-              <template v-slot:activator="{ props }">
-                <v-btn
-                  icon="mdi-login-variant"
-                  color="blue-darken-2"
-                  variant="tonal"
-                  size="small"
-                  v-bind="props"
-                  @click="handleCheckIn(item)"
-                />
-              </template>
-            </v-tooltip>
-
-            <v-tooltip
-              text="Finalizar Operação (Check-out)"
-              location="top"
-              v-if="canCheckIn && isStatus(item.status, 'EmAndamento')"
-            >
-              <template v-slot:activator="{ props }">
-                <v-btn
-                  icon="mdi-check-all"
-                  color="green-darken-1"
-                  variant="tonal"
-                  size="small"
-                  v-bind="props"
-                  @click="handleCheckout(item)"
-                />
-              </template>
-            </v-tooltip>
-
-            <v-menu
-              v-if="
-                canManageGrade &&
-                !isStatus(item.status, 'Finalizado') &&
-                !isStatus(item.status, 'Concluido') &&
-                !isStatus(item.status, 'Cancelado')
-              "
-            >
-              <template v-slot:activator="{ props }">
-                <v-btn
-                  icon="mdi-dots-vertical"
-                  variant="text"
-                  size="small"
-                  v-bind="props"
-                />
-              </template>
-
-              <v-list density="compact">
-                <v-list-item @click="" prepend-icon="mdi-pencil">
-                  <v-list-item-title>Editar Dados</v-list-item-title>
-                </v-list-item>
-                <v-divider class="my-1" />
-                <v-list-item
-                  @click="handleCancelar(item)"
-                  prepend-icon="mdi-cancel"
-                  base-color="red"
-                >
-                  <v-list-item-title class="text-red"
-                    >Cancelar Agendamento</v-list-item-title
+                <div style="margin-top: 10px;">
+                  <span
+                    :style="`display: inline-flex; align-items: center; gap: 5px; border-radius: 20px; padding: 4px 11px; font-size: 0.73rem; font-weight: 600; color: white; background: ${getStatusAvatarColor(item.status)};`"
                   >
-                </v-list-item>
-              </v-list>
-            </v-menu>
+                    <v-icon size="12" color="white">mdi-clock-outline</v-icon>
+                    {{ formatTime(item.dataInicio) }} — {{ formatTime(item.dataFim) }}
+                  </span>
+                </div>
+
+                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 9px;">
+                  <span style="background: #eef2f8; color: #195FA0; border-radius: 20px; padding: 3px 10px; font-size: 0.7rem; font-weight: 700; white-space: nowrap;">
+                    {{ item.produto || 'Carga Geral' }}
+                  </span>
+
+                  <div
+                    v-if="item.placaVeiculo"
+                    style="display: flex; align-items: center; gap: 3px; font-size: 0.7rem; color: #555; background: #f5f5f5; border-radius: 20px; padding: 3px 10px; font-family: monospace; letter-spacing: 0.3px; white-space: nowrap;"
+                  >
+                    <v-icon size="11" color="grey-darken-1">mdi-truck-outline</v-icon>
+                    {{ item.placaVeiculo }}
+                  </div>
+
+                  <div
+                    v-if="item.localDescarga"
+                    style="display: flex; align-items: center; gap: 3px; font-size: 0.7rem; color: #555; background: #f5f5f5; border-radius: 20px; padding: 3px 10px; white-space: nowrap;"
+                  >
+                    <v-icon size="11" color="grey-darken-1">mdi-map-marker-outline</v-icon>
+                    {{ item.localDescarga }}
+                  </div>
+
+                  <div
+                    v-if="item.unidadeEntrega"
+                    style="display: flex; align-items: center; gap: 3px; font-size: 0.7rem; color: #555; background: #f5f5f5; border-radius: 20px; padding: 3px 10px; white-space: nowrap;"
+                  >
+                    <v-icon size="11" color="grey-darken-1">mdi-warehouse</v-icon>
+                    {{ item.unidadeEntrega }}
+                  </div>
+
+                  <div style="margin-left: auto; flex-shrink: 0;">
+                    <span
+                      style="border-radius: 20px; padding: 4px 12px; font-size: 0.67rem; font-weight: 700; white-space: nowrap; display: inline-block;"
+                      :style="getStatusInlineStyle(item.status)"
+                    >
+                      {{ formatStatus(item.status) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="height: 1px; background: #f0f0f0; margin: 0 20px;"></div>
+
+            <div style="padding: 8px 14px; display: flex; justify-content: flex-end; align-items: center; gap: 2px;">
+              <v-tooltip
+                v-if="canCheckIn && (isStatus(item.status, 'Agendado') || isStatus(item.status, 'Confirmado'))"
+                text="Registrar Chegada (Check-in)"
+                location="top"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn icon size="small" variant="text" color="blue-darken-2" v-bind="props" @click="handleCheckIn(item)">
+                    <v-icon size="18">mdi-login-variant</v-icon>
+                  </v-btn>
+                </template>
+              </v-tooltip>
+
+              <v-tooltip
+                v-if="canCheckIn && isStatus(item.status, 'EmAndamento')"
+                text="Finalizar Operação (Check-out)"
+                location="top"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn icon size="small" variant="text" color="green-darken-1" v-bind="props" @click="handleCheckout(item)">
+                    <v-icon size="18">mdi-check-all</v-icon>
+                  </v-btn>
+                </template>
+              </v-tooltip>
+
+              <v-tooltip v-if="canManageGrade" text="Editar Agendamento" location="top">
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    icon
+                    size="small"
+                    variant="text"
+                    color="grey-darken-1"
+                    v-bind="props"
+                    @click="handleEditar(item)"
+                  >
+                    <v-icon size="18">mdi-pencil</v-icon>
+                  </v-btn>
+                </template>
+              </v-tooltip>
+
+              <v-tooltip v-if="canManageGrade" text="Cancelar Agendamento" location="top">
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    icon
+                    size="small"
+                    variant="text"
+                    color="red-darken-1"
+                    v-bind="props"
+                    @click="handleCancelar(item)"
+                  >
+                    <v-icon size="18">mdi-account-cancel-outline</v-icon>
+                  </v-btn>
+                </template>
+              </v-tooltip>
+            </div>
           </div>
-        </template>
-      </v-data-table>
-    </v-card>
+
+          <div style="display: flex; justify-content: center; align-items: center; gap: 16px; padding: 16px 0 4px;">
+            <v-pagination
+              v-model="page"
+              :length="totalPages"
+              :total-visible="7"
+              density="compact"
+              rounded="circle"
+              color="primary"
+            />
+            <span style="font-size: 0.75rem; color: #aaa; white-space: nowrap;">
+              {{ data?.totalCount ?? 0 }} agendamento{{ (data?.totalCount ?? 0) !== 1 ? 's' : '' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <AgendamentoAvulsoModal @saved="refetch()" v-model="showDialogAvulso" />
 
@@ -397,27 +364,33 @@
     />
 
     <v-dialog v-model="finalizarDialog.show" max-width="480" persistent>
-      <v-card rounded="lg">
-        <v-card-title class="text-h6 font-weight-bold d-flex align-center">
-          <v-icon color="green-darken-1" class="mr-2">mdi-check-all</v-icon>
-          Finalizar Operação
-        </v-card-title>
+      <v-card rounded="xl" elevation="8">
+        <div style="background: linear-gradient(135deg, #2e7d32 0%, #388e3c 100%); padding: 20px 24px; display: flex; align-items: center; gap: 10px;">
+          <div style="background: rgba(255,255,255,0.2); border-radius: 10px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+            <v-icon color="white" size="20">mdi-check-all</v-icon>
+          </div>
+          <div>
+            <div style="font-size: 1rem; font-weight: 700; color: white;">Finalizar Operação</div>
+            <div style="font-size: 0.72rem; color: rgba(255,255,255,0.72); margin-top: 1px;">Confirme a quantidade recebida</div>
+          </div>
+          <v-spacer />
+          <v-btn icon variant="text" color="white" size="small" @click="finalizarDialog.show = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </div>
 
-        <v-card-text>
-          <p class="text-body-2 text-grey-darken-1 mb-4">
-            Confirme a quantidade <strong>realmente recebida</strong>.
+        <v-card-text style="padding: 20px 24px;">
+          <p style="font-size: 0.85rem; color: #777; margin-bottom: 16px;">
             Pré-preenchido com o peso da NF; ajuste se houve divergência na balança.
           </p>
-
-          <div class="bg-grey-lighten-4 pa-3 rounded mb-4 text-caption text-grey-darken-1">
-            <div><strong>Placa:</strong> {{ finalizarDialog.placa || "—" }}</div>
-            <div><strong>Produto:</strong> {{ finalizarDialog.produto || "—" }}</div>
+          <div style="background: #f5f5f5; padding: 12px 14px; border-radius: 10px; margin-bottom: 16px; font-size: 0.8rem; color: #555; display: flex; flex-direction: column; gap: 4px;">
+            <div><strong>Placa:</strong> {{ finalizarDialog.placa || '—' }}</div>
+            <div><strong>Produto:</strong> {{ finalizarDialog.produto || '—' }}</div>
             <div>
               <strong>Reservado (NF):</strong>
-              {{ Number(finalizarDialog.pesoReservado).toLocaleString("pt-BR", { maximumFractionDigits: 3 }) }} kg
+              {{ Number(finalizarDialog.pesoReservado).toLocaleString('pt-BR', { maximumFractionDigits: 3 }) }} kg
             </div>
           </div>
-
           <v-text-field
             v-model.number="finalizarDialog.quantidade"
             type="number"
@@ -431,18 +404,13 @@
           />
         </v-card-text>
 
-        <v-card-actions class="pa-4">
+        <v-card-actions style="padding: 12px 20px 20px;">
           <v-spacer />
-          <v-btn
-            variant="text"
-            :disabled="isFinalizando"
-            @click="finalizarDialog.show = false"
-          >
-            Cancelar
-          </v-btn>
+          <v-btn variant="text" :disabled="isFinalizando" @click="finalizarDialog.show = false">Cancelar</v-btn>
           <v-btn
             color="green-darken-1"
             variant="flat"
+            rounded="lg"
             :loading="isFinalizando"
             :disabled="!(finalizarDialog.quantidade > 0)"
             @click="confirmarFinalizacao"
@@ -456,18 +424,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, onUnmounted, ref, watch } from "vue";
 import { format, parseISO } from "date-fns";
 import { useRoute, useRouter } from "vue-router";
 import ConfirmDialog from "@/components/modals/ConfirmDialog.vue";
 
 import type IAgendamentoFilterDto from "@/Dtos/agendamento/agendamentoFilterDto";
 import { useAgendamentoQuery } from "@/queries/agendamento.queries";
+import { AgendamentoService } from "@/services/AgendamentoService";
 import { useAgendamento } from "@/hooks/useAgendamento";
 import { useFornecedor } from "@/hooks/useFornecedor";
 import { useUnidadeEntrega } from "@/hooks/useUnidadeEntrega";
 import { useProduto } from "@/hooks/useProdutos";
-
 import { TipoVeiculoLabels } from "@/utils/tipoVeiculoLabels";
 import { usePermissions } from "@/hooks/usePermissions";
 import AgendamentoAvulsoModal from "@/components/modals/AgendamentoAvulsoModal.vue";
@@ -477,6 +445,8 @@ type PeriodoPreset = "hoje" | "semana" | "proxima" | "custom";
 const route = useRoute();
 const router = useRouter();
 const { canManageGrade, canCheckIn } = usePermissions();
+
+const agendamentoService = AgendamentoService();
 
 const { fornecedores } = useFornecedor();
 const { unidades } = useUnidadeEntrega();
@@ -505,6 +475,9 @@ const pageSize = ref(Number(route.query.pageSize) || 20);
 
 const showDialogAvulso = ref(false);
 const loadingAction = ref<string | null>(null);
+const csvLoading = ref(false);
+const csvCooldown = ref(0);
+let csvCooldownTimer: ReturnType<typeof setInterval> | null = null;
 
 const confirmDialog = ref({
   show: false,
@@ -537,9 +510,7 @@ function applyPreset(preset: PeriodoPreset): { inicio: string; fim: string } {
   const hoje = new Date();
   const toIso = (d: Date) => format(d, "yyyy-MM-dd");
 
-  if (preset === "hoje") {
-    return { inicio: toIso(hoje), fim: toIso(hoje) };
-  }
+  if (preset === "hoje") return { inicio: toIso(hoje), fim: toIso(hoje) };
 
   if (preset === "semana") {
     const inicio = new Date(hoje);
@@ -558,39 +529,24 @@ function applyPreset(preset: PeriodoPreset): { inicio: string; fim: string } {
   return { inicio: filtroDataInicio.value, fim: filtroDataFim.value };
 }
 
-watch(
-  periodoPreset,
-  (preset) => {
-    if (preset !== "custom") {
-      const { inicio, fim } = applyPreset(preset);
-      filtroDataInicio.value = inicio;
-      filtroDataFim.value = fim;
-    }
-  },
-  { immediate: true },
-);
+watch(periodoPreset, (preset) => {
+  if (preset !== "custom") {
+    const { inicio, fim } = applyPreset(preset);
+    filtroDataInicio.value = inicio;
+    filtroDataFim.value = fim;
+  }
+}, { immediate: true });
 
 watch(
-  [
-    searchDebounced,
-    periodoPreset,
-    filtroDataInicio,
-    filtroDataFim,
-    filtroFornecedor,
-    filtroUnidade,
-    filtroProduto,
-    filtroStatus,
-    filtroTipoVeiculo,
-  ],
-  () => {
-    page.value = 1;
-  },
+  [searchDebounced, periodoPreset, filtroDataInicio, filtroDataFim,
+   filtroFornecedor, filtroUnidade, filtroProduto, filtroStatus, filtroTipoVeiculo],
+  () => { page.value = 1; },
 );
 
 const params = computed<IAgendamentoFilterDto>(() => ({
   search: searchDebounced.value || undefined,
-  dataInicio: toStartOfDayIso(filtroDataInicio.value),
-  dataFim: toEndOfDayIso(filtroDataFim.value),
+  dataInicio: filtroDataInicio.value ? `${filtroDataInicio.value}T00:00:00` : undefined,
+  dataFim: filtroDataFim.value ? `${filtroDataFim.value}T23:59:59.999` : undefined,
   fornecedorId: filtroFornecedor.value || undefined,
   unidadeEntregaId: filtroUnidade.value || undefined,
   produtoId: filtroProduto.value || undefined,
@@ -607,73 +563,32 @@ const { data, isLoading, isFetching, refetch } = useAgendamentoQuery(params, {
   refetchInterval: 30_000,
 });
 
+const totalPages = computed(() =>
+  Math.ceil((data.value?.totalCount ?? 0) / pageSize.value),
+);
+
 watch(
-  [
-    searchDebounced,
-    periodoPreset,
-    filtroDataInicio,
-    filtroDataFim,
-    filtroFornecedor,
-    filtroUnidade,
-    filtroProduto,
-    filtroStatus,
-    filtroTipoVeiculo,
-    page,
-    pageSize,
-  ],
+  [searchDebounced, periodoPreset, filtroDataInicio, filtroDataFim,
+   filtroFornecedor, filtroUnidade, filtroProduto, filtroStatus, filtroTipoVeiculo, page, pageSize],
   () => {
     router.replace({
       query: {
         search: searchDebounced.value || undefined,
-        periodo:
-          periodoPreset.value !== "semana" ? periodoPreset.value : undefined,
-        dataInicio:
-          periodoPreset.value === "custom"
-            ? filtroDataInicio.value || undefined
-            : undefined,
-        dataFim:
-          periodoPreset.value === "custom"
-            ? filtroDataFim.value || undefined
-            : undefined,
+        periodo: periodoPreset.value !== "semana" ? periodoPreset.value : undefined,
+        dataInicio: periodoPreset.value === "custom" ? filtroDataInicio.value || undefined : undefined,
+        dataFim: periodoPreset.value === "custom" ? filtroDataFim.value || undefined : undefined,
         fornecedor: filtroFornecedor.value || undefined,
         unidade: filtroUnidade.value || undefined,
         produto: filtroProduto.value || undefined,
         status: filtroStatus.value || undefined,
-        tipoVeiculo:
-          filtroTipoVeiculo.value !== null &&
-          filtroTipoVeiculo.value !== undefined
-            ? String(filtroTipoVeiculo.value)
-            : undefined,
+        tipoVeiculo: filtroTipoVeiculo.value !== null && filtroTipoVeiculo.value !== undefined
+          ? String(filtroTipoVeiculo.value) : undefined,
         page: page.value !== 1 ? page.value : undefined,
         pageSize: pageSize.value !== 20 ? pageSize.value : undefined,
       },
     });
   },
 );
-
-const headers = [
-  {
-    title: "HORÁRIO / DATA",
-    key: "dataInicio",
-    width: "200px",
-    align: "start",
-  },
-  { title: "PRODUTO", key: "produto", width: "150px" },
-  { title: "FORNECEDOR", key: "fornecedorNome" },
-  { title: "MOTORISTA / PLACA", key: "motoristaNome", width: "220px" },
-  { title: "UNIDADE DE ENTREGA", key: "unidadeEntrega", width: "200px" },
-  { title: "DOCA", key: "localDescarga", width: "200px" },
-  { title: "TIPO VEÍCULO", key: "tipoVeiculo", width: "180px" },
-  { title: "PESO", key: "pesoCarga", align: "end", width: "120px" },
-  { title: "STATUS", key: "status", align: "center", width: "140px" },
-  {
-    title: "AÇÕES",
-    key: "actions",
-    sortable: false,
-    align: "center",
-    width: "100px",
-  },
-] as const;
 
 const statusOptions = [
   { title: "Disponível", value: "Disponivel" },
@@ -692,22 +607,120 @@ const tipoVeiculoOptions = computed(() =>
   })),
 );
 
+const statusCounts = computed(() => {
+  const items = data.value?.items ?? [];
+  const counts: Record<string, number> = {};
+  for (const item of items) {
+    const key = item.status?.toLowerCase() ?? "unknown";
+    counts[key] = (counts[key] ?? 0) + 1;
+  }
+  return counts;
+});
+
+function getStatusIcon(status: string): string {
+  const map: Record<string, string> = {
+    disponivel: "mdi-check-circle",
+    pendente: "mdi-clock-alert",
+    agendado: "mdi-calendar-check",
+    confirmado: "mdi-calendar-check",
+    emandamento: "mdi-truck-fast",
+    finalizado: "mdi-check-all",
+    concluido: "mdi-check-all",
+    cancelado: "mdi-close-circle",
+    expirado: "mdi-clock-remove",
+  };
+  return map[status?.toLowerCase()] ?? "mdi-calendar";
+}
+
+function getStatusInlineStyle(status: string) {
+  const map: Record<string, string> = {
+    disponivel: "background: #e8f5e9; color: #2e7d32;",
+    pendente: "background: #fff8e1; color: #f57f17;",
+    agendado: "background: #e3f2fd; color: #1565c0;",
+    confirmado: "background: #e8eaf6; color: #3949ab;",
+    emandamento: "background: #fff3e0; color: #e65100;",
+    finalizado: "background: #f3e5f5; color: #6a1b9a;",
+    concluido: "background: #f3e5f5; color: #6a1b9a;",
+    cancelado: "background: #fce4ec; color: #b71c1c;",
+    expirado: "background: #f5f5f5; color: #757575;",
+  };
+  return map[status?.toLowerCase()] ?? "background: #f5f5f5; color: #666;";
+}
+
+function getStatusAvatarColor(status: string) {
+  const map: Record<string, string> = {
+    disponivel: "#43a047",
+    pendente: "#fb8c00",
+    agendado: "#195FA0",
+    confirmado: "#3949ab",
+    emandamento: "#e65100",
+    finalizado: "#7b1fa2",
+    concluido: "#7b1fa2",
+    cancelado: "#e53935",
+    expirado: "#9e9e9e",
+  };
+  return map[status?.toLowerCase()] ?? "#195FA0";
+}
+
+function getStatusAccentColor(status: string) {
+  const map: Record<string, string> = {
+    disponivel: "#43a047",
+    pendente: "#fb8c00",
+    agendado: "#195FA0",
+    confirmado: "#3949ab",
+    emandamento: "#e65100",
+    finalizado: "#7b1fa2",
+    concluido: "#7b1fa2",
+    cancelado: "#e53935",
+    expirado: "#bdbdbd",
+  };
+  return map[status?.toLowerCase()] ?? "#195FA0";
+}
+
+async function exportCsv() {
+  if (csvCooldown.value > 0 || csvLoading.value) return;
+  csvLoading.value = true;
+  try {
+    const result = await agendamentoService.getByFilters({ ...params.value, pageNumber: 1, pageSize: 1000 });
+    const items = result.items ?? [];
+    const header = ["Horário Início", "Horário Fim", "Data", "Produto", "Fornecedor",
+      "Motorista", "Placa", "Unidade Entrega", "Doca", "Tipo Veículo", "Peso (kg)", "Status"];
+    const rows = items.map((i: any) => [
+      formatTime(i.dataInicio), formatTime(i.dataFim), formatDate(i.dataInicio),
+      i.produto || "", i.fornecedorNome || "", i.motoristaNome || "", i.placaVeiculo || "",
+      i.unidadeEntrega || "", i.localDescarga || "", formatTipoVeiculo(i.tipoVeiculo),
+      Number(i.pesoCarga || 0) > 0 ? String(i.pesoCarga) : "", formatStatus(i.status),
+    ]);
+    const csv = [header, ...rows]
+      .map((r) => r.map((c: any) => `"${String(c).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `agendamentos_${format(new Date(), "yyyy-MM-dd")}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    csvCooldown.value = 30;
+    csvCooldownTimer = setInterval(() => {
+      csvCooldown.value--;
+      if (csvCooldown.value <= 0) { clearInterval(csvCooldownTimer!); csvCooldownTimer = null; }
+    }, 1000);
+  } finally {
+    csvLoading.value = false;
+  }
+}
+
+onUnmounted(() => { if (csvCooldownTimer) clearInterval(csvCooldownTimer); });
+
 function askConfirmation(config: {
-  title: string;
-  message: string;
-  color?: string;
-  icon?: string;
-  confirmText?: string;
-  action: () => Promise<void>;
+  title: string; message: string; color?: string; icon?: string;
+  confirmText?: string; action: () => Promise<void>;
 }) {
   confirmDialog.value = {
-    show: true,
-    title: config.title,
-    message: config.message,
-    color: config.color || "primary",
-    icon: config.icon || "mdi-help-circle-outline",
-    confirmText: config.confirmText || "Confirmar",
-    action: config.action,
+    show: true, title: config.title, message: config.message,
+    color: config.color || "primary", icon: config.icon || "mdi-help-circle-outline",
+    confirmText: config.confirmText || "Confirmar", action: config.action,
   };
 }
 
@@ -715,60 +728,42 @@ async function handleCheckIn(item: any) {
   askConfirmation({
     title: "Confirmar Check-in",
     message: `Deseja registrar a entrada do veículo ${item.placaVeiculo || "sem placa"}?`,
-    color: "blue-darken-2",
-    icon: "mdi-login-variant",
-    confirmText: "Confirmar Entrada",
-    action: async () => {
-      await checkIn(item.id);
-      await refetch();
-    },
+    color: "blue-darken-2", icon: "mdi-login-variant", confirmText: "Confirmar Entrada",
+    action: async () => { await checkIn(item.id); await refetch(); },
   });
 }
 
 function handleCheckout(item: any) {
   const peso = Number(item.pesoCarga) > 0 ? Number(item.pesoCarga) : 0;
   finalizarDialog.value = {
-    show: true,
-    agendamentoId: item.id,
-    placa: item.placaVeiculo ?? "",
-    produto: item.produto ?? "",
-    pesoReservado: peso,
-    quantidade: peso,
+    show: true, agendamentoId: item.id, placa: item.placaVeiculo ?? "",
+    produto: item.produto ?? "", pesoReservado: peso, quantidade: peso,
   };
 }
 
 async function confirmarFinalizacao() {
   const { agendamentoId, quantidade } = finalizarDialog.value;
   if (!agendamentoId || !(quantidade > 0)) return;
-
   try {
     await finalizar({ id: agendamentoId, quantidadeRecebida: quantidade });
     finalizarDialog.value.show = false;
     await refetch();
-  } catch {
-    // toast já notificado pelo hook
-  }
+  } catch {}
 }
 
 async function handleCancelar(item: any) {
   askConfirmation({
     title: "Cancelar Agendamento",
     message: "Esta ação irá remover o agendamento da grade. Deseja continuar?",
-    color: "error",
-    icon: "mdi-cancel",
-    confirmText: "Sim, Cancelar",
-    action: async () => {
-      await cancelar(item.id);
-      await refetch();
-    },
+    color: "error", icon: "mdi-cancel", confirmText: "Sim, Cancelar",
+    action: async () => { await cancelar(item.id); await refetch(); },
   });
 }
 
-async function executeConfirmAction() {
-  if (!confirmDialog.value.action) {
-    return;
-  }
+function handleEditar(_item: any) {}
 
+async function executeConfirmAction() {
+  if (!confirmDialog.value.action) return;
   loadingAction.value = "dialog";
   try {
     await confirmDialog.value.action();
@@ -796,11 +791,7 @@ function formatDate(dateStr: string) {
 
 function formatTipoVeiculo(tipo: any) {
   if (tipo === null || tipo === undefined || tipo === "") return "-";
-
-  if (typeof tipo === "string" && isNaN(Number(tipo))) {
-    return tipo.replace(/([A-Z])/g, " $1").trim();
-  }
-
+  if (typeof tipo === "string" && isNaN(Number(tipo))) return tipo.replace(/([A-Z])/g, " $1").trim();
   const key = Number(tipo);
   return TipoVeiculoLabels[key] || String(tipo);
 }
@@ -810,69 +801,7 @@ function formatStatus(status: string) {
   return status.replace(/([A-Z])/g, " $1").trim();
 }
 
-function getStatusColor(status: string) {
-  switch (status?.toLowerCase()) {
-    case "disponivel":
-      return "green-lighten-1";
-    case "agendado":
-      return "blue-darken-1";
-    case "confirmado":
-      return "indigo-darken-1";
-    case "emandamento":
-      return "amber-darken-2";
-    case "finalizado":
-    case "concluido":
-      return "grey-darken-2";
-    case "cancelado":
-      return "red-lighten-1";
-    case "expirado":
-      return "orange-darken-3";
-    default:
-      return "grey";
-  }
-}
-
-function toStartOfDayIso(dateStr?: string | null) {
-  if (!dateStr) return undefined;
-  const d = new Date(`${dateStr}T00:00:00`);
-  if (isNaN(d.getTime())) return undefined;
-  return d.toISOString();
-}
-
-function toEndOfDayIso(dateStr?: string | null) {
-  if (!dateStr) return undefined;
-  const d = new Date(`${dateStr}T23:59:59.999`);
-  if (isNaN(d.getTime())) return undefined;
-  return d.toISOString();
-}
-
 function criarAgendamento() {
   showDialogAvulso.value = true;
 }
 </script>
-
-<style scoped>
-:deep(.agendamento-table .v-data-table__th) {
-  font-size: 0.7rem !important;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: #888 !important;
-  font-weight: 600 !important;
-  background-color: white !important;
-  border-bottom: 1px solid #eee !important;
-}
-
-:deep(.agendamento-table .v-data-table__td) {
-  font-size: 0.875rem !important;
-  color: #333;
-  height: 64px !important;
-}
-
-.gap-3 {
-  gap: 12px;
-}
-
-.gap-4 {
-  gap: 16px;
-}
-</style>
