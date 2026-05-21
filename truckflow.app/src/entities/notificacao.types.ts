@@ -8,6 +8,8 @@ export enum TipoNotificacao {
   MotoristaChegou = 11,
   MotoristaSaiu = 12,
   JanelaPropxima = 20,
+  MensagemManualAdmin = 30,
+  MensagemManualMotorista = 31,
 }
 
 export enum PrioridadeNotificacao {
@@ -33,6 +35,12 @@ export type NotificacaoListQueryDto = {
   unreadOnly?: boolean | null;
   tipo?: TipoNotificacao | null;
   prioridade?: PrioridadeNotificacao | null;
+};
+
+export type EnviarParaMotoristaDto = {
+  agendamentoId: string;
+  titulo: string;
+  corpo: string;
 };
 
 export type NotificacaoEventDto = {

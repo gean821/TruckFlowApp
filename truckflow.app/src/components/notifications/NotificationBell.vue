@@ -1,7 +1,17 @@
 <template>
-  <v-menu location="bottom end" transition="slide-y-transition" :close-on-content-click="false">
+  <v-menu
+    location="bottom end"
+    transition="slide-y-transition"
+    :close-on-content-click="false"
+  >
     <template #activator="{ props }">
-      <v-btn icon variant="text" size="small" class="appbar-icon-btn" v-bind="props">
+      <v-btn
+        icon
+        variant="text"
+        size="small"
+        class="appbar-icon-btn"
+        v-bind="props"
+      >
         <v-badge
           :content="badgeText"
           :model-value="(unreadCount ?? 0) > 0"
@@ -9,23 +19,40 @@
           offset-x="-1"
           offset-y="-1"
         >
-          <v-icon color="rgba(255,255,255,0.85)" size="20">mdi-bell-outline</v-icon>
+          <v-icon color="rgba(255,255,255,0.85)" size="20"
+            >mdi-bell-outline</v-icon
+          >
         </v-badge>
       </v-btn>
     </template>
 
-    <v-card min-width="360" max-width="400" elevation="0" class="rounded-xl mt-2 bell-card">
+    <v-card
+      min-width="360"
+      max-width="400"
+      elevation="0"
+      class="rounded-xl mt-2 bell-card"
+    >
       <div class="bell-header">
         <span class="bell-title">Notificações</span>
-        <span v-if="(unreadCount ?? 0) > 0" class="bell-counter">{{ unreadCount }} não lida(s)</span>
+        <span v-if="(unreadCount ?? 0) > 0" class="bell-counter"
+          >{{ unreadCount }} não lida(s)</span
+        >
       </div>
       <v-divider />
 
       <div v-if="isLoading" class="bell-state">
-        <v-progress-circular indeterminate size="22" width="2" color="primary" />
+        <v-progress-circular
+          indeterminate
+          size="22"
+          width="2"
+          color="primary"
+        />
       </div>
 
-      <div v-else-if="!notificacoes || notificacoes.length === 0" class="bell-state bell-empty">
+      <div
+        v-else-if="!notificacoes || notificacoes.length === 0"
+        class="bell-state bell-empty"
+      >
         <v-icon size="32" color="grey-lighten-1">mdi-bell-off-outline</v-icon>
         <span class="bell-empty-text">Nenhuma notificação ainda</span>
       </div>
@@ -38,12 +65,20 @@
           @click="onClickItem(item)"
         >
           <template #prepend>
-            <v-icon :color="iconColorForTipo(item.tipo)" size="20">{{ iconForTipo(item.tipo) }}</v-icon>
+            <v-icon :color="iconColorForTipo(item.tipo)" size="20">{{
+              iconForTipo(item.tipo)
+            }}</v-icon>
           </template>
-          <v-list-item-title class="bell-item-title">{{ item.titulo }}</v-list-item-title>
-          <v-list-item-subtitle class="bell-item-corpo">{{ item.corpo }}</v-list-item-subtitle>
+          <v-list-item-title class="bell-item-title">{{
+            item.titulo
+          }}</v-list-item-title>
+          <v-list-item-subtitle class="bell-item-corpo">{{
+            item.corpo
+          }}</v-list-item-subtitle>
           <template #append>
-            <span class="bell-item-time">{{ formatRelative(item.criadaEm) }}</span>
+            <span class="bell-item-time">{{
+              formatRelative(item.criadaEm)
+            }}</span>
           </template>
         </v-list-item>
       </v-list>
@@ -53,19 +88,19 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
 import {
   useNotificacoesPagedQuery,
   useNotificacoesUnreadCountQuery,
 } from "@/queries/notificacao.queries";
 import { useNotificacao } from "@/hooks/useNotificacao";
+import { useComunicacaoDialogStore } from "@/stores/ComunicacaoDialogStore";
 import {
   TipoNotificacao,
   type NotificacaoListItemDto,
   type NotificacaoListQueryDto,
 } from "@/entities/notificacao.types";
 
-const router = useRouter();
+const comunicacaoDialog = useComunicacaoDialogStore();
 
 const bellQuery = ref<NotificacaoListQueryDto>({
   pageNumber: 1,
@@ -140,16 +175,12 @@ async function onClickItem(item: NotificacaoListItemDto) {
   if (!item.lidaEm) {
     await markAsRead(item.id);
   }
-
-  // Navega pra agendamento se payload tiver agendamentoId.
   try {
     const payload = JSON.parse(item.payloadJson) as { agendamentoId?: string };
     if (payload?.agendamentoId) {
-      router.push("/visualizar");
+      comunicacaoDialog.abrir(payload.agendamentoId);
     }
-  } catch {
-    // payload inválido — ignora navegação
-  }
+  } catch {}
 }
 </script>
 

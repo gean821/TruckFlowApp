@@ -1,6 +1,7 @@
 import http from "@/http/http";
 import type { PaginatedResponse } from "@/entities/paginatedResponse";
 import type {
+  EnviarParaMotoristaDto,
   NotificacaoListItemDto,
   NotificacaoListQueryDto,
 } from "@/entities/notificacao.types";
@@ -25,5 +26,26 @@ export const NotificacaoService = () => {
     await http.patch(`/notifications/${id}/read`);
   };
 
-  return { getPaged, unreadCount, markAsRead };
+  const enviarParaMotorista = async (
+    dto: EnviarParaMotoristaDto
+  ): Promise<void> => {
+    await http.post("/notifications/send-motorista", dto);
+  };
+
+  const listarPorAgendamento = async (
+    agendamentoId: string
+  ): Promise<NotificacaoListItemDto[]> => {
+    const { data } = await http.get<NotificacaoListItemDto[]>(
+      `/notifications/agendamento/${agendamentoId}`
+    );
+    return data;
+  };
+
+  return {
+    getPaged,
+    unreadCount,
+    markAsRead,
+    enviarParaMotorista,
+    listarPorAgendamento,
+  };
 };

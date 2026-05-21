@@ -1,4 +1,5 @@
 import {
+  notificacaoAgendamentoQueryKey,
   notificacaoQueryKey,
   notificacaoUnreadCountQueryKey,
 } from "@/queries/notificacao.queries";
@@ -29,6 +30,7 @@ export function useRealtimeNotifications() {
   function invalidateNotificacaoQueries() {
     queryClient.invalidateQueries({ queryKey: [notificacaoQueryKey] });
     queryClient.invalidateQueries({ queryKey: [notificacaoUnreadCountQueryKey] });
+    queryClient.invalidateQueries({ queryKey: [notificacaoAgendamentoQueryKey] });
   }
 
   function toastTypeFor(prioridade: PrioridadeNotificacao): ToastType {
@@ -48,18 +50,27 @@ export function useRealtimeNotifications() {
       return;
     }
 
+    disconnect();
+
     abortController = new AbortController();
     const baseUrl = import.meta.env.VITE_API_URL;
     const token = auth.token;
+    const url = `${baseUrl}notifications/stream`;
 
-    fetchEventSource(`${baseUrl}notifications/stream`, {
+    console.info("[realtime] conectando SSE em", url);
+
+    fetchEventSource(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      
+      credentials: "include",
       signal: abortController.signal,
       openWhenHidden: true,
 
       async onopen(response) {
+        console.info("[realtime] SSE onopen status=", response.status);
+
         if (
           response.ok &&
           response.headers.get("content-type")?.includes(EventStreamContentType)

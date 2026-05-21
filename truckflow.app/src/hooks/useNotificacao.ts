@@ -1,4 +1,6 @@
+import type { EnviarParaMotoristaDto } from "@/entities/notificacao.types";
 import {
+  notificacaoAgendamentoQueryKey,
   notificacaoQueryKey,
   notificacaoUnreadCountQueryKey,
 } from "@/queries/notificacao.queries";
@@ -14,6 +16,7 @@ export function useNotificacao() {
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: [notificacaoQueryKey] });
     queryClient.invalidateQueries({ queryKey: [notificacaoUnreadCountQueryKey] });
+    queryClient.invalidateQueries({ queryKey: [notificacaoAgendamentoQueryKey] });
   };
 
   const markAsReadMutation = useMutation({
@@ -26,8 +29,22 @@ export function useNotificacao() {
     },
   });
 
+  const enviarParaMotoristaMutation = useMutation({
+    mutationFn: async (dto: EnviarParaMotoristaDto) =>
+      await service.enviarParaMotorista(dto),
+    onSuccess: () => {
+      toast.notify("Mensagem enviada ao motorista!", "success");
+    },
+    onError: () => {
+      toast.notify("Erro ao enviar mensagem.", "error");
+    },
+  });
+
   return {
     markAsRead: (id: string) => markAsReadMutation.mutateAsync(id),
     isMarkingAsRead: markAsReadMutation.isPending,
+    enviarParaMotorista: (dto: EnviarParaMotoristaDto) =>
+      enviarParaMotoristaMutation.mutateAsync(dto),
+    isEnviando: enviarParaMotoristaMutation.isPending,
   };
 }

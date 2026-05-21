@@ -301,7 +301,7 @@
                 </template>
               </v-tooltip>
 
-              <v-tooltip v-if="canManageGrade" text="Editar Agendamento" location="top">
+              <v-tooltip v-if="canManageGrade && item.status !== 'Finalizado' && item.status !== 'EmAndamento'"  text="Editar Agendamento" location="top">
                 <template v-slot:activator="{ props }">
                   <v-btn
                     icon
@@ -312,6 +312,25 @@
                     @click="handleEditar(item)"
                   >
                     <v-icon size="18">mdi-pencil</v-icon>
+                  </v-btn>
+                </template>
+              </v-tooltip>
+
+              <v-tooltip
+                v-if="canManageGrade && item.motoristaNome"
+                text="Enviar mensagem ao motorista"
+                location="top"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    icon
+                    size="small"
+                    variant="text"
+                    color="primary"
+                    v-bind="props"
+                    @click="abrirComunicacao(item)"
+                  >
+                    <v-icon size="18">mdi-message-text-outline</v-icon>
                   </v-btn>
                 </template>
               </v-tooltip>
@@ -439,6 +458,7 @@ import { useProduto } from "@/hooks/useProdutos";
 import { TipoVeiculoLabels } from "@/utils/tipoVeiculoLabels";
 import { usePermissions } from "@/hooks/usePermissions";
 import AgendamentoAvulsoModal from "@/components/modals/AgendamentoAvulsoModal.vue";
+import { useComunicacaoDialogStore } from "@/stores/ComunicacaoDialogStore";
 
 type PeriodoPreset = "hoje" | "semana" | "proxima" | "custom";
 
@@ -474,6 +494,17 @@ const page = ref(Number(route.query.page) || 1);
 const pageSize = ref(Number(route.query.pageSize) || 20);
 
 const showDialogAvulso = ref(false);
+
+const comunicacaoDialog = useComunicacaoDialogStore();
+
+function abrirComunicacao(item: { id: string; motoristaNome?: string | null }) {
+  comunicacaoDialog.abrir(item.id, item.motoristaNome ?? null);
+}
+
+if (route.query.agendamentoId) {
+  comunicacaoDialog.abrir(route.query.agendamentoId.toString());
+}
+
 const loadingAction = ref<string | null>(null);
 const csvLoading = ref(false);
 const csvCooldown = ref(0);
