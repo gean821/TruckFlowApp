@@ -17,6 +17,7 @@
   "dependencies": {
     "@fontsource/roboto": "^5.2.7",
     "@mdi/font": "^7.4.47",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@tanstack/vue-query": "^5.92.9",
     "apexcharts": "^5.10.6",
     "axios": "^1.12.2",

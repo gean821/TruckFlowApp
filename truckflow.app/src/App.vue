@@ -12,4 +12,7 @@
 import AppToast from './components/common/AppToast.vue';
 import Navbar from './components/navs/Navbar.vue';
 import router from './router';
+import { useRealtimeNotifications } from './composables/useRealtimeNotifications';
+
+useRealtimeNotifications();
 </script>
