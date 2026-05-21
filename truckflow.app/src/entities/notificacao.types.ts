@@ -27,6 +27,14 @@ export type NotificacaoListItemDto = {
   payloadJson: string;
 };
 
+export type NotificacaoListQueryDto = {
+  pageNumber: number;
+  pageSize: number;
+  unreadOnly?: boolean | null;
+  tipo?: TipoNotificacao | null;
+  prioridade?: PrioridadeNotificacao | null;
+};
+
 export type NotificacaoEventDto = {
   empresaId: string;
   usuarioId: string;

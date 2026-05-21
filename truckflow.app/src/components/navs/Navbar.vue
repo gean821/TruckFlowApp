@@ -50,13 +50,7 @@
 
       <div class="appbar-divider" />
 
-      <v-btn icon variant="text" size="small" class="appbar-icon-btn">
-        <v-badge dot color="#FF5252" offset-x="-1" offset-y="-1">
-          <v-icon color="rgba(255,255,255,0.75)" size="20"
-            >mdi-bell-outline</v-icon
-          >
-        </v-badge>
-      </v-btn>
+      <NotificationBell />
 
       <div class="appbar-divider" />
 
@@ -502,6 +496,7 @@ import { useAuthStore } from "@/stores/AuthStore";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import EditProfileModal from "@/components/modals/EditProfileModal.vue";
+import NotificationBell from "@/components/notifications/NotificationBell.vue";
 import { usePermissions } from "@/hooks/usePermissions";
 
 const router = useRouter();

@@ -1,15 +1,18 @@
 import http from "@/http/http";
-import type { NotificacaoListItemDto } from "@/entities/notificacao.types";
+import type { PaginatedResponse } from "@/entities/paginatedResponse";
+import type {
+  NotificacaoListItemDto,
+  NotificacaoListQueryDto,
+} from "@/entities/notificacao.types";
 
 export const NotificacaoService = () => {
-  const list = async (
-    skip: number = 0,
-    take: number = 20
-  ): Promise<NotificacaoListItemDto[]> => {
-    const { data } = await http.get<NotificacaoListItemDto[]>("/notifications", {
-      params: { skip, take },
-    });
-    
+  const getPaged = async (
+    query: NotificacaoListQueryDto
+  ): Promise<PaginatedResponse<NotificacaoListItemDto>> => {
+    const { data } = await http.get<PaginatedResponse<NotificacaoListItemDto>>(
+      "/notifications",
+      { params: query }
+    );
     return data;
   };
 
@@ -22,5 +25,5 @@ export const NotificacaoService = () => {
     await http.patch(`/notifications/${id}/read`);
   };
 
-  return { list, unreadCount, markAsRead };
+  return { getPaged, unreadCount, markAsRead };
 };
