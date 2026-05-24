@@ -10,6 +10,26 @@
           </span>
         </div>
         <v-spacer />
+        <v-tooltip
+          v-if="whatsappUrl"
+          :text="`Falar com ${motoristaNome ?? 'motorista'} no WhatsApp`"
+          location="bottom"
+        >
+          <template #activator="{ props }">
+            <v-btn
+              icon
+              variant="text"
+              size="small"
+              color="success"
+              v-bind="props"
+              :href="whatsappUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <v-icon>mdi-whatsapp</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
         <v-btn icon variant="text" size="small" @click="close">
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -49,7 +69,7 @@
                 <v-icon size="14" :color="iconColor(item.tipo)">{{
                   iconForTipo(item.tipo)
                 }}</v-icon>
-                <span class="timeline-titulo">{{ item.titulo }}</span>
+                <span class="timeline-usuario">{{ headerDaBubble(item) }}</span>
                 <span class="timeline-time">{{
                   formatTime(item.criadaEm)
                 }}</span>
@@ -63,16 +83,6 @@
       <v-divider />
 
       <div v-if="canEnviar" class="enviar-section pa-4">
-        <v-text-field
-          v-model="titulo"
-          label="Título"
-          density="comfortable"
-          variant="outlined"
-          maxlength="120"
-          counter
-          hide-details="auto"
-          class="mb-2"
-        />
         <v-textarea
           v-model="corpo"
           label="Nova mensagem ao motorista"
@@ -116,13 +126,46 @@ import { useComunicacaoDialogStore } from "@/stores/ComunicacaoDialogStore";
 import { useComunicacaoAgendamentoQuery } from "@/queries/notificacao.queries";
 import { useNotificacao } from "@/hooks/useNotificacao";
 import { useAuthStore } from "@/stores/AuthStore";
-import { TipoNotificacao } from "@/entities/notificacao.types";
+import {
+  TipoNotificacao,
+  type NotificacaoListItemDto,
+} from "@/entities/notificacao.types";
 
 const store = useComunicacaoDialogStore();
-const { open: storeOpen, agendamentoId, motoristaNome } = storeToRefs(store);
+const {
+  open: storeOpen,
+  agendamentoId,
+  motoristaNome,
+  motoristaTelefone,
+} = storeToRefs(store);
 
 const auth = useAuthStore();
 const canEnviar = computed(() => auth.userRole === "Admin");
+
+const whatsappUrl = computed(() => {
+  if (!canEnviar.value) {
+    return null;
+  }
+
+  const raw = motoristaTelefone.value;
+
+  if (!raw) {
+    return null;
+  }
+
+  const digits = raw.replace(/\D/g, "");
+
+  if (digits.length < 10) {
+    return null;
+  }
+
+  const withCountry = digits.startsWith("55") ? digits : `55${digits}`;
+  const greeting = motoristaNome.value
+    ? `Olá ${motoristaNome.value.split(" ")[0]}, sobre seu agendamento: `
+    : "Olá, sobre seu agendamento: ";
+
+  return `https://wa.me/${withCountry}?text=${encodeURIComponent(greeting)}`;
+});
 
 const {
   data: items,
@@ -131,7 +174,6 @@ const {
 } = useComunicacaoAgendamentoQuery(agendamentoId);
 const { enviarParaMotorista, isEnviando } = useNotificacao();
 
-const titulo = ref("");
 const corpo = ref("");
 
 const open = computed({
@@ -142,28 +184,25 @@ const open = computed({
 });
 
 const canSubmit = computed(
-  () =>
-    !!agendamentoId.value &&
-    !!titulo.value?.trim() &&
-    !!corpo.value?.trim() &&
-    !isEnviando.value,
+  () => !!agendamentoId.value && !!corpo.value?.trim() && !isEnviando.value,
 );
 
 watch(open, (v) => {
   if (v) {
-    titulo.value = "";
     corpo.value = "";
   }
 });
 
 async function submit() {
-  if (!canSubmit.value || !agendamentoId.value) return;
+  if (!canSubmit.value || !agendamentoId.value) {
+    return;
+  }
+
   await enviarParaMotorista({
     agendamentoId: agendamentoId.value,
-    titulo: titulo.value.trim(),
     corpo: corpo.value.trim(),
   });
-  titulo.value = "";
+
   corpo.value = "";
   await refetch();
 }
@@ -173,9 +212,6 @@ function close() {
 }
 
 function alinhamentoClasse(tipo: TipoNotificacao): string {
-  // Quem ENVIOU está à direita (do ponto de vista do user atual).
-  // Admin logado: mensagens dele (MensagemManualAdmin) vão pra direita.
-  // Motorista logado: mensagens dele (MensagemManualMotorista) vão pra direita.
   if (auth.userRole === "Admin" && tipo === TipoNotificacao.MensagemManualAdmin)
     return "align-right";
   if (
@@ -187,20 +223,28 @@ function alinhamentoClasse(tipo: TipoNotificacao): string {
 }
 
 function bgPorTipo(tipo: TipoNotificacao): string {
-  if (tipo === TipoNotificacao.MensagemManualAdmin) return "#e3f2fd";
-  if (tipo === TipoNotificacao.MensagemManualMotorista) return "#f1f8e9";
+  if (tipo === TipoNotificacao.MensagemManualAdmin) {
+    return "#e3f2fd";
+  }
+
+  if (tipo === TipoNotificacao.MensagemManualMotorista) {
+    return "#f1f8e9";
+  }
+
   if (
     tipo === TipoNotificacao.AgendamentoCancelado ||
     tipo === TipoNotificacao.AgendamentoExpirado
   ) {
     return "#ffebee";
   }
+
   if (
     tipo === TipoNotificacao.AgendamentoConfirmado ||
     tipo === TipoNotificacao.MotoristaChegou
   ) {
     return "#e8f5e9";
   }
+
   return "#f5f5f5";
 }
 
@@ -228,8 +272,43 @@ function iconColor(tipo: TipoNotificacao): string {
     tipo === TipoNotificacao.AgendamentoExpirado
   )
     return "error";
-  if (tipo === TipoNotificacao.AgendamentoConfirmado) return "success";
+
+  if (tipo === TipoNotificacao.AgendamentoConfirmado) {
+    return "success";
+  }
+
   return "primary";
+}
+
+function headerDaBubble(item: NotificacaoListItemDto): string {
+  const ehMensagemManual =
+    item.tipo === TipoNotificacao.MensagemManualAdmin ||
+    item.tipo === TipoNotificacao.MensagemManualMotorista;
+
+  if (ehMensagemManual) {
+    const autorNome = extrairAutorNome(item.payloadJson);
+    if (autorNome) {
+      return autorNome;
+    }
+  }
+
+  return item.titulo;
+}
+
+function extrairAutorNome(
+  payloadJson: string | null | undefined,
+): string | null {
+  if (!payloadJson) {
+    return null;
+  }
+  
+  try {
+    const obj = JSON.parse(payloadJson);
+    const nome = obj?.autorNome;
+    return typeof nome === "string" && nome.trim() !== "" ? nome : null;
+  } catch {
+    return null;
+  }
 }
 
 function formatTime(iso: string): string {
@@ -289,7 +368,7 @@ function formatTime(iso: string): string {
   margin-bottom: 4px;
 }
 
-.timeline-titulo {
+.timeline-usuario {
   font-size: 12px;
   font-weight: 700;
   color: #1f2937;

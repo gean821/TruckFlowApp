@@ -39,7 +39,6 @@ export type NotificacaoListQueryDto = {
 
 export type EnviarParaMotoristaDto = {
   agendamentoId: string;
-  titulo: string;
   corpo: string;
 };
 

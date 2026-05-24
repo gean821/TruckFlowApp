@@ -497,8 +497,15 @@ const showDialogAvulso = ref(false);
 
 const comunicacaoDialog = useComunicacaoDialogStore();
 
-function abrirComunicacao(item: { id: string; motoristaNome?: string | null }) {
-  comunicacaoDialog.abrir(item.id, item.motoristaNome ?? null);
+function abrirComunicacao(item: {
+  id: string;
+  motoristaNome?: string | null;
+  motoristaTelefone?: string | null;
+}) {
+  comunicacaoDialog.abrir(
+    item.id,
+    item.motoristaNome ?? null,
+    item.motoristaTelefone ?? null);
 }
 
 if (route.query.agendamentoId) {

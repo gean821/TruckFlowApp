@@ -20,17 +20,6 @@
           enviada.
         </p>
 
-        <v-text-field
-          v-model="titulo"
-          label="Título"
-          variant="outlined"
-          density="comfortable"
-          maxlength="120"
-          counter
-          :disabled="!motoristaNome"
-          :rules="[(v: string) => !!v?.trim() || 'Título obrigatório']"
-        />
-
         <v-textarea
           v-model="corpo"
           label="Mensagem"
@@ -86,7 +75,6 @@ const emit = defineEmits<{
 
 const { enviarParaMotorista, isEnviando } = useNotificacao();
 
-const titulo = ref("");
 const corpo = ref("");
 
 const open = computed({
@@ -97,14 +85,12 @@ const open = computed({
 const canSubmit = computed(
   () =>
     !!props.motoristaNome &&
-    !!titulo.value?.trim() &&
     !!corpo.value?.trim() &&
     !isEnviando.value,
 );
 
 watch(open, (v) => {
   if (v) {
-    titulo.value = "";
     corpo.value = "";
   }
 });
@@ -112,14 +98,13 @@ watch(open, (v) => {
 async function submit() {
   if (!canSubmit.value) {
     return;
-  } 
+  }
 
   await enviarParaMotorista({
     agendamentoId: props.agendamentoId,
-    titulo: titulo.value.trim(),
     corpo: corpo.value.trim(),
   });
-  
+
   close();
 }
 
