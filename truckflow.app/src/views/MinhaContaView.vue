@@ -117,6 +117,88 @@
         <v-divider />
 
         <div class="px-7 py-6">
+          <div class="d-flex align-center justify-space-between mb-4">
+            <div class="text-subtitle-2 font-weight-bold text-grey-darken-3">Informações da Conta</div>
+            <v-btn
+              v-if="!modoEdicao"
+              variant="tonal"
+              color="primary"
+              size="small"
+              prepend-icon="mdi-pencil-outline"
+              style="text-transform: none; border-radius: 8px; font-weight: 600; letter-spacing: 0;"
+              @click="entrarModoEdicao"
+            >
+              Editar
+            </v-btn>
+          </div>
+
+          <template v-if="!modoEdicao">
+            <v-row>
+              <v-col cols="12" sm="6">
+                <div class="info-label mb-1">Usuário</div>
+                <div class="info-value">{{ usuario?.username || authStore.user?.unique_name || '—' }}</div>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <div class="info-label mb-1">Telefone</div>
+                <div class="info-value">{{ usuario?.telefone || '—' }}</div>
+              </v-col>
+            </v-row>
+          </template>
+
+          <template v-else>
+            <v-row>
+              <v-col cols="12" sm="6">
+                <div class="field-label mb-1">Usuário</div>
+                <v-text-field
+                  v-model="form.username"
+                  variant="outlined"
+                  density="compact"
+                  prepend-inner-icon="mdi-account-outline"
+                  placeholder="Seu nome de usuário"
+                  :error-messages="errors.username"
+                  hide-details="auto"
+                  style="border-radius: 10px;"
+                />
+              </v-col>
+              <v-col cols="12" sm="6">
+                <div class="field-label mb-1">Telefone / WhatsApp</div>
+                <v-text-field
+                  v-model="form.telefone"
+                  variant="outlined"
+                  density="compact"
+                  prepend-inner-icon="mdi-phone-outline"
+                  placeholder="(11) 99999-9999"
+                  :error-messages="errors.telefone"
+                  hide-details="auto"
+                  style="border-radius: 10px;"
+                  @input="formatPhone"
+                />
+              </v-col>
+            </v-row>
+            <div class="d-flex mt-4" style="gap: 12px;">
+              <v-btn
+                variant="outlined"
+                color="grey"
+                style="text-transform: none; border-radius: 10px; font-weight: 600; letter-spacing: 0; height: 40px;"
+                @click="cancelarEdicao"
+              >
+                Cancelar
+              </v-btn>
+              <v-btn
+                color="#195FA0"
+                :loading="salvando"
+                style="text-transform: none; border-radius: 10px; font-weight: 600; letter-spacing: 0; height: 40px; color: white;"
+                @click="salvarInformacoes"
+              >
+                Salvar Alterações
+              </v-btn>
+            </div>
+          </template>
+        </div>
+
+        <v-divider />
+
+        <div class="px-7 py-6">
           <div class="text-subtitle-2 font-weight-bold text-grey-darken-3 mb-4">Dados Cadastrais</div>
           <v-row>
             <v-col cols="6" sm="3">
@@ -137,29 +219,141 @@
             </v-col>
           </v-row>
         </div>
+
+        <v-divider />
+
+        <div class="px-7 py-5">
+          <div class="text-subtitle-2 font-weight-bold text-grey-darken-3 mb-4">Segurança</div>
+          <div class="d-flex flex-wrap" style="gap: 12px;">
+            <v-btn
+              variant="tonal"
+              color="primary"
+              prepend-icon="mdi-lock-reset"
+              style="text-transform: none; border-radius: 10px; font-weight: 600; letter-spacing: 0;"
+              @click="showAlterarSenha = true"
+            >
+              Alterar Senha
+            </v-btn>
+            <v-btn
+              variant="tonal"
+              color="primary"
+              prepend-icon="mdi-email-edit-outline"
+              style="text-transform: none; border-radius: 10px; font-weight: 600; letter-spacing: 0;"
+              @click="showAlterarEmail = true"
+            >
+              Alterar E-mail
+            </v-btn>
+          </div>
+        </div>
+
+        <AlterarSenhaModal v-model="showAlterarSenha" />
+        <AlterarEmailModal v-model="showAlterarEmail" />
       </v-card>
     </template>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useAuthStore } from '@/stores/AuthStore';
 import { useUsuarioByIdQuery } from '@/queries/usuario.queries';
 import { useEmpresaQuery } from '@/queries/empresa.queries';
+import { useToastStore } from '@/stores/ToastStore';
+import { AuthService } from '@/services/AuthService';
+import AlterarSenhaModal from '@/components/modals/AlterarSenhaModal.vue';
+import AlterarEmailModal from '@/components/modals/AlterarEmailModal.vue';
 
 const authStore = useAuthStore();
+const toast = useToastStore();
+
+const showAlterarSenha = ref(false);
+const showAlterarEmail = ref(false);
+const modoEdicao = ref(false);
+const salvando = ref(false);
 
 const userId = computed(() => authStore.userId ?? null);
-const { data: usuario, isLoading: isLoadingUser } = useUsuarioByIdQuery(userId);
+const { data: usuario, isLoading: isLoadingUser, refetch } = useUsuarioByIdQuery(userId);
 const { data: empresa } = useEmpresaQuery();
 
 const iniciais = computed(() => {
   const name = usuario.value?.nomeReal || usuario.value?.username || authStore.user?.unique_name || 'U';
   return name.split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase();
 });
+
+const form = reactive({ username: '', telefone: '' });
+const errors = reactive({ username: '', telefone: '' });
+
+function entrarModoEdicao() {
+  form.username = usuario.value?.username || authStore.user?.unique_name || '';
+  form.telefone = usuario.value?.telefone || '';
+  errors.username = '';
+  errors.telefone = '';
+  modoEdicao.value = true;
+}
+
+function cancelarEdicao() {
+  modoEdicao.value = false;
+}
+
+function formatPhone() {
+  const digits = form.telefone.replace(/\D/g, '').slice(0, 11);
+  if (digits.length <= 10) {
+    form.telefone = digits
+      .replace(/^(\d{0,2})/, '($1')
+      .replace(/^(\(\d{2})(\d)/, '$1) $2')
+      .replace(/(\d{4})(\d)/, '$1-$2');
+  } else {
+    form.telefone = digits
+      .replace(/^(\d{0,2})/, '($1')
+      .replace(/^(\(\d{2})(\d)/, '$1) $2')
+      .replace(/(\d{5})(\d)/, '$1-$2');
+  }
+}
+
+function validar() {
+  errors.username = '';
+  errors.telefone = '';
+  let valid = true;
+
+  if (!form.username.trim()) {
+    errors.username = 'Usuário é obrigatório';
+    valid = false;
+  } else if (form.username.trim().length < 3) {
+    errors.username = 'Usuário deve ter pelo menos 3 caracteres';
+    valid = false;
+  }
+
+  const digits = form.telefone.replace(/\D/g, '');
+  if (form.telefone && digits.length !== 10 && digits.length !== 11) {
+    errors.telefone = 'Telefone inválido. Use DDD + número';
+    valid = false;
+  }
+
+  return valid;
+}
+
+async function salvarInformacoes() {
+  if (!validar()) return;
+
+  salvando.value = true;
+  try {
+    await AuthService.atualizarPerfil({
+      username: form.username.trim(),
+      telefone: form.telefone.trim() || undefined,
+    });
+
+    authStore.updateUser({ unique_name: form.username.trim() });
+    await refetch();
+    modoEdicao.value = false;
+    toast.notify('Informações atualizadas com sucesso!', 'success');
+  } catch {
+    toast.notify('Erro ao salvar. Tente novamente.', 'error');
+  } finally {
+    salvando.value = false;
+  }
+}
 
 function formatDataLonga(dateStr: string) {
   try {
@@ -201,5 +395,11 @@ function formatCnpj(cnpj: string) {
 
 .info-section {
   padding: 4px 0;
+}
+
+.field-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #374151;
 }
 </style>

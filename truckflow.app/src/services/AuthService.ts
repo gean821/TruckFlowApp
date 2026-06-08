@@ -3,6 +3,11 @@ import type AdminRegisterDto from "@/Dtos/adm/adminRegisterDto";
 import type AdminResponseDto from "@/Dtos/adm/adminResponseDto";
 import type AdminUpdateDto from "@/Dtos/adm/adminUpdateDto";
 import type LoginAdminResponseDto from "@/Dtos/adm/LoginAdminResponseDto";
+import type EnviarCodigoEmailDto from "@/Dtos/auth/EnviarCodigoEmailDto";
+import type VerificarCodigoEmailDto from "@/Dtos/auth/VerificarCodigoEmailDto";
+import type VerificarCodigoEmailResponseDto from "@/Dtos/auth/VerificarCodigoEmailResponseDto";
+import type AlterarSenhaComCodigoDto from "@/Dtos/auth/AlterarSenhaComCodigoDto";
+import type AlterarEmailComCodigoDto from "@/Dtos/auth/AlterarEmailComCodigoDto";
 import http from "@/http/http";
 
 export class AuthService {
@@ -19,14 +24,35 @@ export class AuthService {
     static async getById(id: string): Promise<AdminResponseDto> {
         const { data } = await http.get(`/AuthAdmin/${id}`);
         return data;
- }
+    }
 
     static async update(id: string, dto: AdminUpdateDto): Promise<AdminResponseDto> {
         const adminAtualizado = await http.patch(`/AuthAdmin/${id}`, dto);
         return adminAtualizado.data;
     }
 
+    static async atualizarPerfil(dto: { username?: string; telefone?: string }): Promise<void> {
+        await http.patch('/AuthAdmin/me', dto);
+    }
+
     static async delete(id: string): Promise<void> {
         await http.delete(`/delete/${id}`);
+    }
+
+    static async enviarCodigo(dto: EnviarCodigoEmailDto): Promise<void> {
+        await http.post('/AuthAdmin/enviar-codigo', dto);
+    }
+
+    static async verificarCodigo(dto: VerificarCodigoEmailDto): Promise<VerificarCodigoEmailResponseDto> {
+        const { data } = await http.post<VerificarCodigoEmailResponseDto>('/AuthAdmin/verificar-codigo', dto);
+        return data;
+    }
+
+    static async alterarSenha(dto: AlterarSenhaComCodigoDto): Promise<void> {
+        await http.post('/AuthAdmin/alterar-senha', dto);
+    }
+
+    static async alterarEmail(dto: AlterarEmailComCodigoDto): Promise<void> {
+        await http.post('/AuthAdmin/alterar-email', dto);
     }
 }
