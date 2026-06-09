@@ -8,6 +8,7 @@ import type VerificarCodigoEmailDto from "@/Dtos/auth/VerificarCodigoEmailDto";
 import type VerificarCodigoEmailResponseDto from "@/Dtos/auth/VerificarCodigoEmailResponseDto";
 import type AlterarSenhaComCodigoDto from "@/Dtos/auth/AlterarSenhaComCodigoDto";
 import type AlterarEmailComCodigoDto from "@/Dtos/auth/AlterarEmailComCodigoDto";
+import type RedefinirSenhaDto from "@/Dtos/auth/RedefinirSenhaDto";
 import http from "@/http/http";
 
 export class AuthService {
@@ -54,5 +55,13 @@ export class AuthService {
 
     static async alterarEmail(dto: AlterarEmailComCodigoDto): Promise<void> {
         await http.post('/AuthAdmin/alterar-email', dto);
+    }
+
+    static async esqueciSenha(email: string): Promise<void> {
+        await http.post('/AuthAdmin/esqueci-senha', { email });
+    }
+
+    static async redefinirSenha(dto: RedefinirSenhaDto): Promise<void> {
+        await http.post('/AuthAdmin/redefinir-senha', dto);
     }
 }

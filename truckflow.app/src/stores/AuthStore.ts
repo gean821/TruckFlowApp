@@ -58,9 +58,7 @@ export const useAuthStore = defineStore("auth", {
 
             try {
                 const response = await AuthService.login(dto);
-
                 this.setSession(response.token, response.tokenExpiresAt);
-                router.push('/');
             } finally {
                 this.loading = false;
             }

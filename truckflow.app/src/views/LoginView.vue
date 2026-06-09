@@ -350,6 +350,7 @@
                     text-decoration:none;
                     transition: all .25s ease;
                   "
+                  @click.prevent="esqueciSenhaOpen = true"
                 >
                   Esqueceu a senha?
                 </a>
@@ -422,10 +423,13 @@
       </v-container>
     </v-col>
   </v-row>
+
+  <EsqueciSenhaDialog v-model="esqueciSenhaOpen" />
 </template>
 
 <script setup lang="ts">
 import type AdminLoginDto from '@/Dtos/adm/adminLoginDto'
+import EsqueciSenhaDialog from '@/components/modals/EsqueciSenhaDialog.vue'
 import { useAuthStore } from '@/stores/AuthStore'
 import { useToastStore } from '@/stores/ToastStore'
 import { ref } from 'vue'
@@ -443,6 +447,7 @@ const formLogin = ref<AdminLoginDto>({
 const showPass = ref(false)
 const remember = ref(false)
 const loading = ref(false)
+const esqueciSenhaOpen = ref(false)
 
 async function handleLogin() {
   loading.value = true
