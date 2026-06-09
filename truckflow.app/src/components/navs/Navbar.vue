@@ -112,13 +112,6 @@
               rounded="lg"
               class="mx-1 dropdown-item"
             />
-            <v-list-item
-              prepend-icon="mdi-account-edit-outline"
-              title="Editar Informações"
-              rounded="lg"
-              class="mx-1 dropdown-item"
-              @click="openEditModal"
-            />
             <v-divider class="my-1 mx-2" />
             <v-list-item
               prepend-icon="mdi-logout"
@@ -488,14 +481,12 @@
     </v-list>
   </v-navigation-drawer>
 
-  <EditProfileModal v-model="openProfile" />
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/AuthStore";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import EditProfileModal from "@/components/modals/EditProfileModal.vue";
 import NotificationBell from "@/components/notifications/NotificationBell.vue";
 import { usePermissions } from "@/hooks/usePermissions";
 
@@ -510,7 +501,6 @@ const {
   canManageMasterData,
   canViewAuditLogs,
 } = usePermissions();
-const openProfile = ref(false);
 const sidebarVisible = ref(true);
 const railMode = ref(false);
 const currentTime = ref("");
@@ -578,10 +568,6 @@ function toggleSidebar() {
     sidebarVisible.value = false;
     railMode.value = false;
   }
-}
-
-function openEditModal() {
-  openProfile.value = true;
 }
 
 function logout() {

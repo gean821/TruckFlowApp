@@ -6,6 +6,7 @@ export type UsuarioResponseDto = {
   username: string;
   nomeReal?: string | null;
   role: string;
+  telefone?: string | null;
   photoUrl?: string | null;
   empresa?: string | null;
   empresaId?: string | null;

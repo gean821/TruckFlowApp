@@ -263,7 +263,7 @@
       :open="modalOpen"
       :initial-data="editingUser"
       :loading="isCreating || isUpdating"
-      @close="closeModal"
+@close="closeModal"
       @submit="handleSubmit"
     />
 

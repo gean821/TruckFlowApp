@@ -91,6 +91,9 @@
               variant="outlined"
               density="comfortable"
               :rules="[rules.required, rules.email]"
+              :disabled="isEdit"
+              :hint="isEdit ? 'E-mail só pode ser alterado pelo próprio usuário' : ''"
+              persistent-hint
             />
           </v-col>
           <v-col cols="12" md="6">
@@ -99,7 +102,9 @@
               label="Telefone"
               variant="outlined"
               density="comfortable"
+              placeholder="(00) 00000-0000"
               :rules="isEdit ? [] : [rules.required]"
+              @input="formatPhone"
             />
           </v-col>
 
@@ -122,7 +127,7 @@
             />
           </v-col>
 
-          <v-col cols="12">
+          <v-col v-if="!isEdit" cols="12">
             <v-text-field
               v-model="form.password"
               :label="isEdit ? 'Nova senha (opcional)' : 'Senha'"
@@ -280,6 +285,21 @@ const passwordRules = computed(() => {
   return [rules.required, rules.minPassword];
 });
 
+function formatPhone() {
+  const digits = form.telefone.replace(/\D/g, '').slice(0, 11);
+  if (digits.length <= 10) {
+    form.telefone = digits
+      .replace(/^(\d{0,2})/, '($1')
+      .replace(/^(\(\d{2})(\d)/, '$1) $2')
+      .replace(/(\d{4})(\d)/, '$1-$2');
+  } else {
+    form.telefone = digits
+      .replace(/^(\d{0,2})/, '($1')
+      .replace(/^(\(\d{2})(\d)/, '$1) $2')
+      .replace(/(\d{5})(\d)/, '$1-$2');
+  }
+}
+
 function triggerFileInput() {
   fileInput.value?.click();
 }
@@ -305,9 +325,7 @@ async function onSubmit() {
   if (isEdit.value) {
     const payload: UsuarioUpdateDto = {
       username: form.username || undefined,
-      email: form.email || undefined,
       telefone: form.telefone || undefined,
-      password: form.password || undefined,
       photoUrl: form.photoUrl || undefined,
     };
 
