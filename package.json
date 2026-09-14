@@ -10,7 +10,6 @@
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
-    "test:unit": "vitest",
     "build-only": "vite build",
     "type-check": "vue-tsc --build"
   },
@@ -20,7 +19,7 @@
     "@microsoft/fetch-event-source": "^2.0.1",
     "@tanstack/vue-query": "^5.92.9",
     "apexcharts": "^5.10.6",
-    "axios": "^1.12.2",
+    "axios": "^1.20.0",
     "date-fns": "^4.1.0",
     "jwt-decode": "^4.0.0",
     "pinia": "^3.0.3",
