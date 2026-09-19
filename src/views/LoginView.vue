@@ -377,6 +377,34 @@
                 Acessar Sistema
               </v-btn>
 
+              <div class="d-flex align-center my-5 sso-divider">
+                <v-divider></v-divider>
+                <span class="px-3" style="color:#9aa8b8;font-size:.85rem;font-weight:600;">ou</span>
+                <v-divider></v-divider>
+              </div>
+
+              <v-btn
+                block
+                size="large"
+                rounded="xl"
+                elevation="0"
+                variant="outlined"
+                :loading="loadingSso"
+                prepend-icon="mdi-microsoft"
+                class="text-capitalize entra-btn"
+                style="
+                  height:56px;
+                  font-size:15px;
+                  font-weight:700;
+                  color:#0c2b52;
+                  border: 1.5px solid rgba(12,43,82,0.18);
+                  letter-spacing:.01em;
+                "
+                @click="handleEntraLogin"
+              >
+                Entrar com Microsoft
+              </v-btn>
+
               <v-btn
                 block
                 href="/"
@@ -432,11 +460,12 @@ import type AdminLoginDto from '@/Dtos/adm/adminLoginDto'
 import EsqueciSenhaDialog from '@/components/modals/EsqueciSenhaDialog.vue'
 import { useAuthStore } from '@/stores/AuthStore'
 import { useToastStore } from '@/stores/ToastStore'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const authStore = useAuthStore()
 const router = useRouter()
+const route = useRoute()
 const toast = useToastStore()
 
 const formLogin = ref<AdminLoginDto>({
@@ -447,6 +476,7 @@ const formLogin = ref<AdminLoginDto>({
 const showPass = ref(false)
 const remember = ref(false)
 const loading = ref(false)
+const loadingSso = ref(false)
 const esqueciSenhaOpen = ref(false)
 
 async function handleLogin() {
@@ -461,6 +491,49 @@ async function handleLogin() {
     loading.value = false
   }
 }
+
+function handleEntraLogin() {
+  loadingSso.value = true
+  const apiBase = (import.meta.env.VITE_API_URL as string).replace(/\/+$/, '')
+  window.location.href = `${apiBase}/AuthAdmin/entra/login`
+}
+
+onMounted(async () => {
+  const ssoOk = route.query.ssoOk
+  const ssoErro = route.query.ssoErro
+
+  if (ssoOk) {
+    loadingSso.value = true
+    try {
+      await authStore.restoreSession()
+      if (authStore.isAuthenticated) {
+        router.replace('/visualizar')
+        return
+      }
+      toast.notify('Não foi possível concluir o login corporativo. Tente novamente.', 'error', 4)
+      router.replace({ path: '/login' })
+    } catch (e) {
+      toast.notify('Não foi possível concluir o login corporativo. Tente novamente.', 'error', 4)
+      router.replace({ path: '/login' })
+    } finally {
+      loadingSso.value = false
+    }
+    return
+  }
+
+  if (ssoErro) {
+    const mensagens: Record<string, string> = {
+      SemGrupoMapeado: 'Sua conta não tem acesso liberado no TruckFlow. Fale com o administrador.',
+      GruposAmbiguos: 'Configuração de acesso inconsistente. Fale com o suporte.',
+      EmpresaNaoPermiteEntraId: 'Sua empresa não está habilitada para login corporativo.',
+      CanceladoOuFalhou: 'Login corporativo cancelado ou não concluído.',
+      Interno: 'Erro interno ao concluir o login corporativo. Tente novamente.',
+    }
+
+    toast.notify(mensagens[ssoErro as string] ?? 'Não foi possível entrar com Microsoft.', 'error', 5)
+    router.replace({ path: '/login' })
+  }
+})
 </script>
 
 <style scoped>
@@ -552,6 +625,20 @@ async function handleLogin() {
   transform: translateY(-1px);
   background-color: rgba(238,244,251,0.8) !important;
   border-color: rgba(12,43,82,0.28) !important;
+}
+
+.entra-btn {
+  transition: transform 0.22s ease, background-color 0.22s ease, border-color 0.22s ease;
+}
+
+.entra-btn:hover {
+  transform: translateY(-1px);
+  background-color: rgba(238,244,251,0.8) !important;
+  border-color: rgba(12,43,82,0.32) !important;
+}
+
+.sso-divider :deep(.v-divider) {
+  border-color: rgba(12,43,82,0.10) !important;
 }
 
 :deep(.premium-field .v-field) {

@@ -164,6 +164,24 @@
               >
                 INATIVO
               </v-chip>
+              <v-tooltip
+                v-if="user.isEntraId"
+                text="Provisionado via Entra ID acesso e papel controlados pelo grupo no diretório da empresa."
+                location="top"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-chip
+                    v-bind="props"
+                    size="x-small"
+                    color="primary"
+                    variant="tonal"
+                    class="ml-2"
+                  >
+                    <v-icon start size="12">mdi-microsoft</v-icon>
+                    SSO
+                  </v-chip>
+                </template>
+              </v-tooltip>
             </v-card-title>
             <v-card-subtitle class="d-flex align-center">
               <v-icon size="13" class="mr-1">mdi-at</v-icon>
@@ -211,7 +229,7 @@
               </template>
             </v-tooltip>
 
-            <v-tooltip text="Editar" location="top">
+            <v-tooltip v-if="!user.isEntraId" text="Editar" location="top">
               <template v-slot:activator="{ props }">
                 <v-btn
                   v-bind="props"
@@ -225,6 +243,7 @@
             </v-tooltip>
 
             <v-tooltip
+              v-if="!user.isEntraId"
               :text="user.deletedAt ? 'Ativar' : 'Inativar'"
               location="top"
             >
@@ -241,6 +260,23 @@
                   size="small"
                   @click="openConfirmStatus(user)"
                 />
+              </template>
+            </v-tooltip>
+
+            <v-tooltip
+              v-else
+              text="Gerido pelo Entra ID — sem ações manuais"
+              location="top"
+            >
+              <template v-slot:activator="{ props }">
+                <v-icon
+                  v-bind="props"
+                  size="18"
+                  color="grey-lighten-1"
+                  class="mx-2"
+                >
+                  mdi-lock-outline
+                </v-icon>
               </template>
             </v-tooltip>
           </v-card-actions>

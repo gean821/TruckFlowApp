@@ -13,6 +13,8 @@ export type UsuarioResponseDto = {
   createdAt?: string | null;
   updatedAt?: string | null;
   deletedAt?: string | null;
+  isEntraId: boolean;
+  ultimoSyncEntraEm?: string | null;
 };
 
 export type UsuarioListQueryDto = {
