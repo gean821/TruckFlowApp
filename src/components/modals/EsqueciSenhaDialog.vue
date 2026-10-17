@@ -100,9 +100,9 @@
               />
             </div>
             <div v-if="form.novaSenha" :style="styles.passwordHints">
-              <div :style="{ ...styles.hintItem, ...(form.novaSenha.length >= 6 ? styles.hintActive : {}) }">
-                <v-icon size="13">{{ form.novaSenha.length >= 6 ? 'mdi-check-circle' : 'mdi-circle-outline' }}</v-icon>
-                Mínimo 6 caracteres
+              <div :style="{ ...styles.hintItem, ...(form.novaSenha.length >= 10 ? styles.hintActive : {}) }">
+                <v-icon size="13">{{ form.novaSenha.length >= 10 ? 'mdi-check-circle' : 'mdi-circle-outline' }}</v-icon>
+                Mínimo 10 caracteres
               </div>
               <div :style="{ ...styles.hintItem, ...(/[A-Z]/.test(form.novaSenha) ? styles.hintActive : {}) }">
                 <v-icon size="13">{{ /[A-Z]/.test(form.novaSenha) ? 'mdi-check-circle' : 'mdi-circle-outline' }}</v-icon>
@@ -231,7 +231,7 @@ function validarEtapa2() {
 }
 
 function isValidPassword(value: string) {
-  return value.length >= 6 && /[A-Z]/.test(value) && /[a-z]/.test(value) && /\d/.test(value) && /[^A-Za-z0-9]/.test(value);
+  return value.length >= 10 && /[A-Z]/.test(value) && /[a-z]/.test(value) && /\d/.test(value) && /[^A-Za-z0-9]/.test(value);
 }
 
 async function handleRedefinirSenha() {
