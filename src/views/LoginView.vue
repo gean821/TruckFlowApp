@@ -460,6 +460,7 @@ import type AdminLoginDto from '@/Dtos/adm/adminLoginDto'
 import EsqueciSenhaDialog from '@/components/modals/EsqueciSenhaDialog.vue'
 import { useAuthStore } from '@/stores/AuthStore'
 import { useToastStore } from '@/stores/ToastStore'
+import type { AxiosError } from 'axios'
 import { onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
@@ -486,7 +487,9 @@ async function handleLogin() {
     await authStore.login(formLogin.value)
     router.push('/visualizar')
   } catch (e) {
-    toast.notify('Credenciais inválidas.', 'error', 3)
+    const message = (e as AxiosError<{ message?: string }>)?.response?.data?.message
+      ?? 'Credenciais inválidas.'
+    toast.notify(message, 'error', 5000)
   } finally {
     loading.value = false
   }
