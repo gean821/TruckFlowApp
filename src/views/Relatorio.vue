@@ -130,7 +130,11 @@
                     variant="outlined"
                     density="comfortable"
                     color="primary"
-                    :rules="[v => !!v || 'Obrigatório']"
+                    :min="filtros.dataInicio || undefined"
+                    :rules="[
+                      v => !!v || 'Obrigatório',
+                      v => !filtros.dataInicio || v >= filtros.dataInicio || 'Não pode ser antes da data início'
+                    ]"
                     hint="Obrigatório"
                     persistent-hint
                   ></v-text-field>
@@ -267,10 +271,13 @@ const COOLDOWN_SEGUNDOS = 10;
 const cooldown = ref(0);
 let cooldownInterval: ReturnType<typeof setInterval> | null = null;
 
-const periodoPreenchido = computed(() => !!filtros.dataInicio && !!filtros.dataFim);
+// Datas vêm do input type="date" como "yyyy-mm-dd", então a comparação de string já é cronológica
+const periodoValido = computed(() =>
+  !!filtros.dataInicio && !!filtros.dataFim && filtros.dataFim >= filtros.dataInicio
+);
 
 const podeGerar = computed(() =>
-  isFormatoSelecionado.value && periodoPreenchido.value && cooldown.value === 0
+  isFormatoSelecionado.value && periodoValido.value && cooldown.value === 0
 );
 
 function iniciarCooldown() {
@@ -318,11 +325,10 @@ function montarFiltrosPayload(): IRelatorioAgendamentoFilterDto {
 }
 
 async function gerarRelatorio() {
-  if (!podeGerar.value) return;
+  if (!podeGerar.value || loading.value) return;
 
   loading.value = true;
   sucessoGeracao.value = false;
-  iniciarCooldown();
 
   try {
     const payload = montarFiltrosPayload();
@@ -335,6 +341,8 @@ async function gerarRelatorio() {
     }
 
     sucessoGeracao.value = true;
+    // Só depois de gerar: se o back recusar (limite, filtro inválido), o usuário corrige e tenta de novo na hora
+    iniciarCooldown();
   } catch {
   } finally {
     loading.value = false;
