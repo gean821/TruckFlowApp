@@ -40,6 +40,21 @@
       </div>
       <v-divider />
 
+      <div class="bell-filters">
+        <v-chip
+          v-for="opcao in FILTROS"
+          :key="opcao.value"
+          :color="filtroAtivo === opcao.value ? 'primary' : undefined"
+          :variant="filtroAtivo === opcao.value ? 'flat' : 'outlined'"
+          size="x-small"
+          class="bell-filter-chip"
+          @click="filtroAtivo = opcao.value"
+        >
+          {{ opcao.label }}
+        </v-chip>
+      </div>
+      <v-divider />
+
       <div v-if="isLoading" class="bell-state">
         <v-progress-circular
           indeterminate
@@ -50,16 +65,20 @@
       </div>
 
       <div
-        v-else-if="!notificacoes || notificacoes.length === 0"
+        v-else-if="notificacoesFiltradas.length === 0"
         class="bell-state bell-empty"
       >
         <v-icon size="32" color="grey-lighten-1">mdi-bell-off-outline</v-icon>
-        <span class="bell-empty-text">Nenhuma notificação ainda</span>
+        <span class="bell-empty-text">{{
+          notificacoes.length === 0
+            ? "Nenhuma notificação ainda"
+            : "Nada por aqui para esse filtro"
+        }}</span>
       </div>
 
       <v-list v-else density="compact" class="bell-list py-0" lines="three">
         <v-list-item
-          v-for="item in notificacoes"
+          v-for="item in notificacoesFiltradas"
           :key="item.id"
           :class="['bell-item', { 'bell-item-unread': !item.lidaEm }]"
           @click="onClickItem(item)"
@@ -75,6 +94,13 @@
           <v-list-item-subtitle class="bell-item-corpo">{{
             item.corpo
           }}</v-list-item-subtitle>
+          <div
+            v-if="contextoPayload(parsePayload(item.payloadJson))"
+            class="bell-item-context"
+          >
+            <v-icon size="11" class="mr-1">mdi-map-marker-outline</v-icon
+            >{{ contextoPayload(parsePayload(item.payloadJson)) }}
+          </div>
           <template #append>
             <span class="bell-item-time">{{
               formatRelative(item.criadaEm)
@@ -82,6 +108,13 @@
           </template>
         </v-list-item>
       </v-list>
+
+      <v-divider />
+      <div class="bell-footer">
+        <router-link to="/notificacoes" class="bell-footer-link"
+          >Ver histórico completo</router-link
+        >
+      </div>
     </v-card>
   </v-menu>
 </template>
@@ -93,6 +126,7 @@ import {
   useNotificacoesUnreadCountQuery,
 } from "@/queries/notificacao.queries";
 import { useNotificacao } from "@/hooks/useNotificacao";
+import { useNotificacaoVisual } from "@/composables/useNotificacaoVisual";
 import { useComunicacaoDialogStore } from "@/stores/ComunicacaoDialogStore";
 import {
   TipoNotificacao,
@@ -111,76 +145,68 @@ const { data: page, isLoading } = useNotificacoesPagedQuery(bellQuery);
 const notificacoes = computed(() => page.value?.items ?? []);
 const { data: unreadCount } = useNotificacoesUnreadCountQuery();
 const { markAsRead } = useNotificacao();
+const {
+  iconForTipo,
+  iconColorForTipo,
+  parsePayload,
+  formatRelative,
+  contextoPayload,
+} = useNotificacaoVisual();
 
 const badgeText = computed(() => {
   const n = unreadCount.value ?? 0;
   return n > 99 ? "99+" : String(n);
 });
 
-function iconForTipo(tipo: TipoNotificacao): string {
-  switch (tipo) {
-    case TipoNotificacao.AgendamentoCancelado:
-      return "mdi-calendar-remove-outline";
-    case TipoNotificacao.AgendamentoConfirmado:
-      return "mdi-calendar-check-outline";
-    case TipoNotificacao.AgendamentoReagendado:
-      return "mdi-calendar-clock-outline";
-    case TipoNotificacao.AgendamentoExpirado:
-      return "mdi-calendar-alert-outline";
-    case TipoNotificacao.AgendamentoCriado:
-      return "mdi-calendar-plus-outline";
-    case TipoNotificacao.MotoristaAtrasoInformado:
-      return "mdi-clock-alert-outline";
-    case TipoNotificacao.MotoristaChegou:
-      return "mdi-truck-check-outline";
-    case TipoNotificacao.MotoristaSaiu:
-      return "mdi-truck-delivery-outline";
-    case TipoNotificacao.JanelaPropxima:
-      return "mdi-timer-sand";
-    default:
-      return "mdi-bell-outline";
-  }
-}
+type FiltroBell = "todas" | "naoLidas" | "mensagens" | "agendamentos";
 
-function iconColorForTipo(tipo: TipoNotificacao): string {
-  switch (tipo) {
-    case TipoNotificacao.AgendamentoCancelado:
-    case TipoNotificacao.AgendamentoExpirado:
-      return "error";
-    case TipoNotificacao.AgendamentoConfirmado:
-    case TipoNotificacao.MotoristaChegou:
-      return "success";
-    case TipoNotificacao.AgendamentoReagendado:
-    case TipoNotificacao.MotoristaAtrasoInformado:
-    case TipoNotificacao.JanelaPropxima:
-      return "warning";
-    default:
-      return "primary";
-  }
-}
+const FILTROS: { value: FiltroBell; label: string }[] = [
+  { value: "todas", label: "Todas" },
+  { value: "naoLidas", label: "Não lidas" },
+  { value: "mensagens", label: "Mensagens" },
+  { value: "agendamentos", label: "Agendamentos" },
+];
 
-function formatRelative(iso: string): string {
-  const created = new Date(iso).getTime();
-  const diffSec = Math.max(0, Math.floor((Date.now() - created) / 1000));
-  if (diffSec < 60) return "agora";
-  const diffMin = Math.floor(diffSec / 60);
-  if (diffMin < 60) return `${diffMin}m`;
-  const diffH = Math.floor(diffMin / 60);
-  if (diffH < 24) return `${diffH}h`;
-  const diffD = Math.floor(diffH / 24);
-  return `${diffD}d`;
-}
+const TIPOS_MENSAGEM = new Set<TipoNotificacao>([
+  TipoNotificacao.MensagemManualAdmin,
+  TipoNotificacao.MensagemManualMotorista,
+]);
+
+const TIPOS_AGENDAMENTO = new Set<TipoNotificacao>([
+  TipoNotificacao.AgendamentoCriado,
+  TipoNotificacao.AgendamentoConfirmado,
+  TipoNotificacao.AgendamentoCancelado,
+  TipoNotificacao.AgendamentoReagendado,
+  TipoNotificacao.AgendamentoExpirado,
+  TipoNotificacao.MotoristaAtrasoInformado,
+  TipoNotificacao.MotoristaChegou,
+  TipoNotificacao.MotoristaSaiu,
+  TipoNotificacao.JanelaPropxima,
+]);
+
+const filtroAtivo = ref<FiltroBell>("todas");
+
+const notificacoesFiltradas = computed(() => {
+  switch (filtroAtivo.value) {
+    case "naoLidas":
+      return notificacoes.value.filter((n) => !n.lidaEm);
+    case "mensagens":
+      return notificacoes.value.filter((n) => TIPOS_MENSAGEM.has(n.tipo));
+    case "agendamentos":
+      return notificacoes.value.filter((n) => TIPOS_AGENDAMENTO.has(n.tipo));
+    default:
+      return notificacoes.value;
+  }
+});
 
 async function onClickItem(item: NotificacaoListItemDto) {
   if (!item.lidaEm) {
     await markAsRead(item.id);
   }
-  try {
-    const payload = JSON.parse(item.payloadJson) as { agendamentoId?: string };
-    if (payload?.agendamentoId) {
-      comunicacaoDialog.abrir(payload.agendamentoId);
-    }
-  } catch {}
+  const payload = parsePayload(item.payloadJson);
+  if (payload.agendamentoId) {
+    comunicacaoDialog.abrir(payload.agendamentoId);
+  }
 }
 </script>
 
@@ -208,6 +234,17 @@ async function onClickItem(item: NotificacaoListItemDto) {
   font-size: 11px;
   font-weight: 600;
   color: #ef4444;
+}
+
+.bell-filters {
+  display: flex;
+  gap: 6px;
+  padding: 8px 16px;
+  flex-wrap: wrap;
+}
+
+.bell-filter-chip {
+  cursor: pointer;
 }
 
 .bell-state {
@@ -262,5 +299,29 @@ async function onClickItem(item: NotificacaoListItemDto) {
   font-size: 11px;
   color: #9ca3af;
   white-space: nowrap;
+}
+
+.bell-item-context {
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  color: #8a97a3;
+  margin-top: 2px;
+}
+
+.bell-footer {
+  padding: 8px 16px;
+  text-align: center;
+}
+
+.bell-footer-link {
+  font-size: 12px;
+  font-weight: 600;
+  color: #195fa0;
+  text-decoration: none;
+}
+
+.bell-footer-link:hover {
+  text-decoration: underline;
 }
 </style>
