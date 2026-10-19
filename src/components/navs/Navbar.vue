@@ -418,6 +418,13 @@
             </v-list-item>
           </template>
           <v-list-item
+            to="/notificacoes"
+            title="Histórico"
+            rounded="lg"
+            class="pl-10 mb-1 nav-item-sub"
+            active-class="nav-active-sub"
+          />
+          <v-list-item
             to="reagendamentos"
             title="Reagendamentos"
             rounded="lg"

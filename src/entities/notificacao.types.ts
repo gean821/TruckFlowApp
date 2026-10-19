@@ -35,6 +35,19 @@ export type NotificacaoListQueryDto = {
   unreadOnly?: boolean | null;
   tipo?: TipoNotificacao | null;
   prioridade?: PrioridadeNotificacao | null;
+  search?: string | null;
+  dataInicio?: string | null;
+  dataFim?: string | null;
+};
+
+export type NotificacaoPayloadDto = {
+  agendamentoId?: string;
+  autorNome?: string;
+  autorTipo?: string;
+  unidadeEntregaNome?: string;
+  localDescargaNome?: string;
+  dataAgendamentoIso?: string;
+  empresaNome?: string;
 };
 
 export type EnviarParaMotoristaDto = {

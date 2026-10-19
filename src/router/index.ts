@@ -23,6 +23,7 @@ const ManageUserView = () => import('@/views/ManageUserView.vue');
 const EmpresaView = () => import('@/views/EmpresaView.vue');
 const MinhaContaView = () => import('@/views/MinhaContaView.vue');
 const ConferenciaView = () => import('@/views/ConferenciaView.vue');
+const NotificacoesView = () => import('@/views/NotificacoesView.vue');
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -215,6 +216,15 @@ const router = createRouter({
       component: MinhaContaView,
       meta: {
         requiresAuth: true,
+      }
+    },
+    {
+      path: '/notificacoes',
+      name: 'notificacoes',
+      component: NotificacoesView,
+      meta: {
+        requiresAuth: true,
+        roles: RoleGroups.CanViewSchedule
       }
     },
   ],

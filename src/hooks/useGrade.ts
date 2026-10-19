@@ -43,8 +43,9 @@ export const useGrade = () => {
       queryClient.invalidateQueries({ queryKey: [queryKey] });
       toast.notify("Grade removida.", "info");
     },
-    onError: () => {
-      toast.notify("Erro ao remover grade.", "error");
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message ?? "Erro ao remover grade.";
+      toast.notify(msg, "error");
     }
   });
 
