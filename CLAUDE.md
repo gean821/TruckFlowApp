@@ -76,7 +76,7 @@ API .NET em `C:\ESTUDO\TruckFlow`. Endpoints versionados sob `/v1/`. Multi-tenan
 - `Content-Type` já é global no `http.ts` — não passar header manual.
 - Toast: `toast.notify(msg, tipo, duracaoEmMs)`.
 - Não criar `*.md` (docs) sem pedido explícito.
-- Agentes e skills do projeto ficam no repo da API: `C:\ESTUDO\TruckFlow\.claude\` (`vue-specialist`, `frontend-developer`, skills `vue-best-practices`, `senior-frontend`...).
+- Agentes e skills do projeto ficam no repo da API: `C:\ESTUDO\TruckFlow\.claude\` (`vue-specialist`, `frontend-developer`, skills `vue-best-practices`, `senior-frontend`...). Para valerem aqui, rodar uma vez `.claude\setup-agents.ps1` do repo da API (junções em `~/.claude`).
 
 ## Manter este arquivo vivo
 
