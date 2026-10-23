@@ -40,3 +40,8 @@ coverage
 .env.*
 
 *.tsbuildinfo
+
+# Ferramentas de IA locais (impeccable) — ficam só na máquina de cada dev
+.github/skills/
+.github/agents/impeccable-*
+.github/hooks/impeccable.json

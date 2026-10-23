@@ -31,12 +31,13 @@ export const RoleGroups = {
 export type RoleGroupKey = keyof typeof RoleGroups;
 
 export function hasRole(
-  userRole: string | undefined | null,
+  userRole: string | string[] | undefined | null,
   allowed: readonly string[]): boolean {
 
   if (!userRole) {
     return false;
   }
 
-  return allowed.includes(userRole);
+  const roles = Array.isArray(userRole) ? userRole : [userRole];
+  return roles.some((r) => allowed.includes(r));
 }

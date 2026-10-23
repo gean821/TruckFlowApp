@@ -37,8 +37,11 @@
               <v-row dense>
                 <v-col cols="12" md="6">
                   <v-autocomplete
-                    v-model="filtros.fornecedor"
-                    :items="mock.fornecedores"
+                    v-model="filtros.fornecedorId"
+                    :items="fornecedores"
+                    item-title="nome"
+                    item-value="id"
+                    :loading="loadingFornecedores"
                     label="Fornecedor"
                     placeholder="Selecione um fornecedor"
                     variant="outlined"
@@ -53,8 +56,11 @@
                 
                 <v-col cols="12" md="6">
                   <v-autocomplete
-                    v-model="filtros.produto"
-                    :items="mock.produtos"
+                    v-model="filtros.produtoId"
+                    :items="produtos"
+                    item-title="nome"
+                    item-value="id"
+                    :loading="loadingProdutos"
                     label="Produto"
                     placeholder="Selecione um produto"
                     variant="outlined"
@@ -69,7 +75,7 @@
 
                 <v-col cols="12" md="6">
                   <v-text-field
-                    v-model="filtros.placa"
+                    v-model="filtros.placaVeiculo"
                     label="Placa do Veículo"
                     placeholder="AAA-0000"
                     variant="outlined"
@@ -111,6 +117,9 @@
                     variant="outlined"
                     density="comfortable"
                     color="primary"
+                    :rules="[v => !!v || 'Obrigatório']"
+                    hint="Obrigatório"
+                    persistent-hint
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="3">
@@ -121,6 +130,13 @@
                     variant="outlined"
                     density="comfortable"
                     color="primary"
+                    :min="filtros.dataInicio || undefined"
+                    :rules="[
+                      v => !!v || 'Obrigatório',
+                      v => !filtros.dataInicio || v >= filtros.dataInicio || 'Não pode ser antes da data início'
+                    ]"
+                    hint="Obrigatório"
+                    persistent-hint
                   ></v-text-field>
                 </v-col>
 
@@ -155,8 +171,8 @@
                 </span>
                 <div class="d-flex align-center ga-6">
                   <v-checkbox
-                    v-model="exportar.excel"
-                    label="Excel (.xlsx)"
+                    v-model="exportar.csv"
+                    label="CSV (.csv)"
                     color="green-darken-1"
                     hide-details
                     density="compact"
@@ -188,10 +204,10 @@
                   elevation="2"
                   prepend-icon="mdi-file-download-outline"
                   :loading="loading"
-                  :disabled="!isFormatoSelecionado"
+                  :disabled="!podeGerar"
                   type="submit"
                 >
-                  Gerar Relatório
+                  {{ cooldown > 0 ? `Aguarde ${cooldown}s` : 'Gerar Relatório' }}
                 </v-btn>
                </div>
             </v-sheet>
@@ -217,21 +233,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed, onUnmounted } from 'vue';
+import { useFornecedor } from '@/hooks/useFornecedor';
+import { useProduto } from '@/hooks/useProdutos';
+import { useRelatorio } from '@/hooks/useRelatorio';
+import type IRelatorioAgendamentoFilterDto from '@/Dtos/relatorio/relatorioAgendamentoFilter.dto';
 
 const formValido = ref(false);
 const loading = ref(false);
 const sucessoGeracao = ref(false);
 
-const mock = {
-  fornecedores: ['Cocari', 'Coamo', 'Integrada', 'C Vale', 'Agrária', 'Lar'],
-  produtos: ['Soja', 'Milho', 'Trigo', 'Farelo de Soja', 'Fertilizante'],
-};
+const { fornecedores, loading: loadingFornecedores } = useFornecedor();
+const { produtos, loading: loadingProdutos } = useProduto();
+const { gerarRelatorio: gerarRelatorioMutation } = useRelatorio();
 
 const filtros = reactive({
-  fornecedor: null,
-  produto: null,
-  placa: '',
+  fornecedorId: null as string | null,
+  produtoId: null as string | null,
+  placaVeiculo: '',
   motorista: '',
   dataInicio: '',
   dataFim: '',
@@ -240,41 +259,94 @@ const filtros = reactive({
 });
 
 const exportar = reactive({
-  excel: true, // Default
+  csv: true, // Default
   pdf: false
 });
 
 const isFormatoSelecionado = computed(() => {
-  return exportar.excel || exportar.pdf;
+  return exportar.csv || exportar.pdf;
 });
 
+const COOLDOWN_SEGUNDOS = 10;
+const cooldown = ref(0);
+let cooldownInterval: ReturnType<typeof setInterval> | null = null;
+
+// Datas vêm do input type="date" como "yyyy-mm-dd", então a comparação de string já é cronológica
+const periodoValido = computed(() =>
+  !!filtros.dataInicio && !!filtros.dataFim && filtros.dataFim >= filtros.dataInicio
+);
+
+const podeGerar = computed(() =>
+  isFormatoSelecionado.value && periodoValido.value && cooldown.value === 0
+);
+
+function iniciarCooldown() {
+  cooldown.value = COOLDOWN_SEGUNDOS;
+
+  cooldownInterval = setInterval(() => {
+    cooldown.value -= 1;
+
+    if (cooldown.value <= 0) {
+      cooldown.value = 0;
+      if (cooldownInterval) clearInterval(cooldownInterval);
+      cooldownInterval = null;
+    }
+  }, 1000);
+}
+
+onUnmounted(() => {
+  if (cooldownInterval) clearInterval(cooldownInterval);
+});
 
 function limparFiltros() {
-    filtros.fornecedor = null;
-    filtros.produto = null;
-    filtros.placa = '';
+    filtros.fornecedorId = null;
+    filtros.produtoId = null;
+    filtros.placaVeiculo = '';
     filtros.motorista = '';
     filtros.dataInicio = '';
     filtros.dataFim = '';
     filtros.horaInicio = '';
     filtros.horaFim = '';
-    
+
     sucessoGeracao.value = false;
 }
 
-function gerarRelatorio() {
-  if (!isFormatoSelecionado.value) return;
+function montarFiltrosPayload(): IRelatorioAgendamentoFilterDto {
+  return {
+    dataInicio: filtros.dataInicio || undefined,
+    dataFim: filtros.dataFim || undefined,
+    horaInicio: filtros.horaInicio || undefined,
+    horaFim: filtros.horaFim || undefined,
+    fornecedorId: filtros.fornecedorId ?? undefined,
+    produtoId: filtros.produtoId ?? undefined,
+    placaVeiculo: filtros.placaVeiculo || undefined,
+    motorista: filtros.motorista || undefined,
+  };
+}
+
+async function gerarRelatorio() {
+  if (!podeGerar.value || loading.value) return;
 
   loading.value = true;
   sucessoGeracao.value = false;
 
-  setTimeout(() => {
-    console.log("Gerando relatório com filtros:", { ...filtros });
-    console.log("Formatos:", { ...exportar });
-    
-    loading.value = false;
+  try {
+    const payload = montarFiltrosPayload();
+
+    if (exportar.csv) {
+      await gerarRelatorioMutation({ filtros: payload, formato: 'csv' });
+    }
+    if (exportar.pdf) {
+      await gerarRelatorioMutation({ filtros: payload, formato: 'pdf' });
+    }
+
     sucessoGeracao.value = true;
-  }, 2000);
+    // Só depois de gerar: se o back recusar (limite, filtro inválido), o usuário corrige e tenta de novo na hora
+    iniciarCooldown();
+  } catch {
+  } finally {
+    loading.value = false;
+  }
 }
 </script>
 
