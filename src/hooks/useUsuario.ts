@@ -3,6 +3,7 @@ import { usuarioQueryKey } from "@/queries/usuario.queries";
 import { UsuarioService } from "@/services/UsuarioService";
 import { useToastStore } from "@/stores/ToastStore";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import type { AxiosError } from "axios";
 
 export function useUsuario() {
   const queryClient = useQueryClient();
@@ -12,14 +13,17 @@ export function useUsuario() {
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: [usuarioQueryKey] });
 
+  const msg = (e: unknown, fallback: string) =>
+    (e as AxiosError<{ message?: string }>)?.response?.data?.message ?? fallback;
+
   const createMutation = useMutation({
     mutationFn: async (payload: UsuarioCreateDto) => await service.create(payload),
     onSuccess: () => {
       invalidate();
       toast.notify("Usuário criado!", "success");
     },
-    onError: () => {
-      toast.notify("Erro ao criar usuário.", "error");
+    onError: (e) => {
+      toast.notify(msg(e, "Erro ao criar usuário."), "error");
     }
   });
 
@@ -30,8 +34,8 @@ export function useUsuario() {
       invalidate();
       toast.notify("Usuário atualizado!", "success");
     },
-    onError: () => {
-      toast.notify("Erro ao atualizar usuário.", "error");
+    onError: (e) => {
+      toast.notify(msg(e, "Erro ao atualizar usuário."), "error");
     }
   });
 
@@ -45,8 +49,8 @@ export function useUsuario() {
         variables.ativo ? "success" : "info"
       );
     },
-    onError: () => {
-      toast.notify("Erro ao alterar status do usuário.", "error");
+    onError: (e) => {
+      toast.notify(msg(e, "Erro ao alterar status do usuário."), "error");
     }
   });
 

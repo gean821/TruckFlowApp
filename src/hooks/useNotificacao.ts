@@ -24,8 +24,22 @@ export function useNotificacao() {
     onSuccess: () => {
       invalidate();
     },
-    onError: () => {
-      toast.notify("Erro ao marcar notificação como lida.", "error");
+    onError: (error: any) => {
+      const msg = error.response.data.message ?? "Erro ao marcar notificação como lida.";
+      toast.notify(msg, "error");
+    },
+  });
+
+  const markAllAsReadMutation = useMutation({
+    mutationFn: async () => await service.markAllAsRead(),
+    onSuccess: () => {
+      invalidate();
+    },
+    onError: (error: any) => {
+      const msg =
+        error?.response?.data?.message ??
+        "Erro ao marcar notificações como lidas.";
+      toast.notify(msg, "error");
     },
   });
 
@@ -35,14 +49,17 @@ export function useNotificacao() {
     onSuccess: () => {
       toast.notify("Mensagem enviada ao motorista!", "success");
     },
-    onError: () => {
-      toast.notify("Erro ao enviar mensagem.", "error");
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message ?? "Erro ao enviar mensagem.";
+      toast.notify(msg, "error");
     },
   });
 
   return {
     markAsRead: (id: string) => markAsReadMutation.mutateAsync(id),
     isMarkingAsRead: markAsReadMutation.isPending,
+    markAllAsRead: () => markAllAsReadMutation.mutateAsync(),
+    isMarkingAllAsRead: markAllAsReadMutation.isPending,
     enviarParaMotorista: (dto: EnviarParaMotoristaDto) =>
       enviarParaMotoristaMutation.mutateAsync(dto),
     isEnviando: enviarParaMotoristaMutation.isPending,

@@ -138,7 +138,7 @@
               :hint="
                 isEdit
                   ? 'Deixe em branco para manter a senha atual'
-                  : 'Mínimo 6 caracteres'
+                  : 'Mínimo 10 caracteres, com maiúscula, minúscula, número e caractere especial'
               "
               persistent-hint
               autocomplete="new-password"
@@ -272,7 +272,7 @@ const rules = {
   minUsername: (v: string) => (v?.length ?? 0) >= 3 || "Mínimo 3 caracteres",
   email: (v: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || "E-mail inválido",
-  minPassword: (v: string) => (v?.length ?? 0) >= 6 || "Mínimo 6 caracteres",
+  minPassword: (v: string) => (v?.length ?? 0) >= 10 || "Mínimo 10 caracteres",
 };
 
 const passwordRules = computed(() => {

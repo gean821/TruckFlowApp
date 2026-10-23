@@ -26,6 +26,13 @@ export const NotificacaoService = () => {
     await http.patch(`/notifications/${id}/read`);
   };
 
+  const markAllAsRead = async (): Promise<{ count: number }> => {
+    const { data } = await http.post<{ count: number }>(
+      "/notifications/mark-all-read"
+    );
+    return data;
+  };
+
   const enviarParaMotorista = async (
     dto: EnviarParaMotoristaDto
   ): Promise<void> => {
@@ -45,6 +52,7 @@ export const NotificacaoService = () => {
     getPaged,
     unreadCount,
     markAsRead,
+    markAllAsRead,
     enviarParaMotorista,
     listarPorAgendamento,
   };

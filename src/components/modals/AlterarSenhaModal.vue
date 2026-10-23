@@ -103,9 +103,9 @@
               />
             </div>
             <div v-if="form.novaSenha" :style="styles.passwordHints">
-              <div :style="{ ...styles.hintItem, ...(form.novaSenha.length >= 6 ? styles.hintActive : {}) }">
-                <v-icon size="13">{{ form.novaSenha.length >= 6 ? 'mdi-check-circle' : 'mdi-circle-outline' }}</v-icon>
-                Mínimo 6 caracteres
+              <div :style="{ ...styles.hintItem, ...(form.novaSenha.length >= 10 ? styles.hintActive : {}) }">
+                <v-icon size="13">{{ form.novaSenha.length >= 10 ? 'mdi-check-circle' : 'mdi-circle-outline' }}</v-icon>
+                Mínimo 10 caracteres
               </div>
               <div :style="{ ...styles.hintItem, ...(/[A-Z]/.test(form.novaSenha) ? styles.hintActive : {}) }">
                 <v-icon size="13">{{ /[A-Z]/.test(form.novaSenha) ? 'mdi-check-circle' : 'mdi-circle-outline' }}</v-icon>
@@ -204,12 +204,12 @@ async function handleVerificarCodigo() {
   try {
     await verificarCodigo({ codigo: form.codigo, finalidade: FinalidadeVerificacaoEmail.AlterarSenha });
     etapa.value = 3;
-  } catch { /* toast já exibido pelo hook */ }
+  } catch {}
 }
 
 function isValidPassword(value: string) {
   return (
-    value.length >= 6 &&
+    value.length >= 10 &&
     /[A-Z]/.test(value) &&
     /[a-z]/.test(value) &&
     /\d/.test(value) &&
