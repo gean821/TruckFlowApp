@@ -15,10 +15,13 @@ import {
 } from "@microsoft/fetch-event-source";
 import { useQueryClient } from "@tanstack/vue-query";
 import { onUnmounted, watch } from "vue";
+import router from "@/router";
+import { refreshSession } from "@/http/http";
 
 // FatalError aborta reconexão; RetriableError força nova tentativa imediata.
 // Erros não-anotados deixam a lib reconectar com backoff padrão (que já é exponencial).
 class FatalSseError extends Error { }
+class SessaoExpiradaSseError extends Error { }
 
 export function useRealtimeNotifications() {
   const auth = useAuthStore();
@@ -26,6 +29,7 @@ export function useRealtimeNotifications() {
   const toast = useToastStore();
 
   let abortController: AbortController | null = null;
+  let tokenRenovadoPeloSse: string | null = null;
 
   function invalidateNotificacaoQueries() {
     queryClient.invalidateQueries({ queryKey: [notificacaoQueryKey] });
@@ -43,6 +47,25 @@ export function useRealtimeNotifications() {
     }
 
     return "info";
+  }
+
+  async function renovarSessao(tokenRecusado: string) {
+    if (auth.token !== tokenRecusado) {
+      return;
+    }
+
+    if (tokenRenovadoPeloSse === tokenRecusado) {
+      console.warn("[realtime] SSE recusou o token recém-renovado; encerrando tempo real");
+      return;
+    }
+
+    try {
+      tokenRenovadoPeloSse = await refreshSession();
+      console.info("[realtime] token renovado após 401 do SSE");
+    } catch {
+      auth.clearSession();
+      router.push("/login");
+    }
   }
 
   function connect() {
@@ -63,7 +86,7 @@ export function useRealtimeNotifications() {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      
+
       credentials: "include",
       signal: abortController.signal,
       openWhenHidden: true,
@@ -75,11 +98,16 @@ export function useRealtimeNotifications() {
           response.ok &&
           response.headers.get("content-type")?.includes(EventStreamContentType)
         ) {
+          tokenRenovadoPeloSse = null;
           invalidateNotificacaoQueries();
           return;
         }
 
-        if (response.status === 401 || response.status === 403) {
+        if (response.status === 401) {
+          throw new SessaoExpiradaSseError("SSE com token expirado");
+        }
+
+        if (response.status === 403) {
           throw new FatalSseError("Unauthorized SSE");
         }
         throw new Error(`SSE openendpoint retornou ${response.status}`);
@@ -98,12 +126,17 @@ export function useRealtimeNotifications() {
       },
 
       onerror(err) {
-        if (err instanceof FatalSseError) {
+        if (err instanceof FatalSseError || err instanceof SessaoExpiradaSseError) {
           throw err;
         }
         console.warn("[realtime] erro SSE, reconectando", err);
       },
     }).catch((err) => {
+      if (err instanceof SessaoExpiradaSseError) {
+        void renovarSessao(token);
+        return;
+      }
+
       if (err instanceof FatalSseError) {
         console.warn("[realtime] SSE encerrado: auth inválido");
       }
@@ -117,10 +150,10 @@ export function useRealtimeNotifications() {
 
   watch(
     () => auth.token,
-    (newToken, oldToken) => {
-      if (newToken && !oldToken) {
+    (newToken) => {
+      if (newToken) {
         connect();
-      } else if (!newToken && oldToken) {
+      } else {
         disconnect();
       }
     },

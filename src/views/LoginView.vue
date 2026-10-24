@@ -529,6 +529,7 @@ onMounted(async () => {
       SemGrupoMapeado: 'Sua conta não tem acesso liberado no TruckFlow. Fale com o administrador.',
       GruposAmbiguos: 'Configuração de acesso inconsistente. Fale com o suporte.',
       EmpresaNaoPermiteEntraId: 'Sua empresa não está habilitada para login corporativo.',
+      EmpresaDesativada: 'Empresa desativada. Entre em contato com o suporte do TruckFlow.',
       CanceladoOuFalhou: 'Login corporativo cancelado ou não concluído.',
       Interno: 'Erro interno ao concluir o login corporativo. Tente novamente.',
     }

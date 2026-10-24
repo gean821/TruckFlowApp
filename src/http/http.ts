@@ -45,6 +45,12 @@ function performRefresh(): Promise<RefreshResponseDto> {
   return refreshPromise;
 }
 
+export async function refreshSession(): Promise<string> {
+  const refreshed = await performRefresh();
+  useAuthStore().setSession(refreshed.token, refreshed.tokenExpiresAt);
+  return refreshed.token;
+}
+
 http.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
