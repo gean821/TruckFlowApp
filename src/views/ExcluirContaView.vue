@@ -13,7 +13,7 @@
         sem vínculo com seus dados pessoais.
       </v-alert>
 
-      <v-alert v-if="concluido" type="success" variant="tonal" class="mb-2">
+      <v-alert v-if="excluida" type="success" variant="tonal" class="mb-2">
         Conta excluída. Seus dados pessoais foram removidos.
       </v-alert>
 
@@ -42,13 +42,12 @@
           hide-details
           class="mb-4"
         />
-        <v-alert v-if="erro" type="error" variant="tonal" density="compact" class="mb-4">{{ erro }}</v-alert>
         <v-btn
           type="submit"
           color="error"
           block
           size="large"
-          :loading="enviando"
+          :loading="excluindo"
           :disabled="!confirmado"
         >
           Excluir minha conta
@@ -59,17 +58,14 @@
 </template>
 
 <script setup lang="ts">
-import axios, { AxiosError } from "axios";
+import { useContaMotorista } from "@/hooks/useContaMotorista";
 import { ref } from "vue";
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL });
+const { excluirConta, excluindo, excluida } = useContaMotorista();
 
 const login = ref("");
 const senha = ref("");
 const confirmado = ref(false);
-const enviando = ref(false);
-const concluido = ref(false);
-const erro = ref<string | null>(null);
 const form = ref<{ validate: () => Promise<{ valid: boolean }> } | null>(null);
 
 const obrigatorio = (v: string) => !!v?.trim() || "Obrigatório";
@@ -79,30 +75,10 @@ async function excluir() {
     return;
   }
 
-  enviando.value = true;
-  erro.value = null;
-
   try {
-    const { data } = await api.post<{ token: string }>("/AuthMotorista/login", {
-      login: login.value.trim(),
-      password: senha.value,
-    });
-
-    await api.delete("/AuthMotorista/me", {
-      headers: { Authorization: `Bearer ${data.token}` },
-    });
-
-    concluido.value = true;
-  } catch (e) {
-    const resposta = (e as AxiosError<{ message?: string }>).response;
-    erro.value =
-      resposta?.status === 429
-        ? "Muitas tentativas. Aguarde alguns minutos e tente de novo."
-        : resposta?.status === 401
-          ? "Usuário ou senha inválidos."
-          : resposta?.data?.message ?? "Não foi possível excluir agora. Tente novamente.";
+    await excluirConta({ login: login.value.trim(), password: senha.value });
+  } catch {
   } finally {
-    enviando.value = false;
     senha.value = "";
   }
 }
