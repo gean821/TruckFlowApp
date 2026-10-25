@@ -58,6 +58,12 @@ const router = createRouter({
       meta: { layout: 'public' }
     },
     {
+      path: '/excluir-conta',
+      name: 'excluir-conta',
+      component: () => import('@/views/ExcluirContaView.vue'),
+      meta: { layout: 'public' }
+    },
+    {
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView,
