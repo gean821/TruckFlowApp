@@ -38,6 +38,7 @@ coverage
 *.sw?
 .env
 .env.*
+!.env.example
 
 *.tsbuildinfo
 
