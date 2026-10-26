@@ -12,7 +12,7 @@ Painel admin web do TruckFlowApp. Cliente-alvo: **Aurora Alimentos**. Usuários:
 - **Vuetify 3.10** (UI components) + `@mdi/font` (ícones)
 - **Vue Router 4** (com lazy loading já configurado)
 - `@microsoft/fetch-event-source` (SSE), ApexCharts, date-fns, jwt-decode
-- Vitest / @vue/test-utils / Playwright instalados — **ainda sem testes**
+- Vitest (jsdom, config no `vite.config.ts`) + @vue/test-utils — testes em `src/**/__tests__/*.spec.ts` (fora do type-check do build). Playwright instalado, sem testes e2e ainda
 
 ## Padrão arquitetural (importante)
 
@@ -31,7 +31,7 @@ src/
 ├── hooks/         # useUsuario, useProdutos... (mutations vue-query) + usePermissions
 ├── queries/       # *.queries.ts — definições de queryKey + fetcher
 ├── services/      # <X>Service.ts — factory com chamadas axios puras
-├── composables/   # useRealtimeNotifications (SSE)
+├── composables/   # useRealtimeNotifications (SSE), useIdleLogout (logout por inatividade)
 ├── http/          # http.ts — instância axios + interceptors
 ├── router/        # index.ts (beforeEach), routeMeta.ts
 ├── shared/auth/   # roles.ts (Roles, RoleGroups, hasRole)
@@ -51,16 +51,19 @@ src/
 - Axios interceptor: `src/http/http.ts` — `withCredentials: true`, anexa `Authorization: Bearer ${token}`; no 401 faz **refresh single-flight** e repete a request; se o refresh falhar, limpa a sessão e vai para `/login`
 - Router guard: `src/router/index.ts` — `beforeEach` checa `meta.requiresAuth` + `meta.roles` via `hasRole()`
 - Permissões em componente: `src/hooks/usePermissions.ts`
-- Logout: `AuthStore.logout()` (`POST /Auth/logout`)
+- Logout: `AuthStore.logout(motivo?)` (`POST /Auth/logout`) → `/login?motivo=<motivo>`; `encerrarSessaoLocal()` limpa a sessão sem chamar a API
+- Inatividade (SAD 30): `src/composables/useIdleLogout.ts` (chamado no `App.vue`) — após `VITE_IDLE_TIMEOUT_MIN` (padrão 20) sem interação, aviso 60s antes (`IdleWarningDialog.vue`) e `logout('inatividade')`. Último acesso em `localStorage` (`tf_last_activity`, compartilhado entre abas, throttle de 5s) e logout propagado via `BroadcastChannel('tf-auth')`. Expiração é só client-side (backend não valida inatividade)
 
 ## Variáveis de ambiente
 
-`.env` (git-ignored):
+`.env` (git-ignored) — modelo em `.env.example` (commitado; mantenha sincronizado):
 ```
 VITE_API_URL=http://localhost:8080/v1/
+VITE_IDLE_TIMEOUT_MIN=20
 ```
 
-A barra final é obrigatória (a URL do SSE é concatenada). Ainda não existe `.env.example` — crie ao adicionar a próxima variável e mantenha sincronizado.
+- `VITE_API_URL`: a barra final é obrigatória (a URL do SSE é concatenada).
+- `VITE_IDLE_TIMEOUT_MIN`: opcional, padrão 20. Valor baixo pra teste manual vai em `.env.development.local` (só o `pnpm dev` lê), nunca no `.env` — o `vite build` lê o `.env` e embute o valor no bundle.
 
 ## Backend
 
@@ -88,4 +91,5 @@ Quando algo descrito aqui for implementado, mudado ou deixar de ser verdade, **a
 pnpm dev          # Vite dev server (porta 5173)
 pnpm run build    # type-check (vue-tsc --build) + build produção — é o que o CI roda
 pnpm preview      # preview do build
+pnpm test:unit    # Vitest em watch (uma vez só: pnpm exec vitest run)
 ```

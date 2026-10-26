@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
@@ -13,6 +14,13 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
+    },
+  },
+  test: {
+    environment: 'jsdom',
+    // Valor fixo nos testes: não depende do .env local
+    env: {
+      VITE_IDLE_TIMEOUT_MIN: '20',
     },
   },
 })

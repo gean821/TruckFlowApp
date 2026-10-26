@@ -14,6 +14,8 @@ interface AuthState {
     loading: boolean;
 }
 
+export type MotivoLogout = "inatividade";
+
 export const useAuthStore = defineStore("auth", {
     state: (): AuthState => ({
         user: null,
@@ -64,12 +66,16 @@ export const useAuthStore = defineStore("auth", {
             }
         },
 
-        async logout() {
-            try {
+        async logout(motivo?: MotivoLogout) {
+            try{
                 await http.post("/Auth/logout");
-            } catch { }
+            } catch {}
+            await this.encerrarSessaoLocal(motivo);
+        },
+
+        async encerrarSessaoLocal(motivo?: MotivoLogout){
             this.clearSession();
-            router.push("/login");
+            await router.push({ path: "/login", query: motivo? {motivo} : undefined});
         },
 
         updateUser(data: Partial<JwtPayload>) {

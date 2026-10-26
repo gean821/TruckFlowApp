@@ -460,6 +460,7 @@ import type AdminLoginDto from '@/Dtos/adm/adminLoginDto'
 import EsqueciSenhaDialog from '@/components/modals/EsqueciSenhaDialog.vue'
 import { useAuthStore } from '@/stores/AuthStore'
 import { useToastStore } from '@/stores/ToastStore'
+import { registrarAtividade } from '@/composables/useIdleLogout'
 import type { AxiosError } from 'axios'
 import { onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -498,10 +499,18 @@ async function handleLogin() {
 function handleEntraLogin() {
   loadingSso.value = true
   const apiBase = (import.meta.env.VITE_API_URL as string).replace(/\/+$/, '')
+  registrarAtividade()
   window.location.href = `${apiBase}/AuthAdmin/entra/login`
 }
 
 onMounted(async () => {
+
+   if (route.query.motivo === 'inatividade') {
+    toast.notify('Sua sessão foi encerrada por inatividade. Entre novamente.', 'info', 6000)
+    router.replace({ path: '/login' })
+    return
+  }
+
   const ssoOk = route.query.ssoOk
   const ssoErro = route.query.ssoErro
 
@@ -513,10 +522,10 @@ onMounted(async () => {
         router.replace('/visualizar')
         return
       }
-      toast.notify('Não foi possível concluir o login corporativo. Tente novamente.', 'error', 4)
+      toast.notify('Não foi possível concluir o login corporativo. Tente novamente.', 'error', 4000)
       router.replace({ path: '/login' })
     } catch (e) {
-      toast.notify('Não foi possível concluir o login corporativo. Tente novamente.', 'error', 4)
+      toast.notify('Não foi possível concluir o login corporativo. Tente novamente.', 'error', 4000)
       router.replace({ path: '/login' })
     } finally {
       loadingSso.value = false
@@ -534,7 +543,7 @@ onMounted(async () => {
       Interno: 'Erro interno ao concluir o login corporativo. Tente novamente.',
     }
 
-    toast.notify(mensagens[ssoErro as string] ?? 'Não foi possível entrar com Microsoft.', 'error', 5)
+    toast.notify(mensagens[ssoErro as string] ?? 'Não foi possível entrar com Microsoft.', 'error', 5000)
     router.replace({ path: '/login' })
   }
 })
