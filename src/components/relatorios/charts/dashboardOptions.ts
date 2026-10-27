@@ -6,7 +6,7 @@ import { CORES } from "./echarts";
 export function diaHoraAHoraOption(horas: DashboardHojeHora[], horaAtual: number, diaSemana: string): EChartsOption {
   const comMovimento = horas.filter((h) => h.agendados + h.chegadas + h.concluidos + h.mediaAgendados > 0).map((h) => h.hora);
   const primeira = comMovimento.length ? Math.min(Math.max(0, comMovimento[0]! - 1), horaAtual) : 6;
-  const ultima = comMovimento.length ? Math.max(Math.min(23, comMovimento.at(-1)! + 1), horaAtual) : 20;
+  const ultima = comMovimento.length ? Math.max(Math.min(23, comMovimento[comMovimento.length - 1]! + 1), horaAtual) : 20;
   const visiveis = horas.filter((h) => h.hora >= primeira && h.hora <= ultima);
   const rotulos = visiveis.map((h) => `${String(h.hora).padStart(2, "0")}h`);
   const rotuloAgora = `${String(horaAtual).padStart(2, "0")}h`;
