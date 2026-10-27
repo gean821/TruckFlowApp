@@ -52,3 +52,21 @@ export function usePatioQuery(filtro: MaybeRef<RelatorioBiFiltro>, dia: MaybeRef
     staleTime: 30_000,
   });
 }
+
+export function useFornecedoresQuery(filtro: MaybeRef<RelatorioBiFiltro>) {
+  return useQuery({
+    queryKey: computed(() => [relatorioBiQueryKey, "fornecedores", unref(filtro)]),
+    queryFn: async () => await RelatorioBiService.fornecedores(unref(filtro)),
+    placeholderData: keepPreviousData,
+    staleTime: 60_000,
+  });
+}
+
+export function useFornecedorDetalheQuery(filtro: MaybeRef<RelatorioBiFiltro>, fornecedorId: MaybeRef<string | null>) {
+  return useQuery({
+    queryKey: computed(() => [relatorioBiQueryKey, "fornecedor-detalhe", { ...unref(filtro), fornecedorId: null }, unref(fornecedorId)]),
+    queryFn: async () => await RelatorioBiService.fornecedorDetalhe({ ...unref(filtro), fornecedorId: null }, unref(fornecedorId)!),
+    enabled: computed(() => !!unref(fornecedorId)),
+    staleTime: 60_000,
+  });
+}

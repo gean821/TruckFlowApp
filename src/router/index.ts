@@ -23,6 +23,7 @@ const VisaoGeralView = () => import('@/views/relatorios/VisaoGeralView.vue');
 const RecebimentosView = () => import('@/views/relatorios/RecebimentosView.vue');
 const CapacidadeDocasView = () => import('@/views/relatorios/CapacidadeDocasView.vue');
 const ProdutividadeView = () => import('@/views/relatorios/ProdutividadeView.vue');
+const FornecedoresView = () => import('@/views/relatorios/FornecedoresView.vue');
 const AuditoriaView = () => import('@/views/AuditoriaView.vue');
 const ManageUserView = () => import('@/views/ManageUserView.vue');
 const EmpresaView = () => import('@/views/EmpresaView.vue');
@@ -198,6 +199,7 @@ const router = createRouter({
         { path: 'recebimentos', name: 'relatorios-recebimentos', component: RecebimentosView },
         { path: 'produtividade', name: 'relatorios-produtividade', component: ProdutividadeView },
         { path: 'capacidade-docas', name: 'relatorios-capacidade-docas', component: CapacidadeDocasView },
+        { path: 'fornecedores', name: 'relatorios-fornecedores', component: FornecedoresView },
         { path: 'agendamentos', name: 'relatorios-agendamentos', component: AgendamentosDetalhadoView },
         { path: 'exportar', name: 'relatorios-exportar', redirect: { name: 'relatorios-agendamentos' } },
       ]

@@ -1,4 +1,4 @@
-import type { Agrupamento, CapacidadeDocasResponse, PatioResponse, ProdutividadeResponse, RecebimentosResponse, RelatorioBiFiltro, VisaoGeralResponse } from "@/entities/relatorioBi.types";
+import type { Agrupamento, CapacidadeDocasResponse, FornecedorDetalhe, FornecedoresResponse, PatioResponse, ProdutividadeResponse, RecebimentosResponse, RelatorioBiFiltro, VisaoGeralResponse } from "@/entities/relatorioBi.types";
 import http from "@/http/http";
 
 const limparFiltro = (filtro: Record<string, unknown>) =>
@@ -38,6 +38,20 @@ export const RelatorioBiService = {
     const { inicio: _inicio, fim: _fim, ...semPeriodo } = filtro;
     const { data } = await http.get<PatioResponse>("/Relatorio/produtividade/patio", {
       params: limparFiltro({ ...semPeriodo, dia }),
+    });
+    return data;
+  },
+
+  async fornecedores(filtro: RelatorioBiFiltro): Promise<FornecedoresResponse> {
+    const { data } = await http.get<FornecedoresResponse>("/Relatorio/fornecedores", {
+      params: limparFiltro({ ...filtro }),
+    });
+    return data;
+  },
+
+  async fornecedorDetalhe(filtro: RelatorioBiFiltro, fornecedorId: string): Promise<FornecedorDetalhe> {
+    const { data } = await http.get<FornecedorDetalhe>("/Relatorio/fornecedores/detalhe", {
+      params: limparFiltro({ ...filtro, fornecedorId }),
     });
     return data;
   },
