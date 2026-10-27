@@ -12,6 +12,7 @@ export interface EmpresaResponseDto {
   bairro: string;
   cidade: string;
   estado: string;
+  metaDiariaKg: number | null;
   ativa: boolean;
   createdAt: string;
 }
@@ -28,4 +29,5 @@ export interface EmpresaUpdateDto {
   bairro?: string | null;
   cidade?: string | null;
   estado?: string | null;
+  metaDiariaKg?: number | null;
 }

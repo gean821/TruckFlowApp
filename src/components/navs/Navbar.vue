@@ -431,13 +431,6 @@
             class="pl-10 mb-1 nav-item-sub"
             active-class="nav-active-sub"
           />
-          <v-list-item
-            to="enviar-notificacao"
-            title="Enviar Nova"
-            rounded="lg"
-            class="pl-10 mb-1 nav-item-sub"
-            active-class="nav-active-sub"
-          />
         </v-list-group>
       </template>
 

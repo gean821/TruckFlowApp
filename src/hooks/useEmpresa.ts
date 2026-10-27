@@ -1,5 +1,6 @@
 import type { EmpresaUpdateDto } from "@/Dtos/empresa/empresaDto";
 import { empresaQueryKey } from "@/queries/empresa.queries";
+import { dashboardQueryKey } from "@/queries/dashboard.queries";
 import { EmpresaService } from "@/services/EmpresaService";
 import { resolveEmpresaId } from "@/utils/resolveEmpresaId";
 import { useToastStore } from "@/stores/ToastStore";
@@ -10,8 +11,10 @@ export function useEmpresa() {
   const service = EmpresaService();
   const toast = useToastStore();
 
-  const invalidate = () =>
+  const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: [empresaQueryKey] });
+    queryClient.invalidateQueries({ queryKey: [dashboardQueryKey] });
+  };
 
   const updateMutation = useMutation({
     mutationFn: async (payload: EmpresaUpdateDto) => {
@@ -23,8 +26,9 @@ export function useEmpresa() {
       invalidate();
       toast.notify("Dados da empresa atualizados com sucesso!", "success");
     },
-    onError: () => {
-      toast.notify("Erro ao atualizar dados da empresa.", "error");
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message ?? "Erro ao atualizar dados da empresa.";
+      toast.notify(msg, "error");
     },
   });
 

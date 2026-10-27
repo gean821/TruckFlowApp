@@ -157,6 +157,14 @@
               </v-col>
             </v-row>
           </div>
+
+          <v-divider />
+
+          <div class="px-7 py-6">
+            <div class="text-subtitle-2 font-weight-bold text-grey-darken-3 mb-4">Operação</div>
+            <div class="info-label mb-1">Meta diária de descarga</div>
+            <div class="info-value">{{ metaDiariaFormatada }}</div>
+          </div>
         </template>
 
         <template v-else>
@@ -210,6 +218,27 @@
                 <v-text-field v-model="form.estado" label="UF" variant="outlined" density="compact" hide-details="auto" maxlength="2" />
               </v-col>
             </v-row>
+
+            <v-divider class="my-6" />
+
+            <div class="text-subtitle-2 font-weight-bold text-grey-darken-3 mb-4">Operação</div>
+            <v-row>
+              <v-col cols="12" sm="4">
+                <v-text-field
+                  v-model.number="metaTon"
+                  label="Meta diária de descarga"
+                  type="number"
+                  min="0"
+                  suffix="t"
+                  variant="outlined"
+                  density="compact"
+                  hide-details="auto"
+                  prepend-inner-icon="mdi-target"
+                  hint="Usada no dashboard. Deixe vazio para não usar meta."
+                  persistent-hint
+                />
+              </v-col>
+            </v-row>
           </div>
         </template>
 
@@ -233,6 +262,14 @@ const { update, isUpdating } = useEmpresa();
 const editMode = ref(false);
 const loadingCep = ref(false);
 const form = ref<EmpresaUpdateDto>({});
+const metaTon = ref<number | null>(null);
+
+const metaDiariaFormatada = computed(() => {
+  const metaKg = empresa.value?.metaDiariaKg;
+  return metaKg
+    ? `${(metaKg / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} t`
+    : "Não configurada";
+});
 
 watch(
   [empresa, isLoading],
@@ -261,6 +298,7 @@ function startEdit() {
     cidade: empresa.value?.cidade ?? "",
     estado: empresa.value?.estado ?? "",
   };
+  metaTon.value = empresa.value?.metaDiariaKg ? empresa.value.metaDiariaKg / 1000 : null;
   editMode.value = true;
 }
 
@@ -272,6 +310,7 @@ function cancelEdit() {
 async function salvar() {
   const payload: EmpresaUpdateDto = { ...form.value };
   if (payload.complemento === "") payload.complemento = null;
+  payload.metaDiariaKg = typeof metaTon.value === "number" && metaTon.value > 0 ? metaTon.value * 1000 : 0;
   await update(payload);
   editMode.value = false;
 }

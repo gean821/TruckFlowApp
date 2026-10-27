@@ -34,7 +34,7 @@
           <div class="d-flex flex-column align-center">
             <div class="d-flex align-center gap-1 mb-1">
               <span class="dot dot-red"></span>
-              <span class="text-caption text-grey-darken-1 ml-2">Desativadas</span>
+              <span class="text-caption text-grey-darken-1 ml-2">Ocupadas</span>
             </div>
             <span class="text-h6 font-weight-bold" style="color: #EF5350">{{ docas.ocupadas ?? 0 }}</span>
           </div>
@@ -62,6 +62,7 @@
             <span class="text-body-1 text-grey ml-1">Ton</span>
           </div>
           <v-chip
+            v-if="metaTon"
             size="small"
             :color="progressColor"
             variant="tonal"
@@ -71,16 +72,20 @@
           </v-chip>
         </div>
 
-        <v-progress-linear
-          :model-value="volumeProgress"
-          height="8"
-          rounded
-          :color="progressColor"
-          bg-color="grey-lighten-3"
-          class="mb-2"
-        />
+        <template v-if="metaTon">
+          <v-progress-linear
+            :model-value="volumeProgress"
+            height="8"
+            rounded
+            :color="progressColor"
+            bg-color="grey-lighten-3"
+            class="mb-2"
+          />
 
-        <span class="text-caption text-grey">{{ volumeProgress }}% da meta atingida hoje</span>
+          <span class="text-caption text-grey">{{ volumeProgress }}% da meta de {{ metaTon }} t atingida hoje</span>
+        </template>
+
+        <span v-else class="text-caption text-grey">Meta diária não configurada para a empresa</span>
       </v-col>
 
     </v-row>
@@ -98,7 +103,7 @@ const dockChartOptions = computed(() => ({
     toolbar: { show: false },
     animations: { enabled: true, speed: 600 },
   },
-  labels: ['Livres', 'Desativadas'],
+  labels: ['Livres', 'Ocupadas'],
   colors: ['#4CAF50', '#EF5350'],
   legend: { show: false },
   dataLabels: { enabled: false },
@@ -134,12 +139,16 @@ const dockChartOptions = computed(() => ({
 
 const dockSeries = computed(() => {
   const livres = props.docas?.livres ?? 0;
-  const desativadas = props.docas?.ocupadas ?? 0;
-  return livres === 0 && desativadas === 0 ? [1, 0] : [livres, desativadas];
+  const ocupadas = props.docas?.ocupadas ?? 0;
+  return livres === 0 && ocupadas === 0 ? [1, 0] : [livres, ocupadas];
 });
 
 const volumeProgress = computed(() => props.volume?.progressoDiario ?? 0);
 const totalTon = computed(() => ((props.volume?.totalKg ?? 0) / 1000).toFixed(1));
+const metaTon = computed(() => {
+  const metaKg = props.volume?.metaDiariaKg;
+  return metaKg ? (metaKg / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) : null;
+});
 
 const progressColor = computed(() => {
   if (volumeProgress.value >= 80) return '#4CAF50';

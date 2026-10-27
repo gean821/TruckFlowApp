@@ -9,6 +9,7 @@ export interface DashboardStatsDto {
 
 export interface DashboardVolumeDto {
   totalKg: number;
+  metaDiariaKg: number | null;
   progressoDiario: number;
 }
 

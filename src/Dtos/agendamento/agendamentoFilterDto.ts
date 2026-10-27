@@ -9,6 +9,7 @@ export default interface IAgendamentoFilterDto {
     status?: string;
     tipoVeiculo?: TipoVeiculo | number;
     search?: string;
+    ocultarVagasLivres?: boolean;
     pageNumber?: number;
     pageSize?: number;
 }

@@ -15,9 +15,7 @@
         />
       </div>
       <v-chip v-if="hasData" size="small" variant="tonal" color="primary">
-        {{ appointments.length }} resultado{{
-          appointments.length !== 1 ? "s" : ""
-        }}
+        {{ total }} no dia
       </v-chip>
     </div>
 
@@ -59,11 +57,11 @@
             <v-list-item-title
               class="text-body-2 font-weight-bold text-grey-darken-3 mb-1"
             >
-              {{ apt.fornecedorNome }}
+              {{ titulo(apt) }}
             </v-list-item-title>
 
             <v-list-item-subtitle class="text-caption text-grey-darken-1">
-              {{ apt.produto }} • {{ apt.unidadeEntrega }}
+              {{ detalhe(apt) }}
             </v-list-item-subtitle>
 
             <template #append>
@@ -91,17 +89,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from "vue";
-import { AgendamentoService } from "@/services/AgendamentoService";
+import { computed } from "vue";
 import type AgendamentoAdminResponse from "@/Dtos/agendamento/agendamentoAdminResponse.dto";
 import { StatusAgendamento } from "@/enums/StatusAgendamento";
+import { useAgendamentosDoDia } from "@/hooks/useDashboard";
 
-const REFRESH_INTERVAL_MS = 2 * 60 * 1000;
-
-const service = AgendamentoService();
-const appointments = ref<AgendamentoAdminResponse[]>([]);
-const loading = ref(true);
-const refreshing = ref(false);
+const { agendamentos: appointments, total, loading, refreshing } = useAgendamentosDoDia();
 
 const statusConfig: Record<number, { label: string; color: string }> = {
   [StatusAgendamento.Agendado]: { label: "Agendado", color: "purple" },
@@ -114,8 +107,24 @@ const statusConfig: Record<number, { label: string; color: string }> = {
 };
 
 function getStatusConfig(status: string) {
-  const asNum = Number(status);
-  return statusConfig[asNum] ?? { label: status, color: "grey" };
+  const valor = /^\d+$/.test(status)
+    ? Number(status)
+    : StatusAgendamento[status as keyof typeof StatusAgendamento];
+  return statusConfig[valor] ?? { label: status, color: "grey" };
+}
+
+function titulo(apt: AgendamentoAdminResponse) {
+  return apt.motoristaNome || apt.fornecedorNome || "Motorista não informado";
+}
+
+function detalhe(apt: AgendamentoAdminResponse) {
+  return [
+    apt.motoristaNome ? apt.fornecedorNome : null,
+    apt.produto,
+    apt.placaVeiculo,
+  ]
+    .filter(Boolean)
+    .join(" • ");
 }
 
 function formatHora(dateStr: string) {
@@ -123,59 +132,11 @@ function formatHora(dateStr: string) {
   return new Date(dateStr).toLocaleTimeString("pt-BR", {
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "America/Sao_Paulo",
   });
 }
 
 const hasData = computed(() => appointments.value.length > 0);
-
-async function fetchAppointments(isRefresh = false) {
-  if (isRefresh) refreshing.value = true;
-
-  try {
-    const hoje = new Date();
-    const dataInicio = new Date(
-      hoje.getFullYear(),
-      hoje.getMonth(),
-      hoje.getDate(),
-      0,
-      0,
-      0,
-    ).toISOString();
-    const dataFim = new Date(
-      hoje.getFullYear(),
-      hoje.getMonth(),
-      hoje.getDate(),
-      23,
-      59,
-      59,
-    ).toISOString();
-
-    const result = await service.getByFilters({
-      dataInicio,
-      dataFim,
-      pageSize: 8,
-      pageNumber: 1,
-    });
-
-    appointments.value = result.items ?? (result as any).data ?? [];
-  } catch {
-    appointments.value = [];
-  } finally {
-    loading.value = false;
-    refreshing.value = false;
-  }
-}
-
-let intervalId: ReturnType<typeof setInterval>;
-
-onMounted(() => {
-  fetchAppointments();
-  intervalId = setInterval(() => fetchAppointments(true), REFRESH_INTERVAL_MS);
-});
-
-onUnmounted(() => {
-  clearInterval(intervalId);
-});
 </script>
 
 <style scoped>
