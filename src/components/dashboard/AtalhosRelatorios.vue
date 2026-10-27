@@ -25,7 +25,7 @@
 const atalhos = [
   { to: "/relatorios/visao-geral", titulo: "Visão geral", descricao: "KPIs, tendências e horários de pico", icone: "mdi-view-dashboard-outline", cor: "primary" },
   { to: "/relatorios/recebimentos", titulo: "Recebimentos", descricao: "Toneladas, fluxo, planejado e divergências", icone: "mdi-package-variant-closed-check", cor: "indigo" },
-  { to: "/relatorios/visao-geral?periodo=7d", titulo: "Última semana", descricao: "Comparada com a semana anterior", icone: "mdi-calendar-week", cor: "teal" },
+  { to: "/relatorios/capacidade-docas", titulo: "Capacidade das docas", descricao: "Ocupação, janelas esgotadas e ociosas", icone: "mdi-garage-variant", cor: "teal" },
   { to: "/relatorios/exportar", titulo: "Exportar dados", descricao: "CSV e PDF dos agendamentos", icone: "mdi-file-download-outline", cor: "deep-purple" },
 ];
 </script>

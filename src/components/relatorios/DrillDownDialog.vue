@@ -60,6 +60,7 @@ export interface FiltroDrillDown {
   fornecedorId?: string | null;
   produtoId?: string | null;
   unidadeEntregaId?: string | null;
+  localDescargaId?: string | null;
 }
 
 const props = defineProps<{ modelValue: boolean; titulo: string; filtro: FiltroDrillDown }>();
@@ -81,6 +82,7 @@ const parametros = computed(() => ({
   fornecedorId: props.filtro.fornecedorId ?? undefined,
   produtoId: props.filtro.produtoId ?? undefined,
   unidadeEntregaId: props.filtro.unidadeEntregaId ?? undefined,
+  localDescargaId: props.filtro.localDescargaId ?? undefined,
   ocultarVagasLivres: true,
   pageNumber: pagina.value,
   pageSize: porPagina.value,

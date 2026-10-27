@@ -37,7 +37,7 @@
     </div>
 
     <v-row dense class="mt-2">
-      <v-col cols="12" sm="6" md="3">
+      <v-col cols="12" sm="6" :md="colunas">
         <v-autocomplete
           v-model="rascunho.unidadeEntregaId"
           :items="unidades"
@@ -52,7 +52,7 @@
           @update:model-value="rascunho.localDescargaId = null"
         />
       </v-col>
-      <v-col cols="12" sm="6" md="3">
+      <v-col cols="12" sm="6" :md="colunas">
         <v-autocomplete
           v-model="rascunho.localDescargaId"
           :items="docas"
@@ -66,7 +66,7 @@
           hide-details
         />
       </v-col>
-      <v-col cols="12" sm="6" md="3">
+      <v-col v-if="!semFornecedor" cols="12" sm="6" md="3">
         <v-autocomplete
           v-model="rascunho.fornecedorId"
           :items="fornecedores"
@@ -80,7 +80,7 @@
           hide-details
         />
       </v-col>
-      <v-col cols="12" sm="6" md="3">
+      <v-col cols="12" sm="6" :md="colunas">
         <v-autocomplete
           v-model="rascunho.produtoId"
           :items="produtos"
@@ -123,7 +123,9 @@ import { useProdutosQuery } from "@/queries/produto.queries";
 import { useUnidadesEntregaQuery } from "@/queries/unidadeEntrega.queries";
 import { descreverPeriodo } from "@/utils/relatorioFormat";
 
-const props = defineProps<{ filtros: ReturnType<typeof useFiltrosRelatorio> }>();
+const props = defineProps<{ filtros: ReturnType<typeof useFiltrosRelatorio>; semFornecedor?: boolean }>();
+
+const colunas = computed(() => (props.semFornecedor ? 4 : 3));
 
 const { rascunho, alterado, quantidadeFiltros, aplicar, limpar } = props.filtros;
 
