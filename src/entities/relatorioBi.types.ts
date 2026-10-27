@@ -401,3 +401,107 @@ export interface PatioResponse {
   picoEm: string | null;
   docas: PatioDoca[];
 }
+
+export interface FornecedoresIndicadores {
+  fornecedoresAtivos: RelatorioBiIndicador;
+  pontualidadePct: RelatorioBiIndicador;
+  noShowPct: RelatorioBiIndicador;
+  cancelamentoPct: RelatorioBiIndicador;
+  atrasoMedioMin: RelatorioBiIndicador;
+  pesoRecebidoKg: RelatorioBiIndicador;
+  scoreMedio: number | null;
+  concentracaoTop3Pct: number | null;
+  comScoreCritico: number;
+}
+
+export interface FornecedoresBalde {
+  inicio: string;
+  fim: string;
+  rotulo: string;
+  agendamentos: number;
+  pesoKg: number;
+  pontualidadePct: number | null;
+  noShowPct: number | null;
+  cancelamentoPct: number | null;
+}
+
+export interface FornecedorDesempenho {
+  id: string | null;
+  nome: string;
+  agendamentos: number;
+  realizaveis: number;
+  concluidos: number;
+  pesoKg: number;
+  pctVolume: number;
+  chegaram: number;
+  adiantados: number;
+  noHorario: number;
+  atrasados: number;
+  pontualidadePct: number | null;
+  pontualidadeAnteriorPct: number | null;
+  variacaoPontualidade: number | null;
+  atrasoMedioMin: number | null;
+  naoCompareceu: number;
+  noShowPct: number | null;
+  cancelados: number;
+  cancelamentoPct: number | null;
+  esperaMediaMin: number | null;
+  descargaMediaMin: number | null;
+  score: number | null;
+  classificacao: string;
+  produtoPrincipal: string | null;
+  seriePontualidade: (number | null)[];
+}
+
+export interface FornecedoresResponse {
+  periodo: RelatorioBiPeriodo;
+  agrupamento: Agrupamento;
+  indicadores: FornecedoresIndicadores;
+  serie: FornecedoresBalde[];
+  ranking: FornecedorDesempenho[];
+  destaques: VisaoGeralDestaque[];
+}
+
+export interface FornecedorGrupo {
+  nome: string;
+  agendamentos: number;
+  pesoKg: number;
+  pontualidadePct: number | null;
+  noShowPct: number | null;
+  cancelamentoPct: number | null;
+}
+
+export interface FornecedorFaixaChegada {
+  rotulo: string;
+  deMin: number | null;
+  ateMin: number | null;
+  quantidade: number;
+  atrasado: boolean;
+}
+
+export interface FornecedorOcorrencia {
+  agendamentoId: string;
+  dataInicio: string;
+  dataFim: string;
+  tipo: string;
+  atrasoMin: number | null;
+  placa: string | null;
+  motorista: string | null;
+  produto: string | null;
+  doca: string | null;
+}
+
+export interface FornecedorDetalhe {
+  periodo: RelatorioBiPeriodo;
+  agrupamento: Agrupamento;
+  fornecedor: FornecedorDesempenho;
+  media: FornecedorDesempenho;
+  posicao: number;
+  totalFornecedores: number;
+  serie: FornecedoresBalde[];
+  porProduto: FornecedorGrupo[];
+  porUnidade: FornecedorGrupo[];
+  porDiaSemana: FornecedorGrupo[];
+  distribuicaoChegada: FornecedorFaixaChegada[];
+  ocorrencias: FornecedorOcorrencia[];
+}

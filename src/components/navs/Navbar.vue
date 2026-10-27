@@ -518,6 +518,7 @@ const relatoriosMenu = [
   { to: "/relatorios/recebimentos", titulo: "Recebimentos e volumes" },
   { to: "/relatorios/produtividade", titulo: "Produtividade e tempos" },
   { to: "/relatorios/capacidade-docas", titulo: "Capacidade das docas" },
+  { to: "/relatorios/fornecedores", titulo: "Fornecedores" },
   { to: "/relatorios/agendamentos", titulo: "Agendamentos" },
 ];
 
@@ -539,6 +540,7 @@ const routeMap: Record<string, { label: string; parent?: string }> = {
   "/relatorios/recebimentos": { label: "Recebimentos e volumes", parent: "Relatórios" },
   "/relatorios/produtividade": { label: "Produtividade e tempos", parent: "Relatórios" },
   "/relatorios/capacidade-docas": { label: "Capacidade das docas", parent: "Relatórios" },
+  "/relatorios/fornecedores": { label: "Fornecedores", parent: "Relatórios" },
   "/relatorios/agendamentos": { label: "Agendamentos", parent: "Relatórios" },
   "/auditoria": { label: "Auditoria" },
   "/usuarios": { label: "Usuários" },

@@ -27,12 +27,18 @@ const abas = [
   { rota: "relatorios-visao-geral", titulo: "Visão geral", icone: "mdi-view-dashboard-outline" },
   { rota: "relatorios-recebimentos", titulo: "Recebimentos", icone: "mdi-package-variant-closed-check" },
   { rota: "relatorios-produtividade", titulo: "Produtividade", icone: "mdi-timer-outline" },
-  { rota: "relatorios-capacidade-docas", titulo: "Capacidade das docas", icone: "mdi-garage-variant" },
+  { rota: "relatorios-capacidade-docas", titulo: "Capacidade", icone: "mdi-garage-variant" },
+  { rota: "relatorios-fornecedores", titulo: "Fornecedores", icone: "mdi-domain" },
   { rota: "relatorios-agendamentos", titulo: "Agendamentos", icone: "mdi-table-search" },
 ];
 </script>
 
 <style scoped>
+.abas :deep(.v-tab) {
+  letter-spacing: normal;
+  min-width: 0;
+  padding: 0 12px;
+}
 .abas {
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }

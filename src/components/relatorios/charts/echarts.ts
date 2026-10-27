@@ -4,10 +4,12 @@ import {
   GridComponent,
   LegendComponent,
   MarkLineComponent,
+  MarkAreaComponent,
   TooltipComponent,
   VisualMapComponent,
 } from "echarts/components";
 import { registerTheme, use } from "echarts/core";
+import { LabelLayout } from "echarts/features";
 import { CanvasRenderer } from "echarts/renderers";
 
 export const CORES = {
@@ -44,6 +46,8 @@ use([
   DataZoomComponent,
   VisualMapComponent,
   MarkLineComponent,
+  MarkAreaComponent,
+  LabelLayout,
 ]);
 
 registerTheme("truckflow", {
