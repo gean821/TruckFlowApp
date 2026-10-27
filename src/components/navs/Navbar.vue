@@ -516,8 +516,9 @@ const currentTime = ref("");
 const relatoriosMenu = [
   { to: "/relatorios/visao-geral", titulo: "Visão geral" },
   { to: "/relatorios/recebimentos", titulo: "Recebimentos e volumes" },
+  { to: "/relatorios/produtividade", titulo: "Produtividade e tempos" },
   { to: "/relatorios/capacidade-docas", titulo: "Capacidade das docas" },
-  { to: "/relatorios/agendamentos", titulo: "Agendamentos (detalhado)" },
+  { to: "/relatorios/agendamentos", titulo: "Agendamentos" },
 ];
 
 const routeMap: Record<string, { label: string; parent?: string }> = {
@@ -536,8 +537,9 @@ const routeMap: Record<string, { label: string; parent?: string }> = {
   "/relatorios": { label: "Relatórios" },
   "/relatorios/visao-geral": { label: "Visão geral", parent: "Relatórios" },
   "/relatorios/recebimentos": { label: "Recebimentos e volumes", parent: "Relatórios" },
+  "/relatorios/produtividade": { label: "Produtividade e tempos", parent: "Relatórios" },
   "/relatorios/capacidade-docas": { label: "Capacidade das docas", parent: "Relatórios" },
-  "/relatorios/agendamentos": { label: "Agendamentos (detalhado)", parent: "Relatórios" },
+  "/relatorios/agendamentos": { label: "Agendamentos", parent: "Relatórios" },
   "/auditoria": { label: "Auditoria" },
   "/usuarios": { label: "Usuários" },
   "/empresa": { label: "Empresa", parent: "Controle" },
