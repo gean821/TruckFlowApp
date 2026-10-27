@@ -77,7 +77,7 @@
                   density="compact"
                   variant="outlined"
                   hide-details
-                  style="width: 160px"
+                  style="width: 180px; min-width: 180px"
                   @update:model-value="(v: string) => v && (diaPatio = v)"
                 />
                 <v-btn icon="mdi-chevron-right" variant="text" size="small" density="comfortable" :disabled="diaPatio >= hojeIso" @click="mudarDia(1)" />
@@ -93,7 +93,7 @@
           </div>
         </v-col>
 
-        <v-col cols="12" lg="8">
+        <v-col cols="12">
           <ChartCard
             titulo="Evolução dos tempos"
             subtitulo="Espera, descarga e permanência média por dia. Clique num dia para ver o pátio."
@@ -105,7 +105,7 @@
             @clique="cliqueDia"
           />
         </v-col>
-        <v-col cols="12" lg="4">
+        <v-col cols="12" md="6">
           <ChartCard
             titulo="Quanto tempo cada caminhão levou"
             subtitulo="Quantidade de caminhões por faixa de tempo"
@@ -116,8 +116,18 @@
             :altura="340"
           />
         </v-col>
+        <v-col cols="12" md="6">
+          <ChartCard
+            titulo="Chegadas e espera por hora"
+            subtitulo="Quando chegam mais caminhões e quanto eles esperam"
+            :option="opcoes.porHora"
+            :carregando="isFetching"
+            :vazio="!dados.indicadores.ciclos.valor"
+            :altura="340"
+          />
+        </v-col>
 
-        <v-col cols="12" lg="7">
+        <v-col cols="12">
           <ChartCard
             titulo="Horários mais congestionados"
             :subtitulo="subtituloHeatmap"
@@ -135,16 +145,6 @@
               </v-btn-toggle>
             </template>
           </ChartCard>
-        </v-col>
-        <v-col cols="12" lg="5">
-          <ChartCard
-            titulo="Chegadas e espera por hora"
-            subtitulo="Quando chegam mais caminhões e quanto eles esperam"
-            :option="opcoes.porHora"
-            :carregando="isFetching"
-            :vazio="!dados.indicadores.ciclos.valor"
-            :altura="360"
-          />
         </v-col>
 
         <v-col cols="12">
@@ -169,11 +169,11 @@
             </div>
 
             <v-row dense>
-              <v-col cols="12" lg="5">
+              <v-col cols="12" xl="5">
                 <div v-if="!gruposAtuais.length" class="text-body-2 text-grey py-12 text-center">Sem descargas no período</div>
                 <v-chart v-else :option="opcoes.boxplot" :theme="TEMA" autoresize :style="{ height: `${Math.max(220, Math.min(15, gruposAtuais.length) * 38 + 60)}px` }" />
               </v-col>
-              <v-col cols="12" lg="7">
+              <v-col cols="12" xl="7">
                 <v-data-table
                   :headers="colunasGrupo"
                   :items="gruposAtuais"
@@ -531,9 +531,19 @@ const imprimir = () => window.print();
   background: rgba(100, 116, 139, 0.55);
 }
 .tabela-grupos :deep(th) {
-  white-space: nowrap;
+  min-width: 84px;
+  line-height: 1.25;
+  padding: 8px 10px !important;
   font-weight: 700 !important;
   color: #475569 !important;
+}
+.tabela-grupos :deep(td) {
+  padding: 0 10px !important;
+  white-space: nowrap;
+}
+.tabela-grupos :deep(td:first-child) {
+  white-space: normal;
+  min-width: 140px;
 }
 .tabela-grupos :deep(tbody tr) {
   cursor: pointer;
