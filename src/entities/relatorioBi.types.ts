@@ -94,3 +94,80 @@ export interface VisaoGeralResponse {
   topProdutos: RelatorioBiRanking[];
   destaques: VisaoGeralDestaque[];
 }
+
+export type Agrupamento = "dia" | "semana" | "mes";
+
+export interface RecebimentosIndicadores {
+  pesoNotaKg: RelatorioBiIndicador;
+  descargas: RelatorioBiIndicador;
+  pesoMedioKg: RelatorioBiIndicador;
+  pesoRecebidoKg: number | null;
+  pesoNotaConferidoKg: number | null;
+  divergenciaKg: number | null;
+  divergenciaPct: number | null;
+  coberturaConferenciaPct: number;
+  cumprimentoPlanejamentoPct: number | null;
+  orfaos: number;
+  orfaosKg: number;
+  metaPeriodoKg: number | null;
+}
+
+export interface RecebimentosBalde {
+  inicio: string;
+  fim: string;
+  rotulo: string;
+  totalKg: number;
+  descargas: number;
+  porProduto: Record<string, number>;
+  metaKg: number | null;
+}
+
+export interface RecebimentosFluxo {
+  nos: { id: string; nome: string; tipo: "fornecedor" | "produto" | "unidade" }[];
+  ligacoes: { origem: string; destino: string; kg: number }[];
+}
+
+export interface RecebimentosPlanejamento {
+  itemId: string;
+  produto: string;
+  fornecedor: string;
+  planejadoKg: number;
+  recebidoKg: number;
+  cumprimentoPct: number | null;
+  situacao: string;
+}
+
+export interface RecebimentosDivergencia {
+  agendamentoId: string;
+  dataInicio: string;
+  placa: string | null;
+  notaNumero: number | null;
+  fornecedor: string | null;
+  produto: string | null;
+  pesoNotaKg: number;
+  pesoRecebidoKg: number;
+  diferencaKg: number;
+  diferencaPct: number | null;
+}
+
+export interface RecebimentosMatriz {
+  produtos: string[];
+  linhas: { fornecedor: string; valores: Record<string, number>; total: number; descargas: number }[];
+  totalPorProduto: Record<string, number>;
+  totalGeral: number;
+}
+
+export interface RecebimentosResponse {
+  periodo: RelatorioBiPeriodo;
+  agrupamento: Agrupamento;
+  indicadores: RecebimentosIndicadores;
+  produtos: string[];
+  serie: RecebimentosBalde[];
+  porProduto: RelatorioBiRanking[];
+  porFornecedor: RelatorioBiRanking[];
+  porUnidade: RelatorioBiRanking[];
+  fluxo: RecebimentosFluxo;
+  planejamento: RecebimentosPlanejamento[];
+  divergencias: RecebimentosDivergencia[];
+  matriz: RecebimentosMatriz;
+}

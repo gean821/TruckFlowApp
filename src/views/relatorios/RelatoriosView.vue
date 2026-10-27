@@ -25,6 +25,7 @@ const route = useRoute();
 
 const abas = [
   { rota: "relatorios-visao-geral", titulo: "Visão geral", icone: "mdi-view-dashboard-outline" },
+  { rota: "relatorios-recebimentos", titulo: "Recebimentos", icone: "mdi-package-variant-closed-check" },
   { rota: "relatorios-exportar", titulo: "Exportar dados", icone: "mdi-file-download-outline" },
 ];
 </script>

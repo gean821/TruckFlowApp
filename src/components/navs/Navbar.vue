@@ -522,6 +522,7 @@ const currentTime = ref("");
 
 const relatoriosMenu = [
   { to: "/relatorios/visao-geral", titulo: "Visão geral" },
+  { to: "/relatorios/recebimentos", titulo: "Recebimentos e volumes" },
   { to: "/relatorios/exportar", titulo: "Exportar dados" },
 ];
 
@@ -541,6 +542,7 @@ const routeMap: Record<string, { label: string; parent?: string }> = {
   "/enviar-notificacao": { label: "Enviar Nova", parent: "Notificações" },
   "/relatorios": { label: "Relatórios" },
   "/relatorios/visao-geral": { label: "Visão geral", parent: "Relatórios" },
+  "/relatorios/recebimentos": { label: "Recebimentos e volumes", parent: "Relatórios" },
   "/relatorios/exportar": { label: "Exportar dados", parent: "Relatórios" },
   "/auditoria": { label: "Auditoria" },
   "/usuarios": { label: "Usuários" },
