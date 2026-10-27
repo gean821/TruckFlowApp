@@ -34,8 +34,8 @@ export function tendenciaOption(serie: ProdutividadeDia[], limite: number): ECha
   const linha = (valores: (number | null)[]) => valores.map((v) => (v === null ? "-" : v));
 
   return {
-    grid: { left: 8, right: 8, top: 40, bottom: 8, containLabel: true },
-    legend: { top: 0, left: 0 },
+    grid: { left: 8, right: 24, top: 56, bottom: 8, containLabel: true },
+    legend: { top: 0, left: 0, type: "scroll" },
     tooltip: {
       trigger: "axis",
       formatter: (params: any) => {
@@ -127,8 +127,8 @@ export function distribuicaoOption(faixas: ProdutividadeFaixa[], limite: number)
   const totalDescarga = total("descarga");
 
   return {
-    grid: { left: 8, right: 8, top: 40, bottom: 8, containLabel: true },
-    legend: { top: 0, left: 0 },
+    grid: { left: 8, right: 24, top: 56, bottom: 8, containLabel: true },
+    legend: { top: 0, left: 0, type: "scroll" },
     tooltip: {
       trigger: "axis",
       axisPointer: { type: "shadow" },
@@ -143,7 +143,7 @@ export function distribuicaoOption(faixas: ProdutividadeFaixa[], limite: number)
         ].join("<br/>");
       },
     },
-    xAxis: { type: "category", data: faixas.map((f) => f.rotulo), axisLabel: { interval: 0, rotate: faixas.length > 6 ? 30 : 0 } },
+    xAxis: { type: "category", data: faixas.map((f) => f.rotulo), axisLabel: { interval: 0, rotate: faixas.length > 6 ? 35 : 0, fontSize: 11, margin: 10 } },
     yAxis: { type: "value", minInterval: 1 },
     series: [
       {
@@ -196,7 +196,7 @@ export function heatmapEsperaOption(celulas: ProdutividadeCelula[], metrica: Met
         ].join("<br/>");
       },
     },
-    xAxis: { type: "category", data: faixa.map(hora), splitArea: { show: false } },
+    xAxis: { type: "category", data: faixa.map(hora), splitArea: { show: false }, axisLabel: { interval: 0, fontSize: 10 } },
     yAxis: { type: "category", data: DIAS_SEMANA, inverse: true },
     visualMap: {
       min: 0,
@@ -232,8 +232,8 @@ export function porHoraOption(horas: ProdutividadeHora[]): EChartsOption {
   const visiveis = faixa.map((h) => horas.find((x) => x.hora === h) ?? { hora: h, chegadas: 0, esperaMediaMin: null, descargaMediaMin: null });
 
   return {
-    grid: { left: 8, right: 8, top: 40, bottom: 8, containLabel: true },
-    legend: { top: 0, left: 0 },
+    grid: { left: 8, right: 24, top: 56, bottom: 8, containLabel: true },
+    legend: { top: 0, left: 0, type: "scroll" },
     tooltip: { trigger: "axis", valueFormatter: (v: any) => (typeof v === "number" ? formatarNumero(v, 0) : "—") },
     xAxis: { type: "category", data: visiveis.map((h) => hora(h.hora)) },
     yAxis: [

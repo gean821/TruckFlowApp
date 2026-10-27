@@ -12,15 +12,15 @@
       </v-avatar>
     </div>
 
-    <div class="d-flex align-end justify-space-between">
+    <div class="d-flex align-end justify-space-between" style="gap: 8px">
       <div>
         <div class="text-h5 font-weight-bold text-grey-darken-4 kpi-valor">{{ valor }}</div>
         <div class="d-flex align-center mt-1" style="gap: 6px">
-          <v-chip v-if="variacao !== null" size="x-small" :color="corVariacao" variant="tonal" class="font-weight-bold px-2">
+          <v-chip v-if="variacao !== null" size="x-small" :color="corVariacao" variant="tonal" class="font-weight-bold px-2 flex-shrink-0">
             <v-icon start size="12">{{ variacao >= 0 ? "mdi-trending-up" : "mdi-trending-down" }}</v-icon>
             {{ variacao >= 0 ? "+" : "" }}{{ formatarPct(variacao) }}
           </v-chip>
-          <span class="text-caption text-grey">{{ variacao !== null ? textoComparacao : detalhe ?? "sem comparação" }}</span>
+          <span class="text-caption text-grey" :class="{ 'text-no-wrap': variacao !== null }">{{ variacao !== null ? textoComparacao : detalhe ?? "sem comparação" }}</span>
         </div>
       </div>
       <v-chart v-if="serie.length > 1" :option="sparkline" :theme="TEMA" autoresize class="sparkline" />
@@ -111,6 +111,8 @@ const sparkline = computed<EChartsOption>(() => ({
   line-height: 1.1;
 }
 .sparkline {
+  flex: 0 1 92px;
+  min-width: 48px;
   width: 92px;
   height: 40px;
 }
