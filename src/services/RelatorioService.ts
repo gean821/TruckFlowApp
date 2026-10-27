@@ -1,10 +1,27 @@
 import http from "@/http/http";
 import type IRelatorioAgendamentoFilterDto from "@/Dtos/relatorio/relatorioAgendamentoFilter.dto";
 import type { FormatoRelatorio } from "@/Dtos/relatorio/relatorioAgendamentoFilter.dto";
+import type { PaginatedResponse } from "@/entities/paginatedResponse";
+import type { AgendamentoDetalhado, RelatorioDetalhadoResumo } from "@/entities/relatorioAgendamentos.types";
 
 export interface RelatorioArquivo {
     blob: Blob;
     fileName: string;
+}
+
+export function paramsRelatorio(filtros: IRelatorioAgendamentoFilterDto, extras: Record<string, string | number | undefined> = {}) {
+  const params = new URLSearchParams();
+
+  for (const [chave, valor] of Object.entries({ ...filtros, ...extras })) {
+    if (valor === undefined || valor === null || valor === "" || valor === false) continue;
+    if (Array.isArray(valor)) {
+      valor.forEach((item) => params.append(chave, String(item)));
+    } else {
+      params.append(chave, String(valor));
+    }
+  }
+
+  return params;
 }
 
 export const RelatorioService = () => {
@@ -14,7 +31,7 @@ export const RelatorioService = () => {
   ): Promise<RelatorioArquivo> => {
     try {
       const { data, headers } = await http.get<Blob>("/Relatorio/agendamentos", {
-        params: { ...filtros, formato },
+        params: paramsRelatorio(filtros, { formato }),
         responseType: "blob",
       });
 
@@ -28,7 +45,26 @@ export const RelatorioService = () => {
     }
   };
 
-  return { gerarRelatorioAgendamentos };
+  const listarDetalhado = async (
+    filtros: IRelatorioAgendamentoFilterDto,
+    pageNumber: number,
+    pageSize: number
+  ): Promise<PaginatedResponse<AgendamentoDetalhado>> => {
+    const { data } = await http.get<PaginatedResponse<AgendamentoDetalhado>>("/Relatorio/agendamentos/detalhado", {
+      params: paramsRelatorio(filtros, { pageNumber, pageSize }),
+    });
+    return data;
+  };
+
+  const resumo = async (filtros: IRelatorioAgendamentoFilterDto): Promise<RelatorioDetalhadoResumo> => {
+    const { ordenarPor: _ordenar, desc: _desc, ...semOrdenacao } = filtros;
+    const { data } = await http.get<RelatorioDetalhadoResumo>("/Relatorio/agendamentos/resumo", {
+      params: paramsRelatorio(semOrdenacao),
+    });
+    return data;
+  };
+
+  return { gerarRelatorioAgendamentos, listarDetalhado, resumo };
 };
 
 async function parseErro(error: any): Promise<Error> {

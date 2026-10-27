@@ -17,7 +17,7 @@ const UnidadeEntregaView = () => import('@/views/UnidadeEntregaView.vue');
 const RecebimentoView = () => import('@/views/RecebimentoView.vue');
 const RecebimentoForm = () => import('@/components/Forms/RecebimentoForm.vue');
 const RecebimentosOrfaosView = () => import('@/views/RecebimentosOrfaosView.vue');
-const RelatorioView = () => import('@/views/Relatorio.vue');
+const AgendamentosDetalhadoView = () => import('@/views/relatorios/AgendamentosDetalhadoView.vue');
 const RelatoriosView = () => import('@/views/relatorios/RelatoriosView.vue');
 const VisaoGeralView = () => import('@/views/relatorios/VisaoGeralView.vue');
 const RecebimentosView = () => import('@/views/relatorios/RecebimentosView.vue');
@@ -196,7 +196,8 @@ const router = createRouter({
         { path: 'visao-geral', name: 'relatorios-visao-geral', component: VisaoGeralView },
         { path: 'recebimentos', name: 'relatorios-recebimentos', component: RecebimentosView },
         { path: 'capacidade-docas', name: 'relatorios-capacidade-docas', component: CapacidadeDocasView },
-        { path: 'exportar', name: 'relatorios-exportar', component: RelatorioView },
+        { path: 'agendamentos', name: 'relatorios-agendamentos', component: AgendamentosDetalhadoView },
+        { path: 'exportar', name: 'relatorios-exportar', redirect: { name: 'relatorios-agendamentos' } },
       ]
     },
     {
