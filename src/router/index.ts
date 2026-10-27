@@ -18,6 +18,8 @@ const RecebimentoView = () => import('@/views/RecebimentoView.vue');
 const RecebimentoForm = () => import('@/components/Forms/RecebimentoForm.vue');
 const RecebimentosOrfaosView = () => import('@/views/RecebimentosOrfaosView.vue');
 const RelatorioView = () => import('@/views/Relatorio.vue');
+const RelatoriosView = () => import('@/views/relatorios/RelatoriosView.vue');
+const VisaoGeralView = () => import('@/views/relatorios/VisaoGeralView.vue');
 const AuditoriaView = () => import('@/views/AuditoriaView.vue');
 const ManageUserView = () => import('@/views/ManageUserView.vue');
 const EmpresaView = () => import('@/views/EmpresaView.vue');
@@ -182,12 +184,16 @@ const router = createRouter({
     },
     {
       path: '/relatorios',
-      name: 'relatorios',
-      component: RelatorioView,
+      component: RelatoriosView,
       meta: {
         requiresAuth: true,
         roles: RoleGroups.CanManageMasterData
-      }
+      },
+      children: [
+        { path: '', name: 'relatorios', redirect: { name: 'relatorios-visao-geral' } },
+        { path: 'visao-geral', name: 'relatorios-visao-geral', component: VisaoGeralView },
+        { path: 'exportar', name: 'relatorios-exportar', component: RelatorioView },
+      ]
     },
     {
       path: '/auditoria',

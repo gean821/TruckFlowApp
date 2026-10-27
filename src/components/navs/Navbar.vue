@@ -315,7 +315,7 @@
             />
           </template>
           <v-list-item
-            to="nova-grade"
+            to="/nova-grade"
             title="Nova Grade"
             rounded="lg"
             class="pl-10 mb-1 nav-item-sub"
@@ -341,28 +341,28 @@
             />
           </template>
           <v-list-item
-            to="produtos"
+            to="/produtos"
             title="Produtos"
             rounded="lg"
             class="pl-10 mb-1 nav-item-sub"
             active-class="nav-active-sub"
           />
           <v-list-item
-            to="locais"
+            to="/locais"
             title="Locais de Descarga"
             rounded="lg"
             class="pl-10 mb-1 nav-item-sub"
             active-class="nav-active-sub"
           />
           <v-list-item
-            to="fornecedores"
+            to="/fornecedores"
             title="Fornecedores"
             rounded="lg"
             class="pl-10 mb-1 nav-item-sub"
             active-class="nav-active-sub"
           />
           <v-list-item
-            to="unidades-entregas"
+            to="/unidades-entregas"
             title="Unidades de Entrega"
             rounded="lg"
             class="pl-10 mb-1 nav-item-sub"
@@ -425,7 +425,7 @@
             active-class="nav-active-sub"
           />
           <v-list-item
-            to="reagendamentos"
+            to="/reagendamentos"
             title="Reagendamentos"
             rounded="lg"
             class="pl-10 mb-1 nav-item-sub"
@@ -434,7 +434,22 @@
         </v-list-group>
       </template>
 
-      <v-tooltip text="Relatórios" location="end" :disabled="!railMode">
+      <v-list-group v-if="canManageMasterData && !railMode" value="Relatorios" class="mt-1">
+        <template #activator="{ props }">
+          <v-list-item v-bind="props" prepend-icon="mdi-chart-box-outline" title="Relatórios" rounded="lg" class="nav-item" />
+        </template>
+        <v-list-item
+          v-for="relatorio in relatoriosMenu"
+          :key="relatorio.to"
+          :to="relatorio.to"
+          :title="relatorio.titulo"
+          rounded="lg"
+          class="pl-10 mb-1 nav-item-sub"
+          active-class="nav-active-sub"
+        />
+      </v-list-group>
+
+      <v-tooltip v-else text="Relatórios" location="end" :disabled="!railMode">
         <template #activator="{ props: tip }">
           <v-list-item
             v-if="canManageMasterData"
@@ -505,6 +520,11 @@ const sidebarVisible = ref(true);
 const railMode = ref(false);
 const currentTime = ref("");
 
+const relatoriosMenu = [
+  { to: "/relatorios/visao-geral", titulo: "Visão geral" },
+  { to: "/relatorios/exportar", titulo: "Exportar dados" },
+];
+
 const routeMap: Record<string, { label: string; parent?: string }> = {
   "/dashboard": { label: "Dashboard" },
   "/visualizar": { label: "Agendamentos" },
@@ -520,6 +540,8 @@ const routeMap: Record<string, { label: string; parent?: string }> = {
   "/reagendamentos": { label: "Reagendamentos", parent: "Notificações" },
   "/enviar-notificacao": { label: "Enviar Nova", parent: "Notificações" },
   "/relatorios": { label: "Relatórios" },
+  "/relatorios/visao-geral": { label: "Visão geral", parent: "Relatórios" },
+  "/relatorios/exportar": { label: "Exportar dados", parent: "Relatórios" },
   "/auditoria": { label: "Auditoria" },
   "/usuarios": { label: "Usuários" },
   "/empresa": { label: "Empresa", parent: "Controle" },

@@ -9,12 +9,17 @@ import '@mdi/font/css/materialdesignicons.css'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import { pt } from 'vuetify/locale'
 import VueApexCharts from 'vue3-apexcharts'
 import { useAuthStore } from './stores/AuthStore'
 
 const vuetify = createVuetify({
   components,
   directives,
+  locale: {
+    locale: 'pt',
+    messages: { pt },
+  },
 })
 
 async function bootstrap() {

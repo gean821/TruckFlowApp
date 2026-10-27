@@ -12,6 +12,8 @@ Painel admin web do TruckFlowApp. Cliente-alvo: **Aurora Alimentos**. Usuários:
 - **Vuetify 3.10** (UI components) + `@mdi/font` (ícones)
 - **Vue Router 4** (com lazy loading já configurado)
 - `@microsoft/fetch-event-source` (SSE), ApexCharts, date-fns, jwt-decode
+- **Relatórios/BI: Apache ECharts via `vue-echarts`** (mesma lib do app do motorista, decisão da TRUCK-303/304). Registro de módulos e tema `truckflow` em `src/components/relatorios/charts/echarts.ts` (renderer Canvas, para exportar PNG); gráficos novos usam `ChartCard`/`KpiCard` e montam a `option` em funções puras em `charts/*Options.ts`. ApexCharts segue só onde já existia (dashboard/grade) — não usar em tela nova.
+- Área `/relatorios` = rota pai com abas (`views/relatorios/RelatoriosView.vue`); cada relatório é uma rota filha e um subitem do grupo "Relatórios" no menu (`relatoriosMenu` no `Navbar.vue`). Filtros globais via `useFiltrosRelatorio` (estado na query string, botão Aplicar) e drill-down via `DrillDownDialog`. Links do menu sempre com caminho absoluto (`/produtos`), por causa das rotas aninhadas.
 - Vitest (jsdom, config no `vite.config.ts`) + @vue/test-utils — testes em `src/**/__tests__/*.spec.ts` (fora do type-check do build). Playwright instalado, sem testes e2e ainda
 
 ## Padrão arquitetural (importante)
