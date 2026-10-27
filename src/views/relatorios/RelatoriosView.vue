@@ -27,7 +27,7 @@ const abas = [
   { rota: "relatorios-visao-geral", titulo: "Visão geral", icone: "mdi-view-dashboard-outline" },
   { rota: "relatorios-recebimentos", titulo: "Recebimentos", icone: "mdi-package-variant-closed-check" },
   { rota: "relatorios-capacidade-docas", titulo: "Capacidade das docas", icone: "mdi-garage-variant" },
-  { rota: "relatorios-exportar", titulo: "Exportar dados", icone: "mdi-file-download-outline" },
+  { rota: "relatorios-agendamentos", titulo: "Agendamentos", icone: "mdi-table-search" },
 ];
 </script>
 
