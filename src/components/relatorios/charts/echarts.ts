@@ -1,4 +1,4 @@
-import { BarChart, FunnelChart, GaugeChart, HeatmapChart, LineChart, PieChart, SankeyChart, ScatterChart } from "echarts/charts";
+import { BarChart, BoxplotChart, CustomChart, FunnelChart, GaugeChart, HeatmapChart, LineChart, PieChart, SankeyChart, ScatterChart } from "echarts/charts";
 import {
   DataZoomComponent,
   GridComponent,
@@ -36,6 +36,8 @@ use([
   GaugeChart,
   SankeyChart,
   ScatterChart,
+  BoxplotChart,
+  CustomChart,
   GridComponent,
   TooltipComponent,
   LegendComponent,

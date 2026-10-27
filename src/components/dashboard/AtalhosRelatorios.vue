@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 const atalhos = [
-  { to: "/relatorios/visao-geral", titulo: "Visão geral", descricao: "KPIs, tendências e horários de pico", icone: "mdi-view-dashboard-outline", cor: "primary" },
+  { to: "/relatorios/produtividade", titulo: "Produtividade", descricao: "Espera, descarga e o pátio em Gantt", icone: "mdi-timer-outline", cor: "amber-darken-2" },
   { to: "/relatorios/recebimentos", titulo: "Recebimentos", descricao: "Toneladas, fluxo, planejado e divergências", icone: "mdi-package-variant-closed-check", cor: "indigo" },
   { to: "/relatorios/capacidade-docas", titulo: "Capacidade das docas", descricao: "Ocupação, janelas esgotadas e ociosas", icone: "mdi-garage-variant", cor: "teal" },
   { to: "/relatorios/agendamentos", titulo: "Agendamentos detalhados", descricao: "Busca, ciclo do caminhão e Excel/CSV/PDF", icone: "mdi-table-search", cor: "deep-purple" },

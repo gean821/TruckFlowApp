@@ -275,3 +275,129 @@ export interface CapacidadeDocasResponse {
   porHora: CapacidadeHora[];
   recomendacoes: VisaoGeralDestaque[];
 }
+
+export interface ProdutividadeIndicadores {
+  ciclos: RelatorioBiIndicador;
+  esperaMediaMin: RelatorioBiIndicador;
+  esperaP90Min: RelatorioBiIndicador;
+  descargaMediaMin: RelatorioBiIndicador;
+  permanenciaMediaMin: RelatorioBiIndicador;
+  horasEspera: RelatorioBiIndicador;
+  acimaDoLimitePct: RelatorioBiIndicador;
+  esperaMedianaMin: number | null;
+  descargaMedianaMin: number | null;
+  descargaP90Min: number | null;
+  permanenciaP90Min: number | null;
+  acimaDoLimite: number;
+  descargasPorDia: number;
+  estimadosPct: number;
+}
+
+export interface ProdutividadeDia {
+  dia: string;
+  ciclos: number;
+  esperaMediaMin: number | null;
+  esperaP90Min: number | null;
+  descargaMediaMin: number | null;
+  permanenciaMediaMin: number | null;
+}
+
+export interface ProdutividadeFaixa {
+  rotulo: string;
+  deMin: number;
+  ateMin: number | null;
+  espera: number;
+  descarga: number;
+}
+
+export interface ProdutividadeCelula {
+  diaSemana: number;
+  hora: number;
+  chegadas: number;
+  esperaMediaMin: number | null;
+  esperaP90Min: number | null;
+}
+
+export interface ProdutividadeHora {
+  hora: number;
+  chegadas: number;
+  esperaMediaMin: number | null;
+  descargaMediaMin: number | null;
+}
+
+export interface ProdutividadeCaixa {
+  min: number;
+  q1: number;
+  mediana: number;
+  q3: number;
+  max: number;
+}
+
+export interface ProdutividadeGrupo {
+  id: string | null;
+  nome: string;
+  ciclos: number;
+  esperaMediaMin: number | null;
+  esperaP90Min: number | null;
+  descargaMediaMin: number | null;
+  descargaMedianaMin: number | null;
+  permanenciaMediaMin: number | null;
+  acimaDoLimite: number;
+  caixaEspera: ProdutividadeCaixa | null;
+  caixaDescarga: ProdutividadeCaixa | null;
+}
+
+export interface ProdutividadeResponse {
+  periodo: RelatorioBiPeriodo;
+  limiteEsperaMin: number;
+  indicadores: ProdutividadeIndicadores;
+  serieDiaria: ProdutividadeDia[];
+  distribuicao: ProdutividadeFaixa[];
+  heatmap: ProdutividadeCelula[];
+  porHora: ProdutividadeHora[];
+  porDoca: ProdutividadeGrupo[];
+  porProduto: ProdutividadeGrupo[];
+  porUnidade: ProdutividadeGrupo[];
+  porFornecedor: ProdutividadeGrupo[];
+  destaques: VisaoGeralDestaque[];
+}
+
+export interface PatioCaminhao {
+  agendamentoId: string;
+  placa: string | null;
+  motorista: string | null;
+  fornecedor: string | null;
+  produto: string | null;
+  status: string;
+  janelaInicio: string;
+  janelaFim: string;
+  chegouEm: string;
+  inicioDescarga: string | null;
+  inicioEstimado: boolean;
+  fimDescarga: string | null;
+  saida: string | null;
+  saidaEstimada: boolean;
+  esperaMin: number | null;
+  descargaMin: number | null;
+}
+
+export interface PatioDoca {
+  id: string | null;
+  nome: string;
+  unidade: string | null;
+  descargaMediaMin: number | null;
+  caminhoes: PatioCaminhao[];
+}
+
+export interface PatioResponse {
+  dia: string;
+  agoraUtc: string | null;
+  inicioEixo: string | null;
+  fimEixo: string | null;
+  caminhoes: number;
+  esperaMediaMin: number | null;
+  descargaMediaMin: number | null;
+  picoSimultaneos: number;
+  picoEm: string | null;
+  docas: PatioDoca[];
+}

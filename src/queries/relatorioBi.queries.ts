@@ -31,3 +31,24 @@ export function useRecebimentosQuery(filtro: MaybeRef<RelatorioBiFiltro>, agrupa
     staleTime: 60_000,
   });
 }
+
+export function useProdutividadeQuery(filtro: MaybeRef<RelatorioBiFiltro>, limiteEsperaMin: MaybeRef<number>) {
+  return useQuery({
+    queryKey: computed(() => [relatorioBiQueryKey, "produtividade", unref(filtro), unref(limiteEsperaMin)]),
+    queryFn: async () => await RelatorioBiService.produtividade(unref(filtro), unref(limiteEsperaMin)),
+    placeholderData: keepPreviousData,
+    staleTime: 60_000,
+  });
+}
+
+export function usePatioQuery(filtro: MaybeRef<RelatorioBiFiltro>, dia: MaybeRef<string>) {
+  return useQuery({
+    queryKey: computed(() => {
+      const { inicio: _inicio, fim: _fim, ...semPeriodo } = unref(filtro);
+      return [relatorioBiQueryKey, "patio", semPeriodo, unref(dia)];
+    }),
+    queryFn: async () => await RelatorioBiService.patio(unref(filtro), unref(dia)),
+    placeholderData: keepPreviousData,
+    staleTime: 30_000,
+  });
+}
