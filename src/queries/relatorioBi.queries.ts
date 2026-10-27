@@ -14,6 +14,15 @@ export function useVisaoGeralQuery(filtro: MaybeRef<RelatorioBiFiltro>) {
   });
 }
 
+export function useCapacidadeDocasQuery(filtro: MaybeRef<RelatorioBiFiltro>) {
+  return useQuery({
+    queryKey: computed(() => [relatorioBiQueryKey, "capacidade-docas", { ...unref(filtro), fornecedorId: null }]),
+    queryFn: async () => await RelatorioBiService.capacidadeDocas(unref(filtro)),
+    placeholderData: keepPreviousData,
+    staleTime: 60_000,
+  });
+}
+
 export function useRecebimentosQuery(filtro: MaybeRef<RelatorioBiFiltro>, agrupamento: MaybeRef<Agrupamento | null>) {
   return useQuery({
     queryKey: computed(() => [relatorioBiQueryKey, "recebimentos", unref(filtro), unref(agrupamento)]),

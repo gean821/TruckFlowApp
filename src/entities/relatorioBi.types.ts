@@ -171,3 +171,107 @@ export interface RecebimentosResponse {
   divergencias: RecebimentosDivergencia[];
   matriz: RecebimentosMatriz;
 }
+
+export interface CapacidadeIndicadores {
+  taxaReservaPct: RelatorioBiIndicador;
+  utilizacaoRealPct: RelatorioBiIndicador;
+  horasOfertadas: RelatorioBiIndicador;
+  horasOciosas: RelatorioBiIndicador;
+  horasNaoComparecimento: RelatorioBiIndicador;
+  foraDaGrade: RelatorioBiIndicador;
+  vagasOfertadas: number;
+  vagasReservadas: number;
+  janelasEsgotadas: number;
+  janelasComOferta: number;
+  vagaMediaMin: number | null;
+  descargaMediaMin: number | null;
+  aproveitamentoVagaPct: number | null;
+}
+
+export interface CapacidadeDia {
+  data: string;
+  horasOfertadas: number;
+  horasReservadas: number;
+  horasUtilizadas: number;
+  horasNaoComparecimento: number;
+  taxaReservaPct: number | null;
+  utilizacaoRealPct: number | null;
+}
+
+export interface CapacidadeCelula {
+  diaSemana: number;
+  hora: number;
+  ofertadas: number;
+  reservadas: number;
+  realizadas: number;
+  naoCompareceu: number;
+  foraDaGrade: number;
+  taxaReservaPct: number | null;
+  utilizacaoRealPct: number | null;
+  diasComOferta: number;
+  diasEsgotados: number;
+}
+
+export interface CapacidadeDocaHora {
+  docaId: string;
+  hora: number;
+  ofertadas: number;
+  reservadas: number;
+  taxaReservaPct: number | null;
+  utilizacaoRealPct: number | null;
+}
+
+export interface CapacidadeDoca {
+  id: string;
+  nome: string;
+  unidade: string | null;
+  vagasOfertadas: number;
+  vagasReservadas: number;
+  descargas: number;
+  naoCompareceu: number;
+  foraDaGrade: number;
+  horasOfertadas: number;
+  horasReservadas: number;
+  horasUtilizadas: number;
+  horasOciosas: number;
+  taxaReservaPct: number | null;
+  utilizacaoRealPct: number | null;
+  descargaMediaMin: number | null;
+  horaPico: number | null;
+  serieTaxaReserva: (number | null)[];
+}
+
+export interface CapacidadeJanela {
+  diaSemana: number;
+  hora: number;
+  rotulo: string;
+  ofertadas: number;
+  reservadas: number;
+  foraDaGrade: number;
+  taxaReservaPct: number | null;
+  diasComOferta: number;
+  diasEsgotados: number;
+  vagasLivres: number;
+}
+
+export interface CapacidadeHora {
+  hora: number;
+  horasOfertadas: number;
+  horasReservadas: number;
+  horasUtilizadas: number;
+  taxaReservaPct: number | null;
+  utilizacaoRealPct: number | null;
+}
+
+export interface CapacidadeDocasResponse {
+  periodo: RelatorioBiPeriodo;
+  indicadores: CapacidadeIndicadores;
+  serieDiaria: CapacidadeDia[];
+  heatmapSemana: CapacidadeCelula[];
+  heatmapDocas: CapacidadeDocaHora[];
+  docas: CapacidadeDoca[];
+  excessoDemanda: CapacidadeJanela[];
+  ociosas: CapacidadeJanela[];
+  porHora: CapacidadeHora[];
+  recomendacoes: VisaoGeralDestaque[];
+}

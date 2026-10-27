@@ -10,6 +10,7 @@ export default interface IAgendamentoFilterDto {
     tipoVeiculo?: TipoVeiculo | number;
     search?: string;
     ocultarVagasLivres?: boolean;
+    localDescargaId?: string;
     pageNumber?: number;
     pageSize?: number;
 }
