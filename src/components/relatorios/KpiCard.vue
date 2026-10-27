@@ -20,7 +20,7 @@
             <v-icon start size="12">{{ variacao >= 0 ? "mdi-trending-up" : "mdi-trending-down" }}</v-icon>
             {{ variacao >= 0 ? "+" : "" }}{{ formatarPct(variacao) }}
           </v-chip>
-          <span class="text-caption text-grey">{{ variacao !== null ? "vs anterior" : detalhe ?? "sem comparação" }}</span>
+          <span class="text-caption text-grey">{{ variacao !== null ? textoComparacao : detalhe ?? "sem comparação" }}</span>
         </div>
       </div>
       <v-chart v-if="serie.length > 1" :option="sparkline" :theme="TEMA" autoresize class="sparkline" />
@@ -46,8 +46,9 @@ const props = withDefaults(
     inverter?: boolean;
     detalhe?: string;
     clicavel?: boolean;
+    textoComparacao?: string;
   }>(),
-  { cor: "primary", variacao: null, serie: () => [], inverter: false, clicavel: false },
+  { cor: "primary", variacao: null, serie: () => [], inverter: false, clicavel: false, textoComparacao: "vs anterior" },
 );
 
 const emit = defineEmits<{ clique: [] }>();

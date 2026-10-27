@@ -1,9 +1,9 @@
-import type { DashboardResponseDto } from "@/Dtos/dashboard/Dashboard-responses";
+import type { DashboardHojeResponse } from "@/entities/dashboardHoje.types";
 import http from "@/http/http";
 
 export const DashboardService = {
-  async getSummary(): Promise<DashboardResponseDto> {
-    const { data } = await http.get<DashboardResponseDto>('/Dashboard/summary');
+  async getHoje(): Promise<DashboardHojeResponse> {
+    const { data } = await http.get<DashboardHojeResponse>("/Dashboard/hoje");
     return data;
-  }
-}
+  },
+};

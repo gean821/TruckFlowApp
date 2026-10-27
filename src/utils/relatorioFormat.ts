@@ -40,3 +40,15 @@ export const descreverPeriodo = (inicioIso: string, fimIso: string) => {
   const inicioTexto = `${inicio.getDate()} ${MESES[inicio.getMonth()]}${mesmoAno ? "" : ` ${inicio.getFullYear()}`}`;
   return `${inicioTexto} a ${fim.getDate()} ${MESES[fim.getMonth()]} ${fim.getFullYear()}`;
 };
+
+export const formatarDuracao = (minutos: number | null | undefined) => {
+  if (minutos === null || minutos === undefined) return "—";
+  const total = Math.max(0, Math.round(minutos));
+  if (total < 60) return `${total} min`;
+  const horas = Math.floor(total / 60);
+  const resto = total % 60;
+  return resto === 0 ? `${horas}h` : `${horas}h ${String(resto).padStart(2, "0")}min`;
+};
+
+export const formatarHora = (iso: string) =>
+  new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" });

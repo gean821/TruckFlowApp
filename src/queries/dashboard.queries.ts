@@ -1,11 +1,16 @@
 import { DashboardService } from "@/services/Dashboard.service";
-import { useQuery } from "@tanstack/vue-query";
+import { keepPreviousData, useQuery } from "@tanstack/vue-query";
 
-export const dashboardQueryKey = 'dashboardSummary';
+export const dashboardQueryKey = "dashboard";
 
-export function useDashboardSummaryQuery() {
+const ATUALIZACAO_MS = 30_000;
+
+export function useDashboardHojeQuery() {
   return useQuery({
-    queryKey: [dashboardQueryKey],
-    queryFn: async () => await DashboardService.getSummary()
+    queryKey: [dashboardQueryKey, "hoje"],
+    queryFn: async () => await DashboardService.getHoje(),
+    placeholderData: keepPreviousData,
+    refetchInterval: ATUALIZACAO_MS,
+    refetchOnWindowFocus: true,
   });
 }

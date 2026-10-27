@@ -1,28 +1,18 @@
-import type { DashboardResponseDto } from "@/Dtos/dashboard/Dashboard-responses";
-import { useDashboardSummaryQuery } from "@/queries/dashboard.queries";
 import { computed, onScopeDispose, ref } from "vue";
 import type AgendamentoFilterDto from "@/Dtos/agendamento/agendamentoFilterDto";
 import { useAgendamentoQuery } from "@/queries/agendamento.queries";
+import { useDashboardHojeQuery } from "@/queries/dashboard.queries";
 
-const emptyDashboard: DashboardResponseDto = {
-  stats: { totalAgendamentos: 0, emAndamento: 0, finalizados: 0, atrasados: 0, cancelados: 0, expirados: 0 },
-  volume: { totalKg: 0, metaDiariaKg: null, progressoDiario: 0 },
-  docas: { ocupacaoPorcentagem: 0, livres: 0, ocupadas: 0, total: 0 },
-  recentActivity: []
-};
-
-export function useDashboard() {
-  const summaryQuery = useDashboardSummaryQuery();
-
-  const dashboardData = computed<DashboardResponseDto>(
-    () => summaryQuery.data.value ?? emptyDashboard
-  );
-  const loading = computed(() => summaryQuery.isLoading.value);
+export function useDashboardHoje() {
+  const query = useDashboardHojeQuery();
 
   return {
-    dashboardData,
-    loading,
-    refetch: () => summaryQuery.refetch()
+    dados: query.data,
+    carregando: computed(() => query.isLoading.value),
+    atualizando: computed(() => query.isFetching.value),
+    erro: computed(() => query.isError.value),
+    atualizadoEm: computed(() => (query.dataUpdatedAt.value ? new Date(query.dataUpdatedAt.value) : null)),
+    recarregar: () => query.refetch(),
   };
 }
 
