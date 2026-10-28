@@ -497,6 +497,7 @@ import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import NotificationBell from "@/components/notifications/NotificationBell.vue";
 import { usePermissions } from "@/hooks/usePermissions";
+import { formatarPapeis } from "@/utils/papeis";
 
 const router = useRouter();
 const route = useRoute();
@@ -556,7 +557,7 @@ const profile = computed(() => {
   const name = authStore.user?.unique_name || "Usuário";
   return {
     name,
-    role: authStore.user?.role || "Visitante",
+    role: formatarPapeis(authStore.user?.role, "Visitante"),
     photo: (authStore.user as any)?.photoUrl ?? null,
     initials: name.substring(0, 2).toUpperCase(),
   };

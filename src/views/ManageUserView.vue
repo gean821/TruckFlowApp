@@ -204,7 +204,7 @@
                 class="font-weight-bold"
               >
                 <v-icon start size="12">mdi-shield-account-outline</v-icon>
-                {{ user.role }}
+                {{ formatarPapeis(user.role) }}
               </v-chip>
               <span class="text-caption text-disabled">{{
                 formatData(user.createdAt)
@@ -332,6 +332,7 @@
 </template>
 
 <script setup lang="ts">
+import { formatarPapeis } from "@/utils/papeis";
 import { ref, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { format, parseISO } from "date-fns";
