@@ -58,7 +58,7 @@
               {{ usuario?.nomeReal || usuario?.username || authStore.user?.unique_name || '—' }}
             </span>
             <v-chip color="primary" variant="tonal" size="x-small" prepend-icon="mdi-shield-account-outline">
-              {{ usuario?.role || authStore.user?.role || '—' }}
+              {{ formatarPapeis(usuario?.role || authStore.user?.role) }}
             </v-chip>
           </div>
           <div class="text-body-2 text-grey">{{ usuario?.email || authStore.user?.email || '—' }}</div>
@@ -98,7 +98,7 @@
               </v-avatar>
               <span class="info-label">Função</span>
             </div>
-            <div class="info-value pl-1">{{ usuario?.role || authStore.user?.role || '—' }}</div>
+            <div class="info-value pl-1">{{ formatarPapeis(usuario?.role || authStore.user?.role) }}</div>
           </div>
 
           <v-divider vertical class="mx-6 d-none d-sm-block" />
@@ -254,6 +254,7 @@
 </template>
 
 <script setup lang="ts">
+import { formatarPapeis } from "@/utils/papeis";
 import { computed, reactive, ref } from 'vue';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
