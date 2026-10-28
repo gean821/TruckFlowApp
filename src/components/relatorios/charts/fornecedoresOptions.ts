@@ -17,12 +17,17 @@ export const corClassificacao = (classificacao: string) => COR_CLASSIFICACAO[cla
 const pct = (v: number | null | undefined) => (v === null || v === undefined ? "—" : formatarPct(v));
 
 export function matrizOption(ranking: FornecedorDesempenho[]): EChartsOption {
-  const avaliados = ranking.filter((f) => f.id && f.pontualidadePct !== null && f.pesoKg > 0);
+  const avaliados = ranking
+    .filter((f) => f.id && f.pontualidadePct !== null && f.pesoKg > 0)
+    .sort((a, b) => b.pesoKg - a.pesoKg);
   const volumes = avaliados.map((f) => f.pesoKg / 1000).sort((a, b) => a - b);
   const mediana = volumes.length ? volumes[Math.floor(volumes.length / 2)]! : 0;
   const maxAgendamentos = Math.max(1, ...avaliados.map((f) => f.agendamentos));
   const menorPontualidade = Math.min(100, ...avaliados.map((f) => f.pontualidadePct!));
   const xMin = Math.max(0, Math.min(80, Math.floor((menorPontualidade - 10) / 10) * 10));
+  let rotulosPosicionados: { x: number; y: number; width: number; height: number }[] = [];
+  const sobrepoe = (a: { x: number; y: number; width: number; height: number }, b: typeof a) =>
+    a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
 
   return {
     grid: { left: 8, right: 24, top: 24, bottom: 8, containLabel: true },
@@ -57,13 +62,39 @@ export function matrizOption(ranking: FornecedorDesempenho[]): EChartsOption {
       {
         type: "scatter",
         cursor: "pointer",
-        labelLayout: { hideOverlap: true, moveOverlap: "shiftY" },
-        data: avaliados.map((f) => ({
-          value: [f.pontualidadePct, Math.round(f.pesoKg / 100) / 10],
-          symbolSize: 14 + (f.agendamentos / maxAgendamentos) * 30,
-          itemStyle: { color: corClassificacao(f.classificacao), opacity: 0.85, borderColor: "#fff", borderWidth: 2 },
-          label: { show: true, formatter: f.nome.length > 18 ? `${f.nome.slice(0, 17)}…` : f.nome, position: "top", color: CORES.texto, fontSize: 11 },
-        })),
+        labelLayout: (params: any) => {
+          if (params.dataIndex === 0) rotulosPosicionados = [];
+          const rotulo = { ...params.labelRect };
+          let colisao = rotulosPosicionados.find((r) => sobrepoe(r, rotulo));
+          while (colisao) {
+            rotulo.y = colisao.y + colisao.height + 2;
+            colisao = rotulosPosicionados.find((r) => sobrepoe(r, rotulo));
+          }
+          rotulosPosicionados.push(rotulo);
+          return { dy: rotulo.y - params.labelRect.y };
+        },
+        labelLine: { show: true, length2: 6, lineStyle: { color: "#94A3B8", width: 1 } },
+        emphasis: { focus: "self", label: { fontWeight: "bold" } },
+        data: avaliados.map((f) => {
+          const tamanho = 14 + (f.agendamentos / maxAgendamentos) * 30;
+          return {
+            fornecedorId: f.id,
+            value: [f.pontualidadePct, Math.round(f.pesoKg / 100) / 10],
+            symbolSize: tamanho,
+            itemStyle: { color: corClassificacao(f.classificacao), opacity: 0.85, borderColor: "#fff", borderWidth: 2 },
+            label: {
+              show: true,
+              formatter: f.nome.length > 26 ? `${f.nome.slice(0, 25)}…` : f.nome,
+              position: f.pontualidadePct! >= 90 ? "left" : "right",
+              distance: 6,
+              color: CORES.texto,
+              fontSize: 11,
+              backgroundColor: "rgba(255, 255, 255, 0.92)",
+              padding: [2, 4],
+              borderRadius: 4,
+            },
+          };
+        }),
         markLine: {
           symbol: "none",
           silent: true,

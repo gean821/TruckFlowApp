@@ -271,20 +271,6 @@
           style="border-color: rgba(255, 255, 255, 0.1)"
         />
 
-        <v-tooltip text="Bloqueios" location="end">
-          <template #activator="{ props: tip }">
-            <v-list-item
-              v-bind="tip"
-              to="/bloqueios"
-              prepend-icon="mdi-shield-lock-outline"
-              title="Bloqueios"
-              rounded="lg"
-              active-class="nav-active"
-              class="mb-1 nav-item"
-            />
-          </template>
-        </v-tooltip>
-
         <v-tooltip text="Notificações" location="end">
           <template #activator="{ props: tip }">
             <v-list-item
@@ -395,16 +381,6 @@
             />
           </template>
         </v-tooltip>
-
-        <v-list-item
-          v-if="canManageMasterData"
-          to="/bloqueios"
-          prepend-icon="mdi-shield-lock-outline"
-          title="Bloqueios"
-          rounded="lg"
-          active-class="nav-active"
-          class="mb-1 nav-item"
-        />
 
         <v-list-group value="Notificacoes" v-if="canManageMasterData">
           <template #activator="{ props }">
@@ -534,7 +510,6 @@ const routeMap: Record<string, { label: string; parent?: string }> = {
   "/locais": { label: "Locais de Descarga", parent: "Cadastros" },
   "/fornecedores": { label: "Fornecedores", parent: "Cadastros" },
   "/unidades-entregas": { label: "Unidades de Entrega", parent: "Cadastros" },
-  "/bloqueios": { label: "Bloqueios" },
   "/enviar-notificacao": { label: "Enviar Nova", parent: "Notificações" },
   "/relatorios": { label: "Relatórios" },
   "/relatorios/visao-geral": { label: "Visão geral", parent: "Relatórios" },
@@ -547,6 +522,7 @@ const routeMap: Record<string, { label: string; parent?: string }> = {
   "/usuarios": { label: "Usuários" },
   "/empresa": { label: "Empresa", parent: "Controle" },
   "/account-config": { label: "Minha Conta" },
+  "/notificacoes": { label: "Histórico", parent: "Notificações" },
 };
 
 const breadcrumb = computed(

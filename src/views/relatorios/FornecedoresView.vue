@@ -313,8 +313,7 @@ const abrir = (f: FornecedorDesempenho) => {
 };
 
 const cliqueMatriz = (p: any) => {
-  const avaliados = dados.value?.ranking.filter((f) => f.id && f.pontualidadePct !== null && f.pesoKg > 0) ?? [];
-  const f = avaliados[p?.dataIndex];
+  const f = dados.value?.ranking.find((r) => r.id && r.id === p?.data?.fornecedorId);
   if (f) abrir(f);
 };
 
