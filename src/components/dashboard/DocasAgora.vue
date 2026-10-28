@@ -18,9 +18,9 @@
 
     <div v-else class="grade-docas">
       <div v-for="doca in docas" :key="doca.id" class="doca pa-3 rounded-lg" :class="doca.ocupada ? 'doca-ocupada' : 'doca-livre'">
-        <div class="d-flex align-center justify-space-between mb-2">
-          <div class="text-body-2 font-weight-bold text-grey-darken-4 text-truncate">{{ doca.nome }}</div>
-          <v-chip size="x-small" :color="doca.ocupada ? 'primary' : 'success'" variant="flat" class="font-weight-bold">
+        <div class="d-flex align-start justify-space-between mb-2" style="gap: 8px">
+          <div class="text-body-2 font-weight-bold text-grey-darken-4 nome-doca" :title="doca.nome">{{ doca.nome }}</div>
+          <v-chip size="x-small" :color="doca.ocupada ? 'primary' : 'success'" variant="flat" class="font-weight-bold flex-shrink-0">
             {{ doca.ocupada ? "Ocupada" : "Livre" }}
           </v-chip>
         </div>
@@ -83,6 +83,11 @@ const ocupadas = computed(() => props.docas.filter((d) => d.ocupada).length);
 .doca-livre {
   background: #f8fafc;
   border-color: #e2e8f0;
+}
+.nome-doca {
+  min-width: 0;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 .placa {
   letter-spacing: 0.06em;

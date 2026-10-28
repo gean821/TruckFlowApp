@@ -60,13 +60,16 @@ const rotuloMinutos = (minutos: number | null) =>
   box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.04), 0 2px 4px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.06);
 }
 .lista {
-  max-height: 320px;
+  flex: 1 1 0;
+  min-height: 320px;
   overflow-y: auto;
 }
 .item + .item {
   border-top: 1px solid #f1f5f9;
 }
 .hora {
-  min-width: 72px;
+  flex: 0 0 auto;
+  min-width: 96px;
+  white-space: nowrap;
 }
 </style>

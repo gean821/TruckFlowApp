@@ -837,7 +837,7 @@ import { useAgendamento } from "@/hooks/useAgendamento";
 import { useFornecedor } from "@/hooks/useFornecedor";
 import { useUnidadeEntrega } from "@/hooks/useUnidadeEntrega";
 import { useProduto } from "@/hooks/useProdutos";
-import { TipoVeiculoLabels } from "@/utils/tipoVeiculoLabels";
+import { TipoVeiculoLabels, formatarTipoVeiculo } from "@/utils/tipoVeiculoLabels";
 import { usePermissions } from "@/hooks/usePermissions";
 import AgendamentoAvulsoModal from "@/components/modals/AgendamentoAvulsoModal.vue";
 import { useComunicacaoDialogStore } from "@/stores/ComunicacaoDialogStore";
@@ -1164,7 +1164,7 @@ async function exportCsv() {
       i.placaVeiculo || "",
       i.unidadeEntrega || "",
       i.localDescarga || "",
-      formatTipoVeiculo(i.tipoVeiculo),
+      formatarTipoVeiculo(i.tipoVeiculo),
       Number(i.pesoCarga || 0) > 0 ? String(i.pesoCarga) : "",
       formatStatus(i.status),
     ]);
@@ -1293,13 +1293,6 @@ function formatDate(dateStr: string) {
   return format(parseISO(dateStr), "dd/MM/yyyy");
 }
 
-function formatTipoVeiculo(tipo: any) {
-  if (tipo === null || tipo === undefined || tipo === "") return "-";
-  if (typeof tipo === "string" && isNaN(Number(tipo)))
-    return tipo.replace(/([A-Z])/g, " $1").trim();
-  const key = Number(tipo);
-  return TipoVeiculoLabels[key] || String(tipo);
-}
 
 function formatStatus(status: string) {
   if (!status) return "-";

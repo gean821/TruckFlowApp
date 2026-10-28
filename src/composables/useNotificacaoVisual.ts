@@ -182,7 +182,8 @@ export function useNotificacaoVisual() {
     }
 
     if (payload.unidadeEntregaNome?.trim()) {
-      partes.push(`Unidade ${payload.unidadeEntregaNome.trim()}`);
+      const unidade = payload.unidadeEntregaNome.trim();
+      partes.push(/^unidade\b/i.test(unidade) ? unidade : `Unidade ${unidade}`);
     }
 
     if (payload.localDescargaNome?.trim()) {

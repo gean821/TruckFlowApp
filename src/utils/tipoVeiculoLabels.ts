@@ -11,3 +11,11 @@ export const TipoVeiculoLabels: Record<number, string> = {
     [TipoVeiculo.Vanderleia]: "Vanderléia",
     [TipoVeiculo.BauFrigorifico]: "Baú Frigorífico"
 };
+
+export function formatarTipoVeiculo(valor: string | number | null | undefined): string {
+    if (valor === null || valor === undefined || valor === "") return "-";
+    const numero = Number(valor);
+    if (!Number.isNaN(numero)) return TipoVeiculoLabels[numero] ?? String(valor);
+    const porNome = TipoVeiculo[valor as keyof typeof TipoVeiculo];
+    return porNome !== undefined ? TipoVeiculoLabels[porNome] ?? String(valor) : String(valor);
+}
